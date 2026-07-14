@@ -490,8 +490,20 @@ async function deleteDoc(id,docId,path){
 }
 
 async function openDoc(path){
-  const {data}=SB.storage.from('dokumente').getPublicUrl(path);
-  window.open(data.publicUrl,'_blank');
+  try{
+    // Try public URL first
+    const {data}=SB.storage.from('dokumente').getPublicUrl(path);
+    if(data?.publicUrl){
+      window.open(data.publicUrl,'_blank');
+      return;
+    }
+  }catch(e){}
+  // Fallback: signed URL (works even for non-public buckets)
+  try{
+    const {data,error}=await SB.storage.from('dokumente').createSignedUrl(path,3600);
+    if(data?.signedUrl) window.open(data.signedUrl,'_blank');
+    else toast('⚠ Dokument konnte nicht geöffnet werden');
+  }catch(e){ toast('⚠ '+e.message); }
 }
 
 function makeEditable(el,id,feld,ml){
@@ -624,38 +636,78 @@ function restoreAllBtns(){Object.keys(allData).forEach(id=>{updateNoteBtn(id);up
 // ── RENDER ────────────────────────────────────────────────────────────────
 function getByQuelle(q){return Object.values(allData).filter(r=>r.quelle===q);}
 
+function editField(id, feld, label, multiline){
+  const cur = allEdits[id+'_'+feld] !== undefined ? allEdits[id+'_'+feld] : (allData[id]?.[feld]||'');
+  const val = prompt(`${label} bearbeiten:`, cur);
+  if(val !== null && val !== cur){
+    saveEdit(id, feld, val);
+    allEdits[id+'_'+feld] = val;
+    renderVertraege(); // re-render cards
+  }
+}
+
+function ccField(id, feld, label, val){
+  const edited = allEdits[id+'_'+feld] !== undefined ? allEdits[id+'_'+feld] : val;
+  const isEdited = allEdits[id+'_'+feld] !== undefined;
+  return `<div class="cc-row" style="display:flex;align-items:baseline;gap:6px">
+    <span><strong>${label}:</strong> <span style="${isEdited?'color:var(--acc)':''}">${esc(edited)||'—'}</span></span>
+    <button onclick="editField('${id}','${feld}','${label}',false)" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--ink3);padding:1px 4px;border-radius:2px;flex-shrink:0" title="Bearbeiten">✎</button>
+  </div>`;
+}
+
+function ccFieldLong(id, feld, label, val){
+  const edited = allEdits[id+'_'+feld] !== undefined ? allEdits[id+'_'+feld] : val;
+  const isEdited = allEdits[id+'_'+feld] !== undefined;
+  return `<div class="cc-row" style="margin-bottom:4px">
+    <div style="display:flex;align-items:center;gap:4px;margin-bottom:2px">
+      <strong style="font-size:10px">${label}:</strong>
+      <button onclick="editField('${id}','${feld}','${label}',true)" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--ink3);padding:1px 4px;border-radius:2px" title="Bearbeiten">✎</button>
+    </div>
+    <div style="font-size:10.5px;color:${isEdited?'var(--acc)':'var(--ink2)'};white-space:pre-wrap;line-height:1.5">${esc(edited)||'—'}</div>
+  </div>`;
+}
+
 function renderVertraege(){
   const rows=getByQuelle('Vertragsdokument');
   const container=document.getElementById('vertraege-container');
-  container.innerHTML=rows.map(r=>{
+  container.innerHTML=`
+    <div style="font-size:10.5px;color:var(--ink3);margin-bottom:12px;font-family:monospace">
+      ✎ = Feld bearbeiten · 📎 = Dokument hochladen · 💬 = Notiz hinzufügen
+    </div>
+  `+rows.map(r=>{
     const notes=allNotes[r.id]||[];const docs=allDocs[r.id]||[];
     return `<div class="contract-card">
       <div class="cc-head">
         <span class="cc-head-name">${esc(r.name)}</span>
         <span class="hbadge hb-vertrag">📄 Vertragsdokument</span>
-        ${docs.length?`<span style="font-family:monospace;font-size:9px;color:#4ADE80">📎 ${docs.length} Dokument(e)</span>`:''}
+        ${docs.length?`<span style="font-family:monospace;font-size:9px;color:#4ADE80">📎 ${docs.length} Dok.</span>`:''}
         ${notes.length?`<span style="font-family:monospace;font-size:9px;color:var(--note-border)">💬 ${notes.length} Notiz(en)</span>`:''}
-        <span class="cc-head-meta">${esc(r.abteilung||'')}</span>
+        <span class="cc-head-meta" style="margin-left:auto">${esc(r.abteilung||'')}</span>
       </div>
       <div class="cc-body">
         <div class="cc-col">
           <div class="cc-col-title">Vertragsdaten</div>
-          <div class="cc-row"><strong>Laufzeit:</strong> ${esc(r.erste_buchung||'')} – ${esc(r.laufzeit_bis||'')}</div>
-          <div class="cc-row"><strong>Kosten/Mon.:</strong> ${esc(r.kosten_monat||'')} €</div>
-          <div class="cc-row"><strong>Referenz:</strong> ${esc(r.buchungsbeispiel||'')}</div>
-          <div class="cc-row"><strong>Status:</strong> ${esc(r.status||'')}</div>
+          ${ccField(r.id,'erste_buchung','Start',r.erste_buchung||'')}
+          ${ccField(r.id,'laufzeit_bis','Ende',r.laufzeit_bis||'')}
+          ${ccField(r.id,'kuendigung_bis','Kündigung bis',r.kuendigung_bis||'')}
+          ${ccField(r.id,'kosten_monat','Kosten/Mon.',r.kosten_monat||'')}
+          ${ccField(r.id,'buchungsbeispiel','Referenz',r.buchungsbeispiel||'')}
+          ${ccField(r.id,'status','Status',r.status||'')}
+          ${ccField(r.id,'abteilung','Abteilung',r.abteilung||'')}
         </div>
         <div class="cc-col">
-          <div class="cc-col-title">Konditionen</div>
-          <div class="cc-row" style="white-space:pre-wrap;font-size:10.5px">${esc(r.massnahme||'')}</div>
+          <div class="cc-col-title">Konditionen & Notizen</div>
+          ${ccFieldLong(r.id,'massnahme','Konditionen',r.massnahme||'')}
         </div>
         <div class="cc-col">
           <div class="cc-col-title">Ansprechpartner</div>
-          ${r.ext_ansprechpartner?`<div class="cc-row"><strong>Extern:</strong> ${esc(r.ext_ansprechpartner)}</div>`:''}
-          ${r.int_ansprechpartner?`<div class="cc-row"><strong>Intern:</strong> ${esc(r.int_ansprechpartner)}</div>`:''}
-          <div style="margin-top:8px;display:flex;gap:6px">
+          ${ccFieldLong(r.id,'ext_ansprechpartner','Extern',r.ext_ansprechpartner||'')}
+          ${ccFieldLong(r.id,'int_ansprechpartner','Intern',r.int_ansprechpartner||'')}
+          <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
             ${docBtn(r.id)}
+            <span style="font-size:10px;color:var(--ink3);font-family:monospace">Dokument</span>
             ${noteBtn(r.id)}
+            <span style="font-size:10px;color:var(--ink3);font-family:monospace">Notiz</span>
           </div>
         </div>
       </div>
