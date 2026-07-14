@@ -13,11 +13,11 @@
   --red:#C0392B;--red-lt:#FDF0EF;--yel:#A67C00;--yel-lt:#FFF8E6;
   --grn:#1A6B3A;--grn-lt:#EEF7F2;--ora:#D35400;
   --note-bg:#FFFDE7;--note-border:#F0C040;
+  --doc-bg:#F0F4FF;--doc-border:#C5D0F5;
 }
 html{font-size:14px}
 body{background:var(--bg);color:var(--ink);font-family:system-ui,sans-serif;min-height:100vh}
 
-/* HEADER */
 .header{background:var(--ink);color:#fff;padding:22px 36px 18px;display:flex;align-items:center;gap:20px}
 .header-left{flex:1}
 .header-eye{font-family:monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px}
@@ -31,10 +31,8 @@ body{background:var(--bg);color:var(--ink);font-family:system-ui,sans-serif;min-
 .name-pill input{background:none;border:none;outline:none;color:#fff;font-size:12px;width:120px;font-family:system-ui}
 .name-pill input::placeholder{color:rgba(255,255,255,.3)}
 .conn-dot{width:8px;height:8px;border-radius:50%;background:#666;flex-shrink:0;transition:background .3s}
-.conn-dot.ok{background:#4ADE80}
-.conn-dot.err{background:#FF6B6B}
+.conn-dot.ok{background:#4ADE80}.conn-dot.err{background:#FF6B6B}
 
-/* SCORES */
 .scores{display:grid;grid-template-columns:repeat(5,1fr);background:var(--white);border-bottom:2px solid var(--ink)}
 .sc{padding:12px 18px;border-right:1px solid var(--rule)}
 .sc:last-child{border-right:none}
@@ -43,19 +41,16 @@ body{background:var(--bg);color:var(--ink);font-family:system-ui,sans-serif;min-
 .sc-v.r{color:var(--red)}.sc-v.g{color:var(--grn)}.sc-v.a{color:var(--acc)}.sc-v.y{color:var(--yel);font-size:15px}
 .sc-s{font-size:9px;color:var(--ink3);margin-top:1px;font-family:monospace}
 
-/* TABS */
 .tabs{background:var(--white);border-bottom:1px solid var(--rule);display:flex;padding:0 32px;position:sticky;top:0;z-index:40;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow-x:auto}
 .tab{padding:10px 14px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--ink3);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;display:flex;align-items:center;gap:5px;white-space:nowrap;flex-shrink:0}
 .tab:hover{color:var(--ink)}.tab.active{color:var(--ink);border-bottom-color:var(--ink);font-weight:600}
 .tbadge{display:inline-flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 4px;border-radius:9px;font-size:9px;font-family:monospace;background:var(--rule);color:var(--ink2)}
 .tab.active .tbadge.r{background:var(--red);color:#fff}.tab.active .tbadge.g{background:var(--grn);color:#fff}
-.tab.active .tbadge.a{background:var(--acc);color:#fff}
+.tab.active .tbadge.a{background:var(--acc);color:#fff}.tab.active .tbadge.b{background:var(--ink);color:#fff}
 
-/* LAYOUT */
 .wrap{max-width:1560px;margin:0 auto;padding:0 32px 80px}
 .panel{display:none}.panel.active{display:block}
 
-/* TOOLBAR */
 .toolbar{display:flex;gap:8px;align-items:center;margin:20px 0 12px;flex-wrap:wrap}
 .search{padding:6px 12px;border:1px solid var(--rule);border-radius:3px;font-size:12px;outline:none;background:var(--white);min-width:220px}
 .search:focus{border-color:var(--acc)}
@@ -63,7 +58,6 @@ body{background:var(--bg);color:var(--ink);font-family:system-ui,sans-serif;min-
 .fb:hover{border-color:var(--acc);color:var(--acc)}.fb.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 .tcnt{font-family:monospace;font-size:10px;color:var(--ink3);margin-left:auto}
 
-/* TABLE */
 .tbl-wrap{overflow-x:auto;background:var(--white);border:1px solid var(--rule);border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 table{width:100%;border-collapse:collapse;font-size:12px}
 thead th{background:var(--ink);color:rgba(255,255,255,.65);font-family:monospace;font-size:9px;letter-spacing:.09em;text-transform:uppercase;padding:7px 11px;text-align:left;white-space:nowrap;border-right:1px solid rgba(255,255,255,.07)}
@@ -78,25 +72,30 @@ tbody td:last-child{border-right:none}
 .mono{font-family:monospace;font-size:11px;white-space:nowrap}
 .amt{font-family:monospace;font-size:11px;font-weight:600;text-align:right;white-space:nowrap}
 .amt.neg{color:var(--red)}
+.s-ok{font-size:10px;color:var(--grn);font-family:monospace}
+.s-canc{font-size:10px;color:var(--red)}
+
+/* HERKUNFT BADGES */
+.hbadge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-family:monospace;font-weight:600;white-space:nowrap}
+.hb-vertrag{background:#1B2FD4;color:#fff}
+.hb-datev{background:#A67C00;color:#fff}
+.hb-datev-lic{background:#1A6B3A;color:#fff}
+.hb-lic{background:#6B3A9A;color:#fff}
+
 .chip{display:inline-block;padding:1px 6px;border-radius:20px;font-size:9px;font-family:monospace;font-weight:600}
 .chip.r{background:var(--red-lt);color:var(--red)}.chip.y{background:var(--yel-lt);color:var(--yel)}
 .chip.g{background:var(--grn-lt);color:var(--grn)}.chip.a{background:var(--acc-lt);color:var(--acc)}
 .chip.n{background:#F0EFEB;color:var(--ink3)}
-.s-ok{font-size:10px;color:var(--grn);font-family:monospace}
-.s-canc{font-size:10px;color:var(--red)}
 
-/* INLINE EDIT */
 .editable{cursor:pointer;position:relative}
 .editable:hover::after{content:"✎";position:absolute;right:2px;top:1px;font-size:9px;color:var(--ink3);opacity:.6}
 .editable.editing::after{display:none}
 .cell-input{width:100%;background:var(--acc-lt);border:1px solid var(--acc);border-radius:2px;padding:2px 5px;font-size:11px;font-family:system-ui;outline:none;resize:none}
 
-/* ACTION BUTTONS */
 .act-btn{background:none;border:none;cursor:pointer;font-size:13px;padding:2px 4px;border-radius:3px;transition:background .1s;line-height:1;color:var(--ink3)}
 .act-btn:hover{background:var(--rule)}
 .act-btn.has{color:var(--note-border)}.act-btn.done{color:var(--grn)}.act-btn.has-doc{color:var(--acc)}
 
-/* NOTE PANEL */
 .sub-row{display:none}.sub-row.open{display:table-row}
 .note-panel{background:var(--note-bg);border:1px solid var(--note-border);border-radius:4px;padding:11px 13px;margin:2px 6px 3px}
 .note-panel.resolved{background:var(--grn-lt);border-color:var(--grn)}
@@ -120,15 +119,14 @@ tbody td:last-child{border-right:none}
 .btn-send{padding:5px 9px;background:var(--acc);color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:11px;font-weight:500}
 .btn-send:hover{background:#1526b8}
 .btn-ok2{padding:4px 9px;background:var(--grn);color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:10px}
+.btn-ok2:hover{background:#155730}
 .btn-reopen{padding:4px 9px;background:var(--ink3);color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:10px;display:none}
 
-/* DOC PANEL */
-.doc-panel{background:#F0F4FF;border:1px solid #C5D0F5;border-radius:4px;padding:11px 13px;margin:2px 6px 3px}
+.doc-panel{background:var(--doc-bg);border:1px solid var(--doc-border);border-radius:4px;padding:11px 13px;margin:2px 6px 3px}
 .doc-list{margin-bottom:8px}
 .doc-item{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:11px}
 .doc-item:last-child{border-bottom:none}
 .doc-name{flex:1;color:var(--acc);cursor:pointer;text-decoration:underline}
-.doc-name:hover{color:#1526b8}
 .doc-del{background:none;border:none;cursor:pointer;color:var(--ink3);font-size:10px;padding:0 2px;opacity:0}
 .doc-item:hover .doc-del{opacity:1}.doc-del:hover{color:var(--red)}
 .upload-row{display:flex;gap:6px;align-items:center}
@@ -137,7 +135,6 @@ tbody td:last-child{border-right:none}
 .btn-upload:hover{background:#1526b8}
 .upload-label{font-size:10px;color:var(--ink3);font-family:monospace}
 
-/* FINDINGS */
 .findings{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;margin-top:8px}
 .fc{border-radius:4px;padding:13px 15px;border-left:4px solid transparent;background:var(--white);box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .fc.r{border-color:var(--red);background:var(--red-lt)}.fc.y{border-color:var(--yel);background:var(--yel-lt)}.fc.g{border-color:var(--grn);background:var(--grn-lt)}
@@ -148,7 +145,18 @@ tbody td:last-child{border-right:none}
 .fc-amt{font-family:monospace;font-size:10.5px;font-weight:600;color:var(--ink2);white-space:nowrap}
 .fc-text{font-size:11px;color:var(--ink2);line-height:1.6;margin-bottom:7px}
 
-/* ALL NOTES */
+/* VERTRÄGE TAB */
+.contract-card{background:var(--white);border:1px solid var(--rule);border-radius:4px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:12px}
+.cc-head{background:var(--ink);color:rgba(255,255,255,.85);padding:10px 16px;display:flex;align-items:center;gap:12px}
+.cc-head-name{font-weight:700;font-size:13px;flex:1}
+.cc-head-meta{font-family:monospace;font-size:9px;color:rgba(255,255,255,.45)}
+.cc-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+.cc-col{padding:12px 16px;border-right:1px solid var(--rule)}
+.cc-col:last-child{border-right:none}
+.cc-col-title{font-family:monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+.cc-row{font-size:11px;color:var(--ink2);margin-bottom:3px;line-height:1.5}
+.cc-row strong{color:var(--ink);font-weight:600}
+
 .all-note-item{background:var(--note-bg);border:1px solid var(--note-border);border-radius:4px;padding:13px 17px;margin-bottom:9px}
 .all-note-item.res{background:var(--grn-lt);border-color:var(--grn)}
 .an-head{display:flex;align-items:baseline;gap:10px;margin-bottom:7px}
@@ -157,7 +165,6 @@ tbody td:last-child{border-right:none}
 .an-st{margin-left:auto;font-family:monospace;font-size:9px}
 .an-st.open{color:var(--yel)}.an-st.done{color:var(--grn)}
 
-/* COST */
 .cost-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
 .cost-card{border:1px solid var(--rule);border-radius:4px;overflow:hidden;background:var(--white)}
 .cost-head{background:var(--ink);color:rgba(255,255,255,.7);padding:8px 14px;font-family:monospace;font-size:9px;letter-spacing:.09em;text-transform:uppercase}
@@ -170,22 +177,23 @@ tbody td:last-child{border-right:none}
 .ct-l{flex:1;color:rgba(255,255,255,.85);font-weight:600;font-size:11px}
 .ct-a{font-size:17px;font-weight:800;color:#fff}
 
-/* SEC HEAD */
 .sec-h{display:flex;align-items:baseline;gap:10px;margin:28px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--ink)}
 .sec-title{font-size:13px;font-weight:700;letter-spacing:-.01em}
 .sec-cnt{font-family:monospace;font-size:9px;color:var(--ink3);margin-left:auto}
 
-/* LOADING */
 .loading{display:flex;align-items:center;justify-content:center;padding:60px;color:var(--ink3);font-family:monospace;gap:12px;font-size:12px}
 .spinner{width:20px;height:20px;border:2px solid var(--rule);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .panel.active>*{animation:fadeUp .22s ease both}
 
-/* TOAST */
 #toast{position:fixed;bottom:18px;right:18px;z-index:100;background:var(--ink);color:#fff;padding:9px 14px;border-radius:4px;font-size:11px;font-family:monospace;box-shadow:0 4px 16px rgba(0,0,0,.25);display:flex;align-items:center;gap:10px;transform:translateY(80px);transition:transform .3s cubic-bezier(.4,0,.2,1);pointer-events:none}
 #toast.show{transform:translateY(0);pointer-events:all}
 #toast .t-x{background:none;border:none;color:rgba(255,255,255,.45);cursor:pointer;font-size:13px;padding:0 2px}
+
+/* LEGENDE */
+.legende{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;font-size:10.5px;align-items:center}
+.legende-item{display:flex;align-items:center;gap:5px}
 </style>
 </head>
 <body>
@@ -198,31 +206,32 @@ tbody td:last-child{border-right:none}
     <h1>Lizenz- & Vertragsabgleich <em>interaktiv</em></h1>
     <div class="hdr-meta">
       <span class="hm">Stand <strong>Mai 2026</strong></span>
-      <span class="hm"><strong id="h-total">…</strong> Anbieter</span>
-      <span class="hm"><strong id="h-ok">…</strong> ✓ bekannt</span>
+      <span class="hm"><strong id="h-total">…</strong> Einträge gesamt</span>
       <span class="hm"><strong id="h-pruef">…</strong> ⚠ zu prüfen</span>
+      <span class="hm"><strong id="h-ok">…</strong> ✓ bekannt</span>
     </div>
   </div>
   <div class="conn-dot" id="conn-dot" title="Supabase Verbindung"></div>
   <div class="name-pill">
     <label>Name:</label>
-    <input type="text" id="authorName" placeholder="Dein Name" value="">
+    <input type="text" id="authorName" placeholder="Dein Name">
   </div>
 </div>
 
 <div class="scores">
-  <div class="sc"><div class="sc-l">Anbieter in DATEV</div><div class="sc-v a" id="s-total">…</div><div class="sc-s">2025–2026</div></div>
-  <div class="sc"><div class="sc-l">✓ In Lizenzliste</div><div class="sc-v g" id="s-ok">…</div><div class="sc-s">korrekt erfasst</div></div>
-  <div class="sc"><div class="sc-l">⚠ Zu prüfen</div><div class="sc-v r" id="s-pruef">…</div><div class="sc-s">fehlen in Liste</div></div>
-  <div class="sc"><div class="sc-l">Ungeklärtes Volumen</div><div class="sc-v y">~140.848 €</div><div class="sc-s">aus 26 Posten</div></div>
-  <div class="sc"><div class="sc-l">Offene Notizen</div><div class="sc-v a" id="s-notes">0</div><div class="sc-s" id="s-notes-sub">wird geladen …</div></div>
+  <div class="sc"><div class="sc-l">📄 Hauptverträge</div><div class="sc-v a" id="s-vertraege">…</div><div class="sc-s">aus Dokumenten</div></div>
+  <div class="sc"><div class="sc-l">📊 Lizenzliste</div><div class="sc-v a" id="s-lizenzen">…</div><div class="sc-s">aktiv erfasst</div></div>
+  <div class="sc"><div class="sc-l">✅ DATEV – bekannt</div><div class="sc-v g" id="s-ok">…</div><div class="sc-s">korrekt erfasst</div></div>
+  <div class="sc"><div class="sc-l">⚠ DATEV – zu prüfen</div><div class="sc-v r" id="s-pruef">…</div><div class="sc-s">~140.848 € ungeklärt</div></div>
+  <div class="sc"><div class="sc-l">💬 Offene Notizen</div><div class="sc-v a" id="s-notes">0</div><div class="sc-s" id="s-notes-sub">0 gesamt</div></div>
 </div>
 
 <div class="tabs">
   <button class="tab active" onclick="showTab('befunde',this)">🔍 Befunde</button>
-  <button class="tab" onclick="showTab('pruef',this)">⚠ Zu prüfen<span class="tbadge r" id="tb-pruef">…</span></button>
-  <button class="tab" onclick="showTab('ok',this)">✓ Bekannt<span class="tbadge g" id="tb-ok">…</span></button>
-  <button class="tab" onclick="showTab('lizenzen',this)">📋 Lizenzliste<span class="tbadge a" id="tb-lic">…</span></button>
+  <button class="tab" onclick="showTab('vertraege',this)">📄 Verträge<span class="tbadge b" id="tb-v">…</span></button>
+  <button class="tab" onclick="showTab('pruef',this)">⚠ Zu prüfen<span class="tbadge r" id="tb-p">…</span></button>
+  <button class="tab" onclick="showTab('ok',this)">✅ Bekannt<span class="tbadge g" id="tb-ok">…</span></button>
+  <button class="tab" onclick="showTab('lizenzen',this)">📊 Lizenzliste<span class="tbadge a" id="tb-l">…</span></button>
   <button class="tab" onclick="showTab('notizen',this)">💬 Notizen<span class="tbadge a" id="tb-notes">0</span></button>
   <button class="tab" onclick="showTab('kosten',this)">💶 Kosten</button>
 </div>
@@ -243,7 +252,7 @@ tbody td:last-child{border-right:none}
       <div class="cost-row"><span class="cn">Odoo.sh</span><span class="ca">860,20 €</span></div>
       <div class="cost-row"><span class="cn">Wornet Hosting</span><span class="ca">630,00 €</span></div>
       <div class="cost-row"><span class="cn">Personio</span><span class="ca">557,11 €</span></div>
-      <div class="cost-row"><span class="cn">Weitere 10 Posten</span><span class="ca" style="color:var(--ink3)">~3.011 €</span></div>
+      <div class="cost-row"><span class="cn">Weitere Posten</span><span class="ca" style="color:var(--ink3)">~3.011 €</span></div>
       <div class="cost-total"><span class="ct-l">GESAMT / Monat</span><span class="ct-a">~12.958 €</span></div>
     </div>
     <div class="cost-card">
@@ -259,40 +268,58 @@ tbody td:last-child{border-right:none}
   </div>
 </div>
 
+<!-- VERTRÄGE -->
+<div id="tab-vertraege" class="panel">
+  <div class="sec-h"><span class="sec-title">📄 Hauptverträge aus Dokumenten</span><span class="sec-cnt">Vollständig aus Vertragsdokumenten extrahiert</span></div>
+  <div id="vertraege-container"><div class="loading"><div class="spinner"></div>Lade Verträge …</div></div>
+</div>
+
 <!-- ZU PRÜFEN -->
 <div id="tab-pruef" class="panel">
+  <div class="legende">
+    <span style="font-size:10px;color:var(--ink3);font-family:monospace">Herkunft:</span>
+    <span class="legende-item"><span class="hbadge hb-datev">DATEV</span> In DATEV gebucht, fehlt in Lizenzliste</span>
+  </div>
   <div class="toolbar">
     <input class="search" type="text" placeholder="Suchen …" oninput="filterTbl('pruef-body',this.value,'pruef-cnt')">
     <span class="tcnt" id="pruef-cnt">wird geladen …</span>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>#</th><th>Anbieter</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>Maßnahme</th><th>📎</th><th>💬</th></tr></thead>
-    <tbody id="pruef-body"><tr><td colspan="9"><div class="loading"><div class="spinner"></div>Lade Daten …</div></td></tr></tbody>
+    <thead><tr><th>#</th><th>Herkunft</th><th>Anbieter</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>Maßnahme</th><th>📎</th><th>💬</th></tr></thead>
+    <tbody id="pruef-body"><tr><td colspan="10"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
   </table></div>
 </div>
 
-<!-- IN LIZENZLISTE -->
+<!-- BEKANNT -->
 <div id="tab-ok" class="panel">
+  <div class="legende">
+    <span style="font-size:10px;color:var(--ink3);font-family:monospace">Herkunft:</span>
+    <span class="legende-item"><span class="hbadge hb-datev-lic">DATEV + Lizenzliste</span> In beiden Quellen korrekt erfasst</span>
+  </div>
   <div class="toolbar">
     <input class="search" type="text" placeholder="Suchen …" oninput="filterTbl('ok-body',this.value,'ok-cnt')">
     <span class="tcnt" id="ok-cnt">wird geladen …</span>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>#</th><th>Anbieter</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
-    <tbody id="ok-body"><tr><td colspan="9"><div class="loading"><div class="spinner"></div>Lade Daten …</div></td></tr></tbody>
+    <thead><tr><th>#</th><th>Herkunft</th><th>Anbieter</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
+    <tbody id="ok-body"><tr><td colspan="10"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
   </table></div>
 </div>
 
 <!-- LIZENZLISTE -->
 <div id="tab-lizenzen" class="panel">
+  <div class="legende">
+    <span style="font-size:10px;color:var(--ink3);font-family:monospace">Herkunft:</span>
+    <span class="legende-item"><span class="hbadge hb-lic">Lizenzliste</span> Aus Excel-Lizenzübersicht</span>
+  </div>
   <div class="toolbar">
     <input class="search" type="text" placeholder="Suchen …" oninput="filterTbl('lic-body',this.value,'lic-cnt')">
     <button class="fb ct-tog" onclick="togCanc(this)">Gekündigte einblenden</button>
     <span class="tcnt" id="lic-cnt">wird geladen …</span>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>#</th><th>Vertragsname</th><th>Abteilung</th><th>Laufzeit bis</th><th>Kündigung bis</th><th style="text-align:right">Kosten/Mon.</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
-    <tbody id="lic-body"><tr><td colspan="9"><div class="loading"><div class="spinner"></div>Lade Daten …</div></td></tr></tbody>
+    <thead><tr><th>#</th><th>Herkunft</th><th>Vertragsname</th><th>Abteilung</th><th>Laufzeit bis</th><th>Kündigung bis</th><th style="text-align:right">Kosten/Mon.</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
+    <tbody id="lic-body"><tr><td colspan="10"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
   </table></div>
 </div>
 
@@ -314,7 +341,7 @@ tbody td:last-child{border-right:none}
   <div class="sec-h"><span class="sec-title">Monatliche Kostenübersicht</span></div>
   <div class="cost-grid">
     <div class="cost-card">
-      <div class="cost-head">Fixkosten / Monat</div>
+      <div class="cost-head">Fixkosten Lizenzliste / Monat</div>
       <div class="cost-row"><span class="cn">Adobe Magento (Hosting+Lizenz)</span><span class="ca">5.461,92 €</span></div>
       <div class="cost-row"><span class="cn">productbay</span><span class="ca">1.500,00 €</span></div>
       <div class="cost-row"><span class="cn">Miete Prien (RD-Anteil)</span><span class="ca">938,90 €</span></div>
@@ -341,267 +368,175 @@ tbody td:last-child{border-right:none}
       <div class="cost-row"><span class="cn">Personio ✓</span><span class="ca">11.228 €</span></div>
       <div class="cost-row"><span class="cn">WorNet ✓</span><span class="ca">10.965 €</span></div>
       <div class="cost-row"><span class="cn">Plumrocket ⚠</span><span class="ca r">~9.980 €</span></div>
-      <div class="cost-row"><span class="cn">Regular Trade ⚠</span><span class="ca r">9.397 €</span></div>
       <div class="cost-total" style="background:var(--red)"><span class="ct-l">GESAMT ungeklärt</span><span class="ct-a">~140.848 €</span></div>
     </div>
   </div>
 </div>
 
-</div><!-- /wrap -->
+</div>
 
 <script>
-// ════════════════════════════════════════════════════
-// SUPABASE INIT
-// ════════════════════════════════════════════════════
 const { createClient } = supabase;
 const SB = createClient('https://cbthanrnylsuzrdbpcsa.supabase.co', 'sb_publishable_pWAgsxZrris9ssdehLbOng_UKb8DVBB');
-
-// ════════════════════════════════════════════════════
-// FALLBACK DATA (falls Supabase nicht erreichbar)
-// ════════════════════════════════════════════════════
 const FALLBACK = {"zu_pruefen": [{"id": "datev_pruef_0", "name": "Alex Rabold", "beispiel": "Alex Rabold", "erste": "10.08.2025", "letzte": "29.10.2025", "betrag": "0,00", "betrag_raw": 0, "quelle": "datev_pruef", "massnahme": "Prüfen: Lizenz/Vertrag dokumentieren oder Buchung klären"}, {"id": "datev_pruef_1", "name": "Apple", "beispiel": "Apple, CapCut 01/2025", "erste": "13.05.2025", "letzte": "23.12.2025", "betrag": "302,92", "betrag_raw": 302.92, "quelle": "datev_pruef", "massnahme": "Prüfen: Lizenz/Vertrag dokumentieren oder Buchung klären"}, {"id": "datev_pruef_2", "name": "Apple CapCut", "beispiel": "American Express, Apple CapCut 01/2026", "erste": "28.02.2026", "letzte": "31.03.2026", "betrag": "40,32", "betrag_raw": 40.32, "quelle": "datev_pruef", "massnahme": "Prüfen: Lizenz/Vertrag dokumentieren oder Buchung klären"}, {"id": "datev_pruef_3", "name": "CS1 Online Marketing GmbH", "beispiel": "CS1 Online Marketing GmbH, Google Ersteinrichtung", "erste": "30.07.2025", "letzte": "10.10.2025", "betrag": "1.487,99", "betrag_raw": 1487.99, "quelle": "datev_pruef", "massnahme": "Prüfen: Lizenz/Vertrag dokumentieren oder Buchung klären"}, {"id": "datev_pruef_4", "name": "Dirk Sancken", "beispiel": "Dirk Sancken, JA 2024", "erste": "25.06.2025", "letzte": "13.05.2026", "betrag": "17.391,68", "betrag_raw": 17391.68, "quelle": "datev_pruef", "massnahme": "IT-Dienstleistung – Rahmenvertrag vorhanden?"}, {"id": "datev_pruef_5", "name": "Eduardo Pina Fonseca", "beispiel": "Eduardo Pina Fonseca, Odoo Migration", "erste": "18.01.2026", "letzte": "03.03.2026", "betrag": "7.826,02", "betrag_raw": 7826.02, "quelle": "datev_pruef", "massnahme": "Odoo-Entwicklung – Rahmenvertrag vorhanden?"}, {"id": "datev_pruef_6", "name": "Force Net GmbH", "beispiel": "Force Net GmbH", "erste": "15.01.2025", "letzte": "29.10.2025", "betrag": "19.981,00", "betrag_raw": 19981.0, "quelle": "datev_pruef", "massnahme": "Exchange Mailserver – in Liste aufnehmen"}, {"id": "datev_pruef_7", "name": "GR Portfolio Consulting", "beispiel": "GR Portfolio Consulting, Dienstleistung Entwicklung Odoo", "erste": "28.04.2025", "letzte": "28.04.2025", "betrag": "3.200,00", "betrag_raw": 3200.0, "quelle": "datev_pruef", "massnahme": "Odoo-Entwicklung – Rahmenvertrag vorhanden?"}, {"id": "datev_pruef_8", "name": "Gebühr Auslandszahlung", "beispiel": "Gebühr Auslandszahlung, PE Kolomiets Yuliya Olegivna", "erste": "03.04.2026", "letzte": "14.04.2026", "betrag": "172,55", "betrag_raw": 172.55, "quelle": "datev_pruef", "massnahme": "Prüfen: Lizenz/Vertrag dokumentieren oder Buchung klären"}, {"id": "datev_pruef_9", "name": "Gebühr Auslandszahlung PE Kolomiets Yuliya Olegivna", "beispiel": "Gebühr Auslandszahlung PE Kolomiets Yuliya Olegivna", "erste": "12.09.2025", "letzte": "13.11.2025", "betrag": "51,17", "betrag_raw": 51.17, "quelle": "datev_pruef", "massnahme": "Software-Entwicklung – Rahmenvertrag vorhanden?"}, {"id": "datev_pruef_10", "name": "Google Ireland Limited", "beispiel": "Google Ireland Limited, Google Ads GS", "erste": "21.02.2025", "letzte": "21.02.2025", "betrag": "-71,96", "betrag_raw": -71.96, "quelle": "datev_pruef", "massnahme": "Prüfen: Lizenz/Vertrag dokumentieren oder Buchung klären"}, {"id": "datev_pruef_11", "name": "Julia Grabowski", "beispiel": "Julia Grabowski", "erste": "12.09.2025", "letzte": "30.11.2025", "betrag": "0,00", "betrag_raw": 0, "quelle": "datev_pruef", "massnahme": "Prüfen: Lizenz/Vertrag dokumentieren oder Buchung klären"}, {"id": "datev_pruef_12", "name": "Kolomiets Yuliya Olegivna", "beispiel": "Kolomiets Yuliya Olegivna, Software Development", "erste": "11.04.2025", "letzte": "01.01.2026", "betrag": "5.920,20", "betrag_raw": 5920.2, "quelle": "datev_pruef", "massnahme": "Software-Entwicklung – Rahmenvertrag vorhanden?"}, {"id": "datev_pruef_13", "name": "Malin Passlack", "beispiel": "Malin Passlack", "erste": "30.09.2025", "letzte": "10.10.2025", "betrag": "1,30", "betrag_raw": 1.3, "quelle": "datev_pruef", "massnahme": "Prüfen: Lizenz/Vertrag dokumentieren oder Buchung klären"}, {"id": "datev_pruef_14", "name": "Melina Sieslack", "beispiel": "Melina Sieslack", "erste": "22.10.2025", "letzte": "22.10.2025", "betrag": "0,61", "betrag_raw": 0.61, "quelle": "datev_pruef", "massnahme": "Prüfen: Lizenz/Vertrag dokumentieren oder Buchung klären"}, {"id": "datev_pruef_15", "name": "PPG Digital Sp. zo.o.", "beispiel": "PPG Digital Sp. zo.o., Custom Development Credits", "erste": "20.06.2025", "letzte": "26.01.2026", "betrag": "624,00", "betrag_raw": 624.0, "quelle": "datev_pruef", "massnahme": "Magento-Entwicklung – einmalig oder Vertrag?"}, {"id": "datev_pruef_16", "name": "Plumrocket", "beispiel": "American Express, Plumrocket, Pay as You Go", "erste": "20.05.2025", "letzte": "31.03.2026", "betrag": "979,27", "betrag_raw": 979.27, "quelle": "datev_pruef", "massnahme": "Magento-Extensions – einmalig oder wiederkehrend?"}, {"id": "datev_pruef_17", "name": "Plumrocket Inc.", "beispiel": "Plumrocket Inc., Cart Reservation Extension for Magento 2", "erste": "25.09.2025", "letzte": "25.09.2025", "betrag": "255,18", "betrag_raw": 255.18, "quelle": "datev_pruef", "massnahme": "Magento-Extensions – einmalig oder wiederkehrend?"}, {"id": "datev_pruef_18", "name": "Plumrocket Inc. Magento 2 Social Login Pro", "beispiel": "Plumrocket Inc. Magento 2 Social Login Pro", "erste": "06.03.2025", "letzte": "06.03.2025", "betrag": "294,74", "betrag_raw": 294.74, "quelle": "datev_pruef", "massnahme": "Magento-Extensions – einmalig oder wiederkehrend?"}, {"id": "datev_pruef_19", "name": "Plumrocket Inc. Pay as You Go Support Service", "beispiel": "Plumrocket Inc. Pay as You Go Support Service", "erste": "04.02.2025", "letzte": "30.04.2025", "betrag": "17.851,89", "betrag_raw": 17851.89, "quelle": "datev_pruef", "massnahme": "Magento-Extensions – einmalig oder wiederkehrend?"}, {"id": "datev_pruef_20", "name": "Plumrocket Webshop 50%", "beispiel": "Plumrocket Webshop 50%", "erste": "31.12.2025", "letzte": "31.12.2025", "betrag": "-9.200,90", "betrag_raw": -9200.9, "quelle": "datev_pruef", "massnahme": "Magento-Extensions – einmalig oder wiederkehrend?"}, {"id": "datev_pruef_21", "name": "REGULAR TRADE GMBH", "beispiel": "REGULAR TRADE GMBH, Miete Prien", "erste": "22.01.2025", "letzte": "24.11.2025", "betrag": "4.500,00", "betrag_raw": 4500.0, "quelle": "datev_pruef", "massnahme": "DATEV/NetGo via Regular Trade – Intercompany?"}, {"id": "datev_pruef_22", "name": "Regular Trade", "beispiel": "Regular Trade, WB Sancken DATEV & NetGo 01/24-11/25", "erste": "15.12.2025", "letzte": "15.12.2025", "betrag": "4.897,92", "betrag_raw": 4897.92, "quelle": "datev_pruef", "massnahme": "DATEV/NetGo via Regular Trade – Intercompany?"}, {"id": "datev_pruef_23", "name": "Softonomika", "beispiel": "Softonomika, Währungsdifferenz", "erste": "28.02.2025", "letzte": "31.03.2026", "betrag": "91,67", "betrag_raw": 91.67, "quelle": "datev_pruef", "massnahme": "Magento-Entwicklung – einmalig oder Vertrag?"}, {"id": "datev_pruef_24", "name": "Softonomika Limited", "beispiel": "Softonomika Limited, Funktionen für Magento 2 Magento Cloud", "erste": "28.02.2025", "letzte": "31.12.2025", "betrag": "1.577,55", "betrag_raw": 1577.55, "quelle": "datev_pruef", "massnahme": "Magento-Entwicklung – einmalig oder Vertrag?"}, {"id": "datev_pruef_25", "name": "afa software diverse", "beispiel": "afa software diverse", "erste": "31.12.2025", "letzte": "31.12.2025", "betrag": "44.128,00", "betrag_raw": 44128.0, "quelle": "datev_pruef", "massnahme": "Prüfen: Lizenz/Vertrag dokumentieren oder Buchung klären"}], "in_liste": [{"id": "datev_ok_0", "name": "arbeitswolke GmbH", "beispiel": "arbeitswolke GmbH, 1 Password Lizenz", "erste": "22.11.2025", "letzte": "03.01.2026", "betrag": "8.037,98", "betrag_raw": 8037.98, "quelle": "datev_ok", "status": "✓ 1Password/Google Workspace Backup"}, {"id": "datev_ok_1", "name": "AWS", "beispiel": "American Express, AWS", "erste": "28.02.2025", "letzte": "31.10.2025", "betrag": "5.083,07", "betrag_raw": 5083.07, "quelle": "datev_ok", "status": "✓ AWS"}, {"id": "datev_ok_2", "name": "Julia Stawski", "beispiel": "Julia Stawski", "erste": "12.06.2025", "letzte": "31.12.2025", "betrag": "0,00", "betrag_raw": 0, "quelle": "datev_ok", "status": "✓ AWS"}, {"id": "datev_ok_3", "name": "Sabine Samplawsky-Graf", "beispiel": "Sabine Samplawsky-Graf", "erste": "18.06.2025", "letzte": "06.12.2025", "betrag": "0,00", "betrag_raw": 0, "quelle": "datev_ok", "status": "✓ AWS"}, {"id": "datev_ok_4", "name": "ADFERENCE GmbH", "beispiel": "ADFERENCE GmbH, Goggle CSS", "erste": "31.03.2025", "letzte": "01.04.2025", "betrag": "170,00", "betrag_raw": 170.0, "quelle": "datev_ok", "status": "✓ Adference"}, {"id": "datev_ok_5", "name": "Adference Google CSS Aussteuerung", "beispiel": "American Express, Adference Google CSS Aussteuerung", "erste": "31.10.2025", "letzte": "27.12.2025", "betrag": "1.190,00", "betrag_raw": 1190.0, "quelle": "datev_ok", "status": "✓ Adference"}, {"id": "datev_ok_6", "name": "Gebühr Auslandszahlung Adobe", "beispiel": "Gebühr Auslandszahlung Adobe", "erste": "06.03.2025", "letzte": "06.03.2025", "betrag": "101,34", "betrag_raw": 101.34, "quelle": "datev_ok", "status": "✓ Adobe (Magento/CC)"}, {"id": "datev_ok_7", "name": "Adobe", "beispiel": "Adobe, Adobe Commerce Cloud", "erste": "12.11.2025", "letzte": "31.12.2025", "betrag": "83.189,44", "betrag_raw": 83189.44, "quelle": "datev_ok", "status": "✓ Adobe Creative Cloud"}, {"id": "datev_ok_8", "name": "Adobe Systems Software", "beispiel": "Adobe Systems Software, Creative Cloud", "erste": "28.02.2025", "letzte": "31.12.2025", "betrag": "3.051,90", "betrag_raw": 3051.9, "quelle": "datev_ok", "status": "✓ Adobe Creative Cloud"}, {"id": "datev_ok_9", "name": "Gebühr Auslandszahlung Adobe Systems Software Ireland Ltd.", "beispiel": "Gebühr Auslandszahlung Adobe Systems Software Ireland Ltd.", "erste": "12.09.2025", "letzte": "05.11.2026", "betrag": "179,75", "betrag_raw": 179.75, "quelle": "datev_ok", "status": "✓ Adobe Creative Cloud"}, {"id": "datev_ok_10", "name": "Aftership", "beispiel": "American Express, Aftership, Tracking Growth", "erste": "28.02.2025", "letzte": "31.10.2025", "betrag": "376,00", "betrag_raw": 376.0, "quelle": "datev_ok", "status": "✓ Aftership"}, {"id": "datev_ok_11", "name": "Aftership Tracking Growth", "beispiel": "American Express, Aftership Tracking Growth", "erste": "28.02.2026", "letzte": "31.03.2026", "betrag": "106,96", "betrag_raw": 106.96, "quelle": "datev_ok", "status": "✓ Aftership"}, {"id": "datev_ok_12", "name": "Atlassian", "beispiel": "Atlassian", "erste": "19.07.2025", "letzte": "31.12.2025", "betrag": "4.579,98", "betrag_raw": 4579.98, "quelle": "datev_ok", "status": "✓ Atlassian Jira/Confluence"}, {"id": "datev_ok_13", "name": "Bunnyway", "beispiel": "Bunnyway , Währungsdifferenz", "erste": "10.01.2025", "letzte": "31.12.2025", "betrag": "6,36", "betrag_raw": 6.36, "quelle": "datev_ok", "status": "✓ Bunny.net CDN"}, {"id": "datev_ok_14", "name": "bunny.net", "beispiel": "bunny.net", "erste": "10.01.2025", "letzte": "30.12.2025", "betrag": "150,02", "betrag_raw": 150.02, "quelle": "datev_ok", "status": "✓ Bunny.net CDN"}, {"id": "datev_ok_15", "name": "Canva Pro", "beispiel": "American Express, Canva Pro", "erste": "31.08.2025", "letzte": "31.08.2025", "betrag": "90,00", "betrag_raw": 90.0, "quelle": "datev_ok", "status": "✓ Canva Pro"}, {"id": "datev_ok_16", "name": "OpenAI", "beispiel": "OpenAI", "erste": "07.01.2025", "letzte": "31.08.2025", "betrag": "126,69", "betrag_raw": 126.69, "quelle": "datev_ok", "status": "✓ ChatGPT"}, {"id": "datev_ok_17", "name": "OpenAI Chat GPT Business", "beispiel": "American Express, OpenAI Chat GPT Business", "erste": "28.02.2026", "letzte": "03.03.2026", "betrag": "293,29", "betrag_raw": 293.29, "quelle": "datev_ok", "status": "✓ ChatGPT"}, {"id": "datev_ok_18", "name": "OpenAI Chat GPT Plus 01/26", "beispiel": "American Express, OpenAI Chat GPT Plus 01/26", "erste": "31.01.2026", "letzte": "31.01.2026", "betrag": "20,48", "betrag_raw": 20.48, "quelle": "datev_ok", "status": "✓ ChatGPT"}, {"id": "datev_ok_19", "name": "OpenAI Chat GPT Plus 02/26", "beispiel": "American Express, OpenAI Chat GPT Plus 02/26", "erste": "28.02.2026", "letzte": "28.02.2026", "betrag": "20,12", "betrag_raw": 20.12, "quelle": "datev_ok", "status": "✓ ChatGPT"}, {"id": "datev_ok_20", "name": "OpenAI Chat GPT Plus 03/26", "beispiel": "American Express, OpenAI Chat GPT Plus 03/26", "erste": "31.03.2026", "letzte": "31.03.2026", "betrag": "20,58", "betrag_raw": 20.58, "quelle": "datev_ok", "status": "✓ ChatGPT"}, {"id": "datev_ok_21", "name": "OpenAI Chat GPT Plus 04/26", "beispiel": "American Express, OpenAI Chat GPT Plus 04/26", "erste": "30.04.2026", "letzte": "30.04.2026", "betrag": "30,48", "betrag_raw": 30.48, "quelle": "datev_ok", "status": "✓ ChatGPT"}, {"id": "datev_ok_22", "name": "OpenAI ChatGPT Plus", "beispiel": "American Express, OpenAI ChatGPT Plus", "erste": "31.10.2025", "letzte": "07.12.2025", "betrag": "492,50", "betrag_raw": 492.5, "quelle": "datev_ok", "status": "✓ ChatGPT"}, {"id": "datev_ok_23", "name": "Simone Birkemeyer", "beispiel": "Simone Birkemeyer, ChatGPT Plus 01/26", "erste": "31.12.2025", "letzte": "25.02.2026", "betrag": "217,53", "betrag_raw": 217.53, "quelle": "datev_ok", "status": "✓ ChatGPT (Simone)"}, {"id": "datev_ok_24", "name": "Anthropic Claude Pro 02/26", "beispiel": "American Express, Anthropic Claude Pro 02/26", "erste": "28.02.2026", "letzte": "28.02.2026", "betrag": "21,42", "betrag_raw": 21.42, "quelle": "datev_ok", "status": "✓ Claude Standard/Premium"}, {"id": "datev_ok_25", "name": "Anthropic Claude Pro 03/26", "beispiel": "American Express, Anthropic Claude Pro 03/26", "erste": "31.03.2026", "letzte": "31.03.2026", "betrag": "21,42", "betrag_raw": 21.42, "quelle": "datev_ok", "status": "✓ Claude Standard/Premium"}, {"id": "datev_ok_26", "name": "Anthropic Claude Pro 04/26", "beispiel": "American Express, Anthropic Claude Pro 04/26", "erste": "30.04.2026", "letzte": "30.04.2026", "betrag": "108,00", "betrag_raw": 108.0, "quelle": "datev_ok", "status": "✓ Claude Standard/Premium"}, {"id": "datev_ok_27", "name": "Anthropic Individual Plan", "beispiel": "American Express, Anthropic Individual Plan", "erste": "31.03.2026", "letzte": "30.04.2026", "betrag": "35,70", "betrag_raw": 35.7, "quelle": "datev_ok", "status": "✓ Claude Standard/Premium"}, {"id": "datev_ok_28", "name": "Anthropic Max Plan", "beispiel": "American Express, Anthropic Max Plan", "erste": "30.04.2026", "letzte": "30.04.2026", "betrag": "90,00", "betrag_raw": 90.0, "quelle": "datev_ok", "status": "✓ Claude Standard/Premium"}, {"id": "datev_ok_29", "name": "Anthropic One Time Credit", "beispiel": "American Express, Anthropic One Time Credit", "erste": "31.03.2026", "letzte": "31.03.2026", "betrag": "25,88", "betrag_raw": 25.88, "quelle": "datev_ok", "status": "✓ Claude Standard/Premium"}, {"id": "datev_ok_30", "name": "Anthropic Team Plan", "beispiel": "American Express, Anthropic Team Plan", "erste": "28.02.2026", "letzte": "31.03.2026", "betrag": "1.103,27", "betrag_raw": 1103.27, "quelle": "datev_ok", "status": "✓ Claude Standard/Premium"}, {"id": "datev_ok_31", "name": "concept & service", "beispiel": "concept & service, Inbound Annahme von Gesprächen", "erste": "04.01.2026", "letzte": "05.04.2026", "betrag": "4.104,24", "betrag_raw": 4104.24, "quelle": "datev_ok", "status": "✓ Concept & Service"}, {"id": "datev_ok_32", "name": "ConsentManager 07/25", "beispiel": "American Express, ConsentManager 07/25", "erste": "31.08.2025", "letzte": "31.08.2025", "betrag": "144,29", "betrag_raw": 144.29, "quelle": "datev_ok", "status": "✓ Consentmanager"}, {"id": "datev_ok_33", "name": "ConsentManager 08/25", "beispiel": "American Express, ConsentManager 08/25", "erste": "30.09.2025", "letzte": "30.09.2025", "betrag": "159,33", "betrag_raw": 159.33, "quelle": "datev_ok", "status": "✓ Consentmanager"}, {"id": "datev_ok_34", "name": "ConsentManager 09/25", "beispiel": "American Express, ConsentManager 09/25", "erste": "31.10.2025", "letzte": "31.10.2025", "betrag": "205,23", "betrag_raw": 205.23, "quelle": "datev_ok", "status": "✓ Consentmanager"}, {"id": "datev_ok_35", "name": "ConsentManager 10/25", "beispiel": "American Express, ConsentManager 10/25", "erste": "29.11.2025", "letzte": "29.11.2025", "betrag": "232,80", "betrag_raw": 232.8, "quelle": "datev_ok", "status": "✓ Consentmanager"}, {"id": "datev_ok_36", "name": "ConsentManager 11/25", "beispiel": "American Express, ConsentManager 11/25", "erste": "28.12.2025", "letzte": "28.12.2025", "betrag": "290,04", "betrag_raw": 290.04, "quelle": "datev_ok", "status": "✓ Consentmanager"}, {"id": "datev_ok_37", "name": "DATEV", "beispiel": "DATEV 01-03/2025", "erste": "15.07.2025", "letzte": "31.12.2025", "betrag": "135,36", "betrag_raw": 135.36, "quelle": "datev_ok", "status": "✓ DATEV"}, {"id": "datev_ok_38", "name": "Dropbox", "beispiel": "Dropbox, Dropbox Plus", "erste": "02.02.2025", "letzte": "02.02.2025", "betrag": "134,34", "betrag_raw": 134.34, "quelle": "datev_ok", "status": "✓ Dropbox"}, {"id": "datev_ok_39", "name": "Auflösung RST creativestyle Lizenz", "beispiel": "Auflösung RST creativestyle Lizenz 10-12/2025", "erste": "28.02.2026", "letzte": "28.02.2026", "betrag": "-2.750,25", "betrag_raw": -2750.25, "quelle": "datev_ok", "status": "✓ ElasticSuite (creativestyle)"}, {"id": "datev_ok_40", "name": "RST Creativestyle ElasticSuite Premium Lizenz", "beispiel": "RST Creativestyle ElasticSuite Premium Lizenz 10-12/2025", "erste": "31.12.2025", "letzte": "31.12.2025", "betrag": "2.750,25", "betrag_raw": 2750.25, "quelle": "datev_ok", "status": "✓ ElasticSuite (creativestyle)"}, {"id": "datev_ok_41", "name": "creativestyle GmbH", "beispiel": "creativestyle GmbH, ElasticSuite Premium Lizenz 01/2026", "erste": "25.02.2026", "letzte": "25.02.2026", "betrag": "3.667,00", "betrag_raw": 3667.0, "quelle": "datev_ok", "status": "✓ ElasticSuite (creativestyle)"}, {"id": "datev_ok_42", "name": "Freenet", "beispiel": "American Express, Freenet", "erste": "28.02.2025", "letzte": "31.10.2025", "betrag": "799,84", "betrag_raw": 799.84, "quelle": "datev_ok", "status": "✓ Freenet DSL"}, {"id": "datev_ok_43", "name": "Google", "beispiel": "American Express, Google", "erste": "31.10.2025", "letzte": "27.12.2025", "betrag": "298.273,54", "betrag_raw": 298273.54, "quelle": "datev_ok", "status": "✓ Google Cloud"}, {"id": "datev_ok_44", "name": "Google Cloud", "beispiel": "American Express, Google Cloud", "erste": "28.02.2025", "letzte": "31.10.2025", "betrag": "1.706,52", "betrag_raw": 1706.52, "quelle": "datev_ok", "status": "✓ Google Cloud"}, {"id": "datev_ok_45", "name": "Google Workspace", "beispiel": "American Express, Google Workspace", "erste": "28.02.2025", "letzte": "31.10.2025", "betrag": "4.329,85", "betrag_raw": 4329.85, "quelle": "datev_ok", "status": "✓ Google Workspace"}, {"id": "datev_ok_46", "name": "JERA GmbH", "beispiel": "JERA GmbH, Update-Service Amazon 2 DATEV", "erste": "05.08.2025", "letzte": "05.08.2025", "betrag": "125,21", "betrag_raw": 125.21, "quelle": "datev_ok", "status": "✓ JERA (DATEV Amazon 2)"}, {"id": "datev_ok_47", "name": "Gebühr Auslandszahlung Klaviyo", "beispiel": "Gebühr Auslandszahlung Klaviyo", "erste": "05.05.2026", "letzte": "05.05.2026", "betrag": "43,44", "betrag_raw": 43.44, "quelle": "datev_ok", "status": "✓ Klaviyo"}, {"id": "datev_ok_48", "name": "Klaviyo", "beispiel": "Klaviyo 04/2026", "erste": "30.04.2026", "letzte": "30.05.2026", "betrag": "3.976,87", "betrag_raw": 3976.87, "quelle": "datev_ok", "status": "✓ Klaviyo"}, {"id": "datev_ok_49", "name": "Mailchimp Essentials Plan", "beispiel": "American Express, Mailchimp Essentials Plan", "erste": "28.02.2025", "letzte": "31.05.2025", "betrag": "98,13", "betrag_raw": 98.13, "quelle": "datev_ok", "status": "✓ Mailchimp"}, {"id": "datev_ok_50", "name": "Mailchimp Premium Plan", "beispiel": "American Express, Mailchimp Premium Plan", "erste": "31.01.2025", "letzte": "31.01.2025", "betrag": "26,17", "betrag_raw": 26.17, "quelle": "datev_ok", "status": "✓ Mailchimp"}, {"id": "datev_ok_51", "name": "Mailstore Software GmbH", "beispiel": "Mailstore Software GmbH, Update- Support-Service 06-12/25", "erste": "31.01.2025", "letzte": "01.01.2026", "betrag": "584,71", "betrag_raw": 584.71, "quelle": "datev_ok", "status": "✓ Mailstore"}, {"id": "datev_ok_52", "name": "Metricool Advanced", "beispiel": "American Express, Metricool Advanced 04-12/2026", "erste": "30.04.2026", "letzte": "30.04.2026", "betrag": "292,77", "betrag_raw": 292.77, "quelle": "datev_ok", "status": "✓ Metricool"}, {"id": "datev_ok_53", "name": "Metricool Software Jahresabo EU 19%", "beispiel": "American Express, Metricool Software Jahresabo EU 19%", "erste": "30.09.2025", "letzte": "30.09.2025", "betrag": "312,00", "betrag_raw": 312.0, "quelle": "datev_ok", "status": "✓ Metricool"}, {"id": "datev_ok_54", "name": "MICROSOFT PAYMENTS", "beispiel": "MICROSOFT PAYMENTS", "erste": "04.09.2025", "letzte": "03.10.2025", "betrag": "17,60", "betrag_raw": 17.6, "quelle": "datev_ok", "status": "✓ Microsoft 365"}, {"id": "datev_ok_55", "name": "Microsoft", "beispiel": "American Express, Microsoft", "erste": "28.02.2026", "letzte": "28.02.2026", "betrag": "3,64", "betrag_raw": 3.64, "quelle": "datev_ok", "status": "✓ Microsoft 365"}, {"id": "datev_ok_56", "name": "Microsoft Ireland Operations Ltd.", "beispiel": "Microsoft Ireland Operations Ltd., Microsoft 365", "erste": "18.06.2025", "letzte": "18.06.2025", "betrag": "99,00", "betrag_raw": 99.0, "quelle": "datev_ok", "status": "✓ Microsoft 365"}, {"id": "datev_ok_57", "name": "Microsoft Onlinedienst", "beispiel": "American Express, Microsoft Onlinedienst", "erste": "28.02.2025", "letzte": "31.10.2025", "betrag": "469,71", "betrag_raw": 469.71, "quelle": "datev_ok", "status": "✓ Microsoft 365"}, {"id": "datev_ok_58", "name": "Mprotect365 GmbH", "beispiel": "Mprotect365 GmbH, externer DSB", "erste": "28.02.2025", "letzte": "31.12.2025", "betrag": "2.483,37", "betrag_raw": 2483.37, "quelle": "datev_ok", "status": "✓ Mprotect DSB"}, {"id": "datev_ok_59", "name": "much. GmbH", "beispiel": "much. GmbH, Odoo", "erste": "28.02.2025", "letzte": "31.12.2025", "betrag": "5.407,05", "betrag_raw": 5407.05, "quelle": "datev_ok", "status": "✓ Much Lizenzen"}, {"id": "datev_ok_60", "name": "Eduardo Pina Fonseca Odoo Programmierung 2025", "beispiel": "Eduardo Pina Fonseca Odoo Programmierung 2025", "erste": "31.12.2025", "letzte": "31.12.2025", "betrag": "-4.155,87", "betrag_raw": -4155.87, "quelle": "datev_ok", "status": "✓ Odoo.sh"}, {"id": "datev_ok_61", "name": "Odoo", "beispiel": "American Express, Odoo 01/2025", "erste": "28.02.2025", "letzte": "31.10.2025", "betrag": "18.672,29", "betrag_raw": 18672.29, "quelle": "datev_ok", "status": "✓ Odoo.sh"}, {"id": "datev_ok_62", "name": "Personio GmbH", "beispiel": "Personio GmbH, Abo 01/2026", "erste": "08.05.2025", "letzte": "22.07.2025", "betrag": "11.228,27", "betrag_raw": 11228.27, "quelle": "datev_ok", "status": "✓ Personio"}, {"id": "datev_ok_63", "name": "Gamma Placetel GmbH", "beispiel": "Gamma Placetel GmbH", "erste": "04.01.2025", "letzte": "31.12.2025", "betrag": "2.190,18", "betrag_raw": 2190.18, "quelle": "datev_ok", "status": "✓ Placetel Telefonie"}, {"id": "datev_ok_64", "name": "Reclay Systems GmbH", "beispiel": "Reclay Systems GmbH 08/2025", "erste": "06.01.2026", "letzte": "26.01.2026", "betrag": "10.393,20", "betrag_raw": 10393.2, "quelle": "datev_ok", "status": "✓ Reclay Systems"}, {"id": "datev_ok_65", "name": "Sevenflow", "beispiel": "Sevenflow, Zendesk Audit 04/2026", "erste": "22.04.2026", "letzte": "22.04.2026", "betrag": "500,00", "betrag_raw": 500.0, "quelle": "datev_ok", "status": "✓ Sevenflow"}, {"id": "datev_ok_66", "name": "Sistrix für Google Plus", "beispiel": "American Express, Sistrix für Google Plus", "erste": "31.10.2025", "letzte": "27.12.2025", "betrag": "4.064,33", "betrag_raw": 4064.33, "quelle": "datev_ok", "status": "✓ Sistrix"}, {"id": "datev_ok_67", "name": "Storyclash GmbH", "beispiel": "Storyclash GmbH, Custom Package 02/2026", "erste": "02.01.2026", "letzte": "05.01.2026", "betrag": "2.000,00", "betrag_raw": 2000.0, "quelle": "datev_ok", "status": "✓ Storyclash"}, {"id": "datev_ok_68", "name": "Vimeo Plus", "beispiel": "American Express, Vimeo Plus", "erste": "30.04.2025", "letzte": "30.04.2026", "betrag": "180,00", "betrag_raw": 180.0, "quelle": "datev_ok", "status": "✓ Vimeo"}, {"id": "datev_ok_69", "name": "IT UHA Ionos", "beispiel": "IT UHA Ionos 01/2026", "erste": "18.03.2026", "letzte": "18.03.2026", "betrag": "49,58", "betrag_raw": 49.58, "quelle": "datev_ok", "status": "✓ Webseite LIMALOO (IONOS)"}, {"id": "datev_ok_70", "name": "Ionos", "beispiel": "Ionos, IT intern IONOS VPS Linux 11/2025", "erste": "12.11.2025", "letzte": "02.05.2026", "betrag": "57,98", "betrag_raw": 57.98, "quelle": "datev_ok", "status": "✓ Webseite LIMALOO (IONOS)"}, {"id": "datev_ok_71", "name": "WorNet AG", "beispiel": "WorNet AG", "erste": "28.02.2025", "letzte": "31.12.2025", "betrag": "10.965,26", "betrag_raw": 10965.26, "quelle": "datev_ok", "status": "✓ Wornet Hosting"}, {"id": "datev_ok_72", "name": "Zendesk", "beispiel": "Zendesk, Suite Growth Subscription 11/24-10/25", "erste": "28.02.2025", "letzte": "31.12.2025", "betrag": "3.809,48", "betrag_raw": 3809.48, "quelle": "datev_ok", "status": "✓ Zendesk"}, {"id": "datev_ok_73", "name": "Zendesk inc.", "beispiel": "Zendesk inc., Talk Usage Subscription", "erste": "13.01.2025", "letzte": "13.03.2025", "betrag": "24,29", "betrag_raw": 24.29, "quelle": "datev_ok", "status": "✓ Zendesk"}, {"id": "datev_ok_74", "name": "Zoom", "beispiel": "American Express, Zoom", "erste": "31.08.2025", "letzte": "07.12.2025", "betrag": "122,92", "betrag_raw": 122.92, "quelle": "datev_ok", "status": "✓ Zoom"}, {"id": "datev_ok_75", "name": "CleverPush GmbH", "beispiel": "CleverPush GmbH", "erste": "01.05.2025", "letzte": "12.05.2025", "betrag": "3.984,00", "betrag_raw": 3984.0, "quelle": "datev_ok", "status": "✓ cleverPush"}, {"id": "datev_ok_76", "name": "fino data", "beispiel": "fino data, GMI Lizenz 01-02/2025", "erste": "31.01.2025", "letzte": "31.01.2025", "betrag": "182,73", "betrag_raw": 182.73, "quelle": "datev_ok", "status": "✓ fino data GMI"}, {"id": "datev_ok_77", "name": "idealo internet GmbH", "beispiel": "idealo internet GmbH", "erste": "14.04.2026", "letzte": "06.05.2026", "betrag": "3.849,48", "betrag_raw": 3849.48, "quelle": "datev_ok", "status": "✓ idealo"}, {"id": "datev_ok_78", "name": "Productbay", "beispiel": "American Express, Productbay 01/2026", "erste": "28.02.2026", "letzte": "31.03.2026", "betrag": "3.100,00", "betrag_raw": 3100.0, "quelle": "datev_ok", "status": "✓ productbay"}, {"id": "datev_ok_79", "name": "Productbay 01/2026 EU 19%", "beispiel": "American Express, Productbay 01/2026 EU 19%", "erste": "31.01.2026", "letzte": "31.01.2026", "betrag": "600,00", "betrag_raw": 600.0, "quelle": "datev_ok", "status": "✓ productbay"}, {"id": "datev_ok_80", "name": "Productbay EU 19%", "beispiel": "American Express, Productbay EU 19%", "erste": "12.05.2025", "letzte": "12.05.2025", "betrag": "600,00", "betrag_raw": 600.0, "quelle": "datev_ok", "status": "✓ productbay"}], "lizenzen": [{"id": "lic_0", "name": "productbay", "abt": "Einkauf", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "1.500,00", "quelle": "lizenzliste"}, {"id": "lic_1", "name": "varify.io", "abt": "Shop Management", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "349,00", "quelle": "lizenzliste"}, {"id": "lic_2", "name": "Microsoft 365", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "83,20", "quelle": "lizenzliste"}, {"id": "lic_3", "name": "AWS", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "240,00", "quelle": "lizenzliste"}, {"id": "lic_4", "name": "Google Cloud", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "115,00", "quelle": "lizenzliste"}, {"id": "lic_5", "name": "Vimeo", "abt": "IT", "status": "jährlich kündbar", "lz": "16.04.2026", "kue": "16.04.2027", "kosten": "7,50", "quelle": "lizenzliste"}, {"id": "lic_6", "name": "Claude Standard", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "252,48", "quelle": "lizenzliste"}, {"id": "lic_7", "name": "Claude Premium", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "210,46", "quelle": "lizenzliste"}, {"id": "lic_8", "name": "Aftership", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "25,00", "quelle": "lizenzliste"}, {"id": "lic_9", "name": "Freenet DSL", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "49,99", "quelle": "lizenzliste"}, {"id": "lic_10", "name": "Placetel Telefonie", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "65,00", "quelle": "lizenzliste"}, {"id": "lic_11", "name": "Bunny.net , CDN", "abt": "IT", "status": "", "lz": "", "kue": "", "kosten": "8,50", "quelle": "lizenzliste"}, {"id": "lic_12", "name": "Atlassian Jira", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "170,50", "quelle": "lizenzliste"}, {"id": "lic_13", "name": "Atlassian Confluence", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "106,20", "quelle": "lizenzliste"}, {"id": "lic_14", "name": "Google Workspace", "abt": "IT/HR", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "435,75", "quelle": "lizenzliste"}, {"id": "lic_15", "name": "Adobe (Creative Cloud, Photoshop)", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "158,97", "quelle": "lizenzliste"}, {"id": "lic_16", "name": "Domainoffensive Hosting RD", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "145,00", "quelle": "lizenzliste"}, {"id": "lic_17", "name": "Domainoffensive Hosting EB", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "4,99", "quelle": "lizenzliste"}, {"id": "lic_18", "name": "Consentmanager (Cookiebanner)", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "190,00", "quelle": "lizenzliste"}, {"id": "lic_19", "name": "Odoo.sh", "abt": "IT", "status": "jährlich kündbar", "lz": "21.05.2027", "kue": "21.04.2027", "kosten": "860,20", "quelle": "lizenzliste"}, {"id": "lic_20", "name": "Adobe (Magento Hosting, Lizenz)", "abt": "IT", "status": "jährlich kündbar", "lz": "06.11.2026", "kue": "06.10.2026", "kosten": "5.461,92", "quelle": "lizenzliste"}, {"id": "lic_21", "name": "Wornet Hosting", "abt": "IT", "status": "monatl. kündbar", "lz": "", "kue": "", "kosten": "630,00", "quelle": "lizenzliste"}, {"id": "lic_22", "name": "Much Lizenzen & Supporthub", "abt": "IT", "status": "jährlich kündbar", "lz": "31.10.2026", "kue": "30.09.2026", "kosten": "254,46", "quelle": "lizenzliste"}, {"id": "lic_23", "name": "GS1 Germany", "abt": "Produktmanagement", "status": "jährlich kündbar", "lz": "", "kue": "30.09.2026", "kosten": "nan", "quelle": "lizenzliste"}, {"id": "lic_24", "name": "Webseite LIMALOO", "abt": "", "status": "Wird alle 3 Monate verlängert. Kündigungsfrist 1 Monat", "lz": "", "kue": "", "kosten": "nan", "quelle": "lizenzliste"}, {"id": "lic_25", "name": "Zendesk", "abt": "CS", "status": "jährlich kündbar", "lz": "17.11.2026", "kue": "18.10.2026", "kosten": "230,65", "quelle": "lizenzliste"}, {"id": "lic_26", "name": "Storyclash", "abt": "BM", "status": "gekündigt", "lz": "31.07.2026", "kue": "02.05.2026", "kosten": "500,00", "quelle": "lizenzliste"}, {"id": "lic_27", "name": "Metricool", "abt": "BM", "status": "jährlich kündbar", "lz": "17.04.2027", "kue": "17.02.2027", "kosten": "43,00", "quelle": "lizenzliste"}, {"id": "lic_28", "name": "Scripe", "abt": "EK/Sales", "status": "monatlich kündbar", "lz": "", "kue": "", "kosten": "85,00", "quelle": "lizenzliste"}, {"id": "lic_29", "name": "Concept & Service (Telefonservice)", "abt": "CS", "status": "", "lz": "", "kue": "", "kosten": "0,00", "quelle": "lizenzliste"}, {"id": "lic_30", "name": "Awin", "abt": "Marketing", "status": "gekündigt zum 15.10.2026", "lz": "", "kue": "", "kosten": "0,00", "quelle": "lizenzliste"}, {"id": "lic_31", "name": "ChatGPT", "abt": "Alle", "status": "monatlich", "lz": "", "kue": "", "kosten": "20,00", "quelle": "lizenzliste"}, {"id": "lic_32", "name": "cleverPush", "abt": "Marketing", "status": "gekündigt zum 09.06.2026", "lz": "", "kue": "", "kosten": "50,00", "quelle": "lizenzliste"}, {"id": "lic_33", "name": "Klaviyo", "abt": "Marketing", "status": "", "lz": "20.04.2027", "kue": "15.03.2027", "kosten": "nan", "quelle": "lizenzliste"}, {"id": "lic_34", "name": "billiger.de", "abt": "", "status": "gekündigt zum 30.04.2026", "lz": "", "kue": "", "kosten": "nan", "quelle": "lizenzliste"}, {"id": "lic_35", "name": "idealo", "abt": "Marketing", "status": "monatlich kündbar", "lz": "", "kue": "", "kosten": "nan", "quelle": "lizenzliste"}, {"id": "lic_36", "name": "Strom Prien", "abt": "Accounting", "status": "", "lz": "", "kue": "", "kosten": "99,16", "quelle": "lizenzliste"}, {"id": "lic_37", "name": "Telefon Internet Prien", "abt": "Accounting", "status": "", "lz": "", "kue": "", "kosten": "49,90", "quelle": "lizenzliste"}, {"id": "lic_38", "name": "Miete Prien", "abt": "Accounting", "status": "", "lz": "", "kue": "", "kosten": "938,90", "quelle": "lizenzliste"}, {"id": "lic_39", "name": "Capcut RidersDeal", "abt": "Brandmanagement", "status": "monatlich", "lz": "", "kue": "", "kosten": "nan", "quelle": "lizenzliste"}, {"id": "lic_40", "name": "Capcut RidersChoice", "abt": "Brandmanagement", "status": "Jährlich", "lz": "", "kue": "13.05.2027", "kosten": "168,06", "quelle": "lizenzliste"}, {"id": "lic_41", "name": "Asam Praevent EB", "abt": "HR", "status": "", "lz": "", "kue": "", "kosten": "nan", "quelle": "lizenzliste"}, {"id": "lic_42", "name": "Asam Praevent RegBrand", "abt": "HR", "status": "", "lz": "", "kue": "", "kosten": "nan", "quelle": "lizenzliste"}]};
 
-// ════════════════════════════════════════════════════
-// STATE
-// ════════════════════════════════════════════════════
-let allData = {};      // id -> Eintrag
-let allNotes = {};     // id -> [notes]
-let allDocs = {};      // id -> [docs]
-let allEdits = {};     // id+feld -> wert
-let connected = false;
-let nFilter = 'open';
-let showCanc = false;
+let allData = {}, allNotes = {}, allDocs = {}, allEdits = {};
+let connected = false, nFilter = 'open', showCanc = false;
 
 function author(){return(document.getElementById('authorName').value||'').trim()||'Anonym';}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function now(){const d=new Date();return d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});}
 
-// ════════════════════════════════════════════════════
-// CONNECTION & DATA LOAD
-// ════════════════════════════════════════════════════
+function herkunftBadge(h){
+  if(!h) return '';
+  if(h==='Vertragsdokument') return '<span class="hbadge hb-vertrag">📄 Vertrag</span>';
+  if(h==='DATEV') return '<span class="hbadge hb-datev">⚠️ DATEV</span>';
+  if(h.includes('DATEV')) return '<span class="hbadge hb-datev-lic">✅ DATEV+Liste</span>';
+  if(h==='Lizenzliste') return '<span class="hbadge hb-lic">📊 Lizenzliste</span>';
+  return `<span class="hbadge chip-n">${esc(h)}</span>`;
+}
+
 async function init(){
   try{
-    // Test connection & load data
-    const {data, error} = await SB.from('eintraege').select('*').limit(1);
+    const {data,error} = await SB.from('eintraege').select('*').limit(1);
     if(error) throw error;
     connected = true;
     document.getElementById('conn-dot').classList.add('ok');
     await loadAll();
-  } catch(e){
-    console.warn('Supabase not available, using fallback:', e.message);
+  }catch(e){
+    console.warn('Fallback:', e.message);
     document.getElementById('conn-dot').classList.add('err');
     useFallback();
   }
 }
 
 async function loadAll(){
-  // Load entries
-  const {data: entries} = await SB.from('eintraege').select('*').order('id');
-  if(entries) entries.forEach(e => allData[e.id] = e);
+  const {data:entries} = await SB.from('eintraege').select('*').order('quelle').order('name');
+  if(entries) entries.forEach(e => allData[e.id]=e);
 
-  // Load notes
-  const {data: notes} = await SB.from('notizen').select('*').order('created_at');
-  if(notes){
-    notes.forEach(n => {
-      if(!allNotes[n.eintrag_id]) allNotes[n.eintrag_id] = [];
-      allNotes[n.eintrag_id].push(n);
-    });
-  }
+  const {data:notes} = await SB.from('notizen').select('*').order('created_at');
+  if(notes) notes.forEach(n=>{if(!allNotes[n.eintrag_id])allNotes[n.eintrag_id]=[];allNotes[n.eintrag_id].push(n);});
 
-  // Load docs
-  const {data: docs} = await SB.from('dokumente').select('*').order('created_at');
-  if(docs){
-    docs.forEach(d => {
-      if(!allDocs[d.eintrag_id]) allDocs[d.eintrag_id] = [];
-      allDocs[d.eintrag_id].push(d);
-    });
-  }
+  const {data:docs} = await SB.from('dokumente').select('*').order('created_at');
+  if(docs) docs.forEach(d=>{if(!allDocs[d.eintrag_id])allDocs[d.eintrag_id]=[];allDocs[d.eintrag_id].push(d);});
 
-  // Load edits
-  const {data: edits} = await SB.from('edits').select('*');
-  if(edits) edits.forEach(e => allEdits[e.eintrag_id+'_'+e.feld] = e.wert);
+  const {data:edits} = await SB.from('edits').select('*');
+  if(edits) edits.forEach(e=>allEdits[e.eintrag_id+'_'+e.feld]=e.wert);
 
   renderAll();
   updateScores();
 }
 
 function useFallback(){
-  FALLBACK.zu_pruefen.forEach(r => allData[r.id] = {
-    id:r.id, name:r.name, quelle:'DATEV – Zu prüfen', kategorie:'⚠ Zu klären',
-    status:'⚠ Zu prüfen', erste_buchung:r.erste, letzte_buchung:r.letzte,
-    betrag:r.betrag, betrag_raw:r.betrag_raw, buchungsbeispiel:r.beispiel,
-    massnahme:r.massnahme||''
-  });
-  FALLBACK.in_liste.forEach(r => allData[r.id] = {
-    id:r.id, name:r.name, quelle:'DATEV – In Lizenzliste', kategorie:'✓ Bekannt',
-    status:'✓ Erfasst', erste_buchung:r.erste, letzte_buchung:r.letzte,
-    betrag:r.betrag, betrag_raw:r.betrag_raw, buchungsbeispiel:r.beispiel, massnahme:r.status||''
-  });
-  FALLBACK.lizenzen.forEach(r => allData[r.id] = {
-    id:r.id, name:r.name, quelle:'Lizenzliste', kategorie:'📋 Lizenz',
-    abteilung:r.abt, status:r.status, kosten_monat:r.kosten,
-    laufzeit_bis:r.lz, kuendigung_bis:r.kue
-  });
-  renderAll();
-  updateScores();
+  FALLBACK.zu_pruefen.forEach(r=>allData[r.id]={id:r.id,name:r.name,quelle:'DATEV – Zu prüfen',herkunft:'DATEV',status:'⚠ Zu prüfen',erste_buchung:r.erste,letzte_buchung:r.letzte,betrag:r.betrag,betrag_raw:r.betrag_raw,buchungsbeispiel:r.beispiel,massnahme:r.massnahme||''});
+  FALLBACK.in_liste.forEach(r=>allData[r.id]={id:r.id,name:r.name,quelle:'DATEV – In Lizenzliste',herkunft:'DATEV + Lizenzliste',status:'✓ Erfasst',erste_buchung:r.erste,letzte_buchung:r.letzte,betrag:r.betrag,betrag_raw:r.betrag_raw,buchungsbeispiel:r.beispiel,massnahme:r.status||''});
+  FALLBACK.lizenzen.forEach(r=>allData[r.id]={id:r.id,name:r.name,quelle:'Lizenzliste',herkunft:'Lizenzliste',abteilung:r.abt,status:r.status,kosten_monat:r.kosten,laufzeit_bis:r.lz,kuendigung_bis:r.kue});
+  renderAll();updateScores();
 }
 
-// ════════════════════════════════════════════════════
-// SUPABASE OPERATIONS
-// ════════════════════════════════════════════════════
-async function saveEdit(id, feld, wert){
-  if(!connected) return;
-  await SB.from('edits').upsert({eintrag_id:id, feld, wert, autor:author()}, {onConflict:'eintrag_id,feld'});
-  allEdits[id+'_'+feld] = wert;
+async function saveEdit(id,feld,wert){
+  if(!connected)return;
+  await SB.from('edits').upsert({eintrag_id:id,feld,wert,autor:author()},{onConflict:'eintrag_id,feld'});
+  allEdits[id+'_'+feld]=wert;
   toast('✓ Gespeichert');
 }
 
 async function addNote(id){
-  const ta = document.getElementById('nta_'+id);
-  const text = (ta?.value||'').trim();
-  if(!text) return;
-  const note = {eintrag_id:id, autor:author(), text, resolved:false};
+  const ta=document.getElementById('nta_'+id);
+  const text=(ta?.value||'').trim();if(!text)return;
+  const note={eintrag_id:id,autor:author(),text,resolved:false};
   if(connected){
-    const {data} = await SB.from('notizen').insert(note).select().single();
-    if(data){
-      if(!allNotes[id]) allNotes[id]=[];
-      allNotes[id].push(data);
-    }
-  } else {
-    if(!allNotes[id]) allNotes[id]=[];
-    allNotes[id].push({...note, id:'local_'+Date.now(), created_at:new Date().toISOString()});
+    const {data}=await SB.from('notizen').insert(note).select().single();
+    if(data){if(!allNotes[id])allNotes[id]=[];allNotes[id].push(data);}
+  }else{
+    if(!allNotes[id])allNotes[id]=[];
+    allNotes[id].push({...note,id:'local_'+Date.now(),created_at:new Date().toISOString()});
   }
-  ta.value='';
-  renderNoteList(id);
-  updateNoteBtn(id);
-  updateScores();
-  renderAllNotes();
-  toast('Notiz gespeichert');
+  ta.value='';renderNoteList(id);updateNoteBtn(id);updateScores();renderAllNotes();toast('Notiz gespeichert');
 }
 
-async function deleteNote(id, noteId){
-  if(connected) await SB.from('notizen').delete().eq('id', noteId);
-  if(allNotes[id]) allNotes[id] = allNotes[id].filter(n=>n.id!==noteId);
-  renderNoteList(id);
-  updateNoteBtn(id);
-  updateScores();
-  renderAllNotes();
+async function deleteNote(id,noteId){
+  if(connected)await SB.from('notizen').delete().eq('id',noteId);
+  if(allNotes[id])allNotes[id]=allNotes[id].filter(n=>n.id!==noteId);
+  renderNoteList(id);updateNoteBtn(id);updateScores();renderAllNotes();
 }
 
 async function resolveNote(id){
-  const notes = allNotes[id]||[];
-  if(connected) await SB.from('notizen').update({resolved:true}).eq('eintrag_id', id);
-  notes.forEach(n=>n.resolved=true);
-  renderNoteList(id);
-  updateNoteBtn(id);
-  updateScores();
-  renderAllNotes();
+  if(connected)await SB.from('notizen').update({resolved:true}).eq('eintrag_id',id);
+  (allNotes[id]||[]).forEach(n=>n.resolved=true);
+  renderNoteList(id);updateNoteBtn(id);updateScores();renderAllNotes();
 }
 
 async function reopenNote(id){
-  const notes = allNotes[id]||[];
-  if(connected) await SB.from('notizen').update({resolved:false}).eq('eintrag_id', id);
-  notes.forEach(n=>n.resolved=false);
-  renderNoteList(id);
-  updateNoteBtn(id);
-  updateScores();
-  renderAllNotes();
+  if(connected)await SB.from('notizen').update({resolved:false}).eq('eintrag_id',id);
+  (allNotes[id]||[]).forEach(n=>n.resolved=false);
+  renderNoteList(id);updateNoteBtn(id);updateScores();renderAllNotes();
 }
 
-async function uploadDoc(id, file){
-  if(!connected){ toast('⚠ Kein Supabase – Upload nicht möglich'); return; }
-  const path = `${id}/${Date.now()}_${file.name}`;
-  const {error:upErr} = await SB.storage.from('dokumente').upload(path, file);
-  if(upErr){ toast('⚠ Upload fehlgeschlagen: '+upErr.message); return; }
-  const doc = {eintrag_id:id, dateiname:file.name, storage_path:path, dateityp:file.type, groesse:file.size, hochgeladen_von:author()};
-  const {data} = await SB.from('dokumente').insert(doc).select().single();
-  if(data){
-    if(!allDocs[id]) allDocs[id]=[];
-    allDocs[id].push(data);
-    renderDocList(id);
-    updateDocBtn(id);
-    toast(`📎 ${file.name} hochgeladen`);
-  }
+async function uploadDoc(id,file){
+  if(!connected){toast('⚠ Upload nur mit Supabase-Verbindung');return;}
+  const path=`${id}/${Date.now()}_${file.name}`;
+  const {error:upErr}=await SB.storage.from('dokumente').upload(path,file);
+  if(upErr){toast('⚠ '+upErr.message);return;}
+  const doc={eintrag_id:id,dateiname:file.name,storage_path:path,dateityp:file.type,groesse:file.size,hochgeladen_von:author()};
+  const {data}=await SB.from('dokumente').insert(doc).select().single();
+  if(data){if(!allDocs[id])allDocs[id]=[];allDocs[id].push(data);renderDocList(id);updateDocBtn(id);toast(`📎 ${file.name} hochgeladen`);}
 }
 
-async function deleteDoc(id, docId, path){
-  if(connected){
-    await SB.storage.from('dokumente').remove([path]);
-    await SB.from('dokumente').delete().eq('id', docId);
-  }
-  if(allDocs[id]) allDocs[id] = allDocs[id].filter(d=>d.id!==docId);
-  renderDocList(id);
-  updateDocBtn(id);
+async function deleteDoc(id,docId,path){
+  if(connected){await SB.storage.from('dokumente').remove([path]);await SB.from('dokumente').delete().eq('id',docId);}
+  if(allDocs[id])allDocs[id]=allDocs[id].filter(d=>d.id!==docId);
+  renderDocList(id);updateDocBtn(id);
 }
 
 async function openDoc(path){
-  if(!connected){ return; }
-  const {data} = SB.storage.from('dokumente').getPublicUrl(path);
-  window.open(data.publicUrl, '_blank');
+  const {data}=SB.storage.from('dokumente').getPublicUrl(path);
+  window.open(data.publicUrl,'_blank');
 }
 
-// ════════════════════════════════════════════════════
-// INLINE EDIT
-// ════════════════════════════════════════════════════
-function makeEditable(el, id, feld, multiline){
+function makeEditable(el,id,feld,ml){
   el.classList.add('editable');
-  el.addEventListener('click', function(e){
-    if(el.classList.contains('editing')) return;
+  el.addEventListener('click',function(e){
+    if(el.classList.contains('editing'))return;
     el.classList.add('editing');
-    const cur = allEdits[id+'_'+feld] !== undefined ? allEdits[id+'_'+feld] : (el.dataset.orig||'');
-    if(multiline){
-      const ta=document.createElement('textarea');
-      ta.className='cell-input';ta.value=cur;ta.rows=3;
+    const cur=allEdits[id+'_'+feld]!==undefined?allEdits[id+'_'+feld]:(el.dataset.orig||'');
+    if(ml){
+      const ta=document.createElement('textarea');ta.className='cell-input';ta.value=cur;ta.rows=3;
       el.innerHTML='';el.appendChild(ta);ta.focus();
       ta.addEventListener('blur',()=>commitEdit(el,ta,id,feld));
-      ta.addEventListener('keydown',ev=>{if(ev.key==='Escape'){el.classList.remove('editing');renderEditCell(el,id,feld);}});
+      ta.addEventListener('keydown',ev=>{if(ev.key==='Escape'){el.classList.remove('editing');renderEC(el,id,feld);}});
     }else{
-      const inp=document.createElement('input');
-      inp.className='cell-input';inp.value=cur;
+      const inp=document.createElement('input');inp.className='cell-input';inp.value=cur;
       el.innerHTML='';el.appendChild(inp);inp.focus();inp.select();
       inp.addEventListener('blur',()=>commitEdit(el,inp,id,feld));
-      inp.addEventListener('keydown',ev=>{if(ev.key==='Enter')inp.blur();if(ev.key==='Escape'){el.classList.remove('editing');renderEditCell(el,id,feld);}});
+      inp.addEventListener('keydown',ev=>{if(ev.key==='Enter')inp.blur();if(ev.key==='Escape'){el.classList.remove('editing');renderEC(el,id,feld);}});
     }
     e.stopPropagation();
   });
 }
 
-function commitEdit(el, inp, id, feld){
-  const val = inp.value.trim();
-  el.classList.remove('editing');
-  if(val !== el.dataset.orig){
-    saveEdit(id, feld, val);
-  } else {
-    delete allEdits[id+'_'+feld];
-  }
-  renderEditCell(el, id, feld);
+function commitEdit(el,inp,id,feld){
+  const val=inp.value.trim();el.classList.remove('editing');
+  if(val!==el.dataset.orig)saveEdit(id,feld,val);else delete allEdits[id+'_'+feld];
+  renderEC(el,id,feld);
 }
 
-function renderEditCell(el, id, feld){
-  const val = allEdits[id+'_'+feld] !== undefined ? allEdits[id+'_'+feld] : (el.dataset.orig||'');
-  el.textContent = val;
-  el.style.color = allEdits[id+'_'+feld] !== undefined ? 'var(--acc)' : '';
+function renderEC(el,id,feld){
+  const val=allEdits[id+'_'+feld]!==undefined?allEdits[id+'_'+feld]:(el.dataset.orig||'');
+  el.textContent=val;el.style.color=allEdits[id+'_'+feld]!==undefined?'var(--acc)':'';
 }
 
-// ════════════════════════════════════════════════════
-// NOTE UI
-// ════════════════════════════════════════════════════
 function noteBtn(id){
-  const notes=allNotes[id]||[];const cnt=notes.length;
-  const res=cnt&&notes.every(n=>n.resolved);
-  return `<button class="act-btn ${res?'done':cnt?'has':''}" id="nbtn_${id}" onclick="toggleSub('note','${id}')" title="Notiz">
-    ${res?'✅':cnt?'💬':'＋'}
-  </button>`;
+  const n=allNotes[id];const cnt=n?.length||0;const res=cnt&&n.every(x=>x.resolved);
+  return `<button class="act-btn ${res?'done':cnt?'has':''}" id="nbtn_${id}" onclick="toggleSub('note','${id}')">${res?'✅':cnt?'💬':'＋'}</button>`;
 }
 
 function docBtn(id){
-  const docs=allDocs[id]||[];
-  return `<button class="act-btn ${docs.length?'has-doc':''}" id="dbtn_${id}" onclick="toggleSub('doc','${id}')" title="Dokument">
-    📎${docs.length?`<span style="font-size:9px;font-family:monospace;color:var(--acc)">${docs.length}</span>`:''}
-  </button>`;
+  const d=allDocs[id]||[];
+  return `<button class="act-btn ${d.length?'has-doc':''}" id="dbtn_${id}" onclick="toggleSub('doc','${id}')" title="Dokumente">📎${d.length?`<span style="font-size:9px;font-family:monospace;color:var(--acc)">${d.length}</span>`:''}</button>`;
 }
 
-function notePanel(id, title){
+function notePanel(id,title){
   return `<tr class="sub-row" id="nrow_${id}"><td colspan="99" style="padding:0 0 2px">
     <div class="note-panel" id="np_${id}">
       <div class="np-head"><span class="np-title">💬 ${esc(title)}</span><button class="np-close" onclick="closeSub('note','${id}')">✕</button></div>
@@ -618,41 +553,34 @@ function notePanel(id, title){
   </td></tr>`;
 }
 
-function docPanel(id, title){
+function docPanel(id,title){
   return `<tr class="sub-row" id="drow_${id}"><td colspan="99" style="padding:0 0 2px">
     <div class="doc-panel" id="dp_${id}">
-      <div class="np-head"><span class="np-title" style="color:var(--acc)">📎 Dokumente – ${esc(title)}</span><button class="np-close" onclick="closeSub('doc','${id}')">✕</button></div>
+      <div class="np-head"><span class="np-title" style="color:var(--acc)">📎 ${esc(title)}</span><button class="np-close" onclick="closeSub('doc','${id}')">✕</button></div>
       <div class="doc-list" id="dl_${id}"></div>
       <div class="upload-row">
         <input type="file" class="upload-input" id="uf_${id}" accept=".pdf,.doc,.docx,.xlsx,.png,.jpg" onchange="uploadDoc('${id}',this.files[0])">
-        <button class="btn-upload" onclick="document.getElementById('uf_${id}').click()">📤 PDF hochladen</button>
+        <button class="btn-upload" onclick="document.getElementById('uf_${id}').click()">📤 Hochladen</button>
         <span class="upload-label">PDF, Word, Excel, Bilder</span>
       </div>
     </div>
   </td></tr>`;
 }
 
-function toggleSub(type, id){
-  const rowId = (type==='note'?'nrow_':'drow_')+id;
-  const row = document.getElementById(rowId);
-  if(!row) return;
-  const wasOpen = row.classList.contains('open');
+function toggleSub(type,id){
+  const rowId=(type==='note'?'nrow_':'drow_')+id;
+  const row=document.getElementById(rowId);if(!row)return;
+  const wasOpen=row.classList.contains('open');
   document.querySelectorAll('.sub-row.open').forEach(r=>{
-    if((type==='note'&&r.id.startsWith('nrow_'))||(type==='doc'&&r.id.startsWith('drow_'))) r.classList.remove('open');
+    if((type==='note'&&r.id.startsWith('nrow_'))||(type==='doc'&&r.id.startsWith('drow_')))r.classList.remove('open');
   });
-  if(!wasOpen){
-    row.classList.add('open');
-    if(type==='note'){ renderNoteList(id); setTimeout(()=>document.getElementById('nta_'+id)?.focus(),50); }
-    if(type==='doc') renderDocList(id);
-  }
+  if(!wasOpen){row.classList.add('open');if(type==='note'){renderNoteList(id);setTimeout(()=>document.getElementById('nta_'+id)?.focus(),50);}if(type==='doc')renderDocList(id);}
 }
 
-function closeSub(type, id){
-  document.getElementById((type==='note'?'nrow_':'drow_')+id)?.classList.remove('open');
-}
+function closeSub(type,id){document.getElementById((type==='note'?'nrow_':'drow_')+id)?.classList.remove('open');}
 
 function renderNoteList(id){
-  const el=document.getElementById('nl_'+id); if(!el) return;
+  const el=document.getElementById('nl_'+id);if(!el)return;
   const notes=allNotes[id]||[];
   el.innerHTML=!notes.length?'<div class="empty-notes">Noch keine Notizen.</div>':
     notes.map((n,i)=>`<div class="note-item">
@@ -668,9 +596,9 @@ function renderNoteList(id){
 }
 
 function renderDocList(id){
-  const el=document.getElementById('dl_'+id); if(!el) return;
+  const el=document.getElementById('dl_'+id);if(!el)return;
   const docs=allDocs[id]||[];
-  el.innerHTML=!docs.length?'<div class="empty-notes">Noch keine Dokumente hochgeladen.</div>':
+  el.innerHTML=!docs.length?'<div class="empty-notes">Noch keine Dokumente.</div>':
     docs.map(d=>`<div class="doc-item">
       <span class="doc-name" onclick="openDoc('${d.storage_path}')">${esc(d.dateiname)}</span>
       <span style="font-size:9px;color:var(--ink3);font-family:monospace">${d.hochgeladen_von}</span>
@@ -680,68 +608,105 @@ function renderDocList(id){
 
 function updateNoteBtn(id){
   const btn=document.getElementById('nbtn_'+id);if(!btn)return;
-  const notes=allNotes[id]||[];const cnt=notes.length;
-  const res=cnt&&notes.every(n=>n.resolved);
-  btn.textContent=res?'✅':cnt?'💬':'＋';
-  btn.className='act-btn '+(res?'done':cnt?'has':'');
+  const n=allNotes[id];const cnt=n?.length||0;const res=cnt&&n.every(x=>x.resolved);
+  btn.textContent=res?'✅':cnt?'💬':'＋';btn.className='act-btn '+(res?'done':cnt?'has':'');
 }
 
 function updateDocBtn(id){
   const btn=document.getElementById('dbtn_'+id);if(!btn)return;
-  const docs=allDocs[id]||[];
-  btn.innerHTML=`📎${docs.length?`<span style="font-size:9px;font-family:monospace;color:var(--acc)">${docs.length}</span>`:''}`;
-  btn.className='act-btn '+(docs.length?'has-doc':'');
+  const d=allDocs[id]||[];
+  btn.innerHTML=`📎${d.length?`<span style="font-size:9px;font-family:monospace;color:var(--acc)">${d.length}</span>`:''}`;
+  btn.className='act-btn '+(d.length?'has-doc':'');
 }
 
-function restoreAllBtns(){
-  Object.keys(allData).forEach(id=>{updateNoteBtn(id);updateDocBtn(id);});
-}
+function restoreAllBtns(){Object.keys(allData).forEach(id=>{updateNoteBtn(id);updateDocBtn(id);});}
 
-// ════════════════════════════════════════════════════
-// RENDER TABLES
-// ════════════════════════════════════════════════════
-function getPruef(){return Object.values(allData).filter(r=>r.quelle==='DATEV – Zu prüfen');}
-function getOk(){return Object.values(allData).filter(r=>r.quelle==='DATEV – In Lizenzliste');}
-function getLic(){return Object.values(allData).filter(r=>r.quelle==='Lizenzliste');}
+// ── RENDER ────────────────────────────────────────────────────────────────
+function getByQuelle(q){return Object.values(allData).filter(r=>r.quelle===q);}
+
+function renderVertraege(){
+  const rows=getByQuelle('Vertragsdokument');
+  const container=document.getElementById('vertraege-container');
+  container.innerHTML=rows.map(r=>{
+    const notes=allNotes[r.id]||[];const docs=allDocs[r.id]||[];
+    return `<div class="contract-card">
+      <div class="cc-head">
+        <span class="cc-head-name">${esc(r.name)}</span>
+        <span class="hbadge hb-vertrag">📄 Vertragsdokument</span>
+        ${docs.length?`<span style="font-family:monospace;font-size:9px;color:#4ADE80">📎 ${docs.length} Dokument(e)</span>`:''}
+        ${notes.length?`<span style="font-family:monospace;font-size:9px;color:var(--note-border)">💬 ${notes.length} Notiz(en)</span>`:''}
+        <span class="cc-head-meta">${esc(r.abteilung||'')}</span>
+      </div>
+      <div class="cc-body">
+        <div class="cc-col">
+          <div class="cc-col-title">Vertragsdaten</div>
+          <div class="cc-row"><strong>Laufzeit:</strong> ${esc(r.erste_buchung||'')} – ${esc(r.laufzeit_bis||'')}</div>
+          <div class="cc-row"><strong>Kosten/Mon.:</strong> ${esc(r.kosten_monat||'')} €</div>
+          <div class="cc-row"><strong>Referenz:</strong> ${esc(r.buchungsbeispiel||'')}</div>
+          <div class="cc-row"><strong>Status:</strong> ${esc(r.status||'')}</div>
+        </div>
+        <div class="cc-col">
+          <div class="cc-col-title">Konditionen</div>
+          <div class="cc-row" style="white-space:pre-wrap;font-size:10.5px">${esc(r.massnahme||'')}</div>
+        </div>
+        <div class="cc-col">
+          <div class="cc-col-title">Ansprechpartner</div>
+          ${r.ext_ansprechpartner?`<div class="cc-row"><strong>Extern:</strong> ${esc(r.ext_ansprechpartner)}</div>`:''}
+          ${r.int_ansprechpartner?`<div class="cc-row"><strong>Intern:</strong> ${esc(r.int_ansprechpartner)}</div>`:''}
+          <div style="margin-top:8px;display:flex;gap:6px">
+            ${docBtn(r.id)}
+            ${noteBtn(r.id)}
+          </div>
+        </div>
+      </div>
+      ${docPanel(r.id,r.name)}
+      ${notePanel(r.id,r.name)}
+    </div>`;
+  }).join('');
+  rows.forEach(r=>{updateNoteBtn(r.id);updateDocBtn(r.id);});
+  document.getElementById('tb-v').textContent=rows.length;
+}
 
 function renderPruef(){
   const tb=document.getElementById('pruef-body');
-  const rows=getPruef();
+  const rows=getByQuelle('DATEV – Zu prüfen');
   tb.innerHTML=rows.map((r,i)=>{
-    const fMass=`${r.id}_massnahme`;
-    const cur=allEdits[fMass]!==undefined?allEdits[fMass]:(r.massnahme||'');
+    const sk=`${r.id}_massnahme`;
+    const cur=allEdits[sk]!==undefined?allEdits[sk]:(r.massnahme||'');
     const neg=(r.betrag_raw||0)<0;
     return `<tr class="dr ${i%2?'even':''}" data-id="${r.id}" data-name="${esc(r.name).toLowerCase()}">
       <td style="font-family:monospace;font-size:10px;color:var(--ink3)">${i+1}</td>
+      <td>${herkunftBadge(r.herkunft)}</td>
       <td class="td-name">${esc(r.name)}</td>
       <td><div class="td-sub">${esc(r.buchungsbeispiel)}</div></td>
       <td class="mono">${r.erste_buchung||''}</td>
       <td class="mono">${r.letzte_buchung||''}</td>
       <td class="amt ${neg?'neg':''}">${r.betrag?r.betrag+' €':'—'}</td>
-      <td class="editable" data-orig="${esc(r.massnahme||'')}" id="cell_${fMass}" style="${allEdits[fMass]?'color:var(--acc)':''}"><div class="td-sub">${esc(cur)}</div></td>
+      <td class="editable" data-orig="${esc(r.massnahme||'')}" id="cell_${sk}" style="${allEdits[sk]?'color:var(--acc)':''}"><div class="td-sub">${esc(cur)}</div></td>
       <td>${docBtn(r.id)}</td>
       <td>${noteBtn(r.id)}</td>
     </tr>${docPanel(r.id,r.name)}${notePanel(r.id,r.name)}`;
   }).join('');
   rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_massnahme`);if(el)makeEditable(el,r.id,'massnahme',true);});
   document.getElementById('pruef-cnt').textContent=rows.length+' Einträge';
-  document.getElementById('tb-pruef').textContent=rows.length;
+  document.getElementById('tb-p').textContent=rows.length;
 }
 
 function renderOk(){
   const tb=document.getElementById('ok-body');
-  const rows=getOk();
+  const rows=getByQuelle('DATEV – In Lizenzliste');
   tb.innerHTML=rows.map((r,i)=>{
-    const fSt=`${r.id}_status`;
-    const cur=allEdits[fSt]!==undefined?allEdits[fSt]:(r.massnahme||r.status||'');
+    const sk=`${r.id}_status`;
+    const cur=allEdits[sk]!==undefined?allEdits[sk]:(r.massnahme||r.status||'');
     return `<tr class="dr ${i%2?'even':''}" data-id="${r.id}" data-name="${esc(r.name).toLowerCase()}">
       <td style="font-family:monospace;font-size:10px;color:var(--ink3)">${i+1}</td>
+      <td>${herkunftBadge(r.herkunft)}</td>
       <td class="td-name">${esc(r.name)}</td>
       <td><div class="td-sub">${esc(r.buchungsbeispiel)}</div></td>
       <td class="mono">${r.erste_buchung||''}</td>
       <td class="mono">${r.letzte_buchung||''}</td>
       <td class="amt">${r.betrag?r.betrag+' €':'—'}</td>
-      <td class="s-ok editable" data-orig="${esc(r.massnahme||r.status||'')}" id="cell_${fSt}" style="${allEdits[fSt]?'color:var(--acc)':''}">${esc(cur)}</td>
+      <td class="s-ok editable" data-orig="${esc(r.massnahme||r.status||'')}" id="cell_${sk}" style="${allEdits[sk]?'color:var(--acc)':''}">${esc(cur)}</td>
       <td>${docBtn(r.id)}</td>
       <td>${noteBtn(r.id)}</td>
     </tr>${docPanel(r.id,r.name)}${notePanel(r.id,r.name)}`;
@@ -753,14 +718,15 @@ function renderOk(){
 
 function renderLic(){
   const tb=document.getElementById('lic-body');
-  const rows=getLic();
+  const rows=getByQuelle('Lizenzliste');
   tb.innerHTML=rows.map((r,i)=>{
     const canc=(r.status||'').toLowerCase().includes('gekündigt');
+    if(canc&&!showCanc) return '';
     const sk=`${r.id}_status`;
     const cur=allEdits[sk]!==undefined?allEdits[sk]:(r.status||'');
-    if(canc&&!showCanc) return '';
     return `<tr class="dr ${i%2?'even':''}" data-id="${r.id}" data-name="${esc(r.name).toLowerCase()}" data-canc="${canc}">
       <td style="font-family:monospace;font-size:10px;color:var(--ink3)">${i+1}</td>
+      <td>${herkunftBadge(r.herkunft)}</td>
       <td class="td-name" style="${canc?'text-decoration:line-through;color:var(--ink3)':''}">${esc(r.name)}</td>
       <td><span class="chip n">${esc(r.abteilung)||'—'}</span></td>
       <td class="mono">${r.laufzeit_bis&&r.laufzeit_bis!=='NaT'?r.laufzeit_bis:'—'}</td>
@@ -774,25 +740,20 @@ function renderLic(){
   rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_status`);if(el)makeEditable(el,r.id,'status',false);});
   const vis=rows.filter(r=>!(r.status||'').toLowerCase().includes('gekündigt')||showCanc).length;
   document.getElementById('lic-cnt').textContent=vis+' Einträge';
-  document.getElementById('tb-lic').textContent=rows.length;
+  document.getElementById('tb-l').textContent=rows.length;
 }
 
-function renderAll(){renderPruef();renderOk();renderLic();restoreAllBtns();}
-
-// ════════════════════════════════════════════════════
-// FINDINGS
-// ════════════════════════════════════════════════════
 const FINDINGS=[
   {cls:'r',lvl:'SOFORT',name:'afa software diverse',amt:'44.128 €',text:'Größter ungeklärter Posten – nicht in Lizenzliste. Was ist das? Einmalig oder wiederkehrend?',id:'f_afa'},
   {cls:'r',lvl:'SOFORT',name:'Force Net GmbH (Exchange)',amt:'19.981 €',text:'Exchange/Mailserver fehlt komplett. Vertrag prüfen und Liste ergänzen.',id:'f_force'},
-  {cls:'r',lvl:'SOFORT',name:'Dirk Sancken',amt:'17.391 €',text:'IT-Dienstleistung – kein Rahmenvertrag gefunden. Bitte nachreichen.',id:'f_sancken'},
-  {cls:'r',lvl:'SOFORT',name:'Plumrocket (4 Buchungen)',amt:'~9.980 €',text:'Magento-Extensions: einmalig oder wiederkehrend? → bei wiederkehrend in Lizenzliste.',id:'f_plumrocket'},
+  {cls:'r',lvl:'SOFORT',name:'Dirk Sancken',amt:'17.391 €',text:'IT-Dienstleistung – kein Rahmenvertrag. Bitte nachreichen.',id:'f_sancken'},
+  {cls:'r',lvl:'SOFORT',name:'Plumrocket (4 Buchungen)',amt:'~9.980 €',text:'Magento-Extensions: einmalig oder wiederkehrend?',id:'f_plumrocket'},
   {cls:'y',lvl:'PRÜFEN',name:'Regular Trade / REGULAR TRADE GMBH',amt:'9.397 €',text:'Miete Prien + DATEV/NetGo via Regular Trade. Intercompany? Buchhalterisch abgrenzen.',id:'f_regular'},
   {cls:'y',lvl:'PRÜFEN',name:'Kolomiets / PPG Digital / Softonomika',amt:'~8.213 €',text:'Freelance Magento-Entwicklung – Rahmenverträge vorhanden?',id:'f_kolo'},
   {cls:'y',lvl:'PRÜFEN',name:'Eduardo Pina Fonseca',amt:'7.826 €',text:'Odoo-Migration – Einzelrechnung oder Rahmenvertrag?',id:'f_eduardo'},
   {cls:'y',lvl:'PRÜFEN',name:'Apple / Apple CapCut',amt:'343 €',text:'CapCut teils in Lizenzliste – Apple-Buchungen unklar.',id:'f_apple'},
-  {cls:'g',lvl:'HINWEIS',name:'Google Cloud (298.273 €)',amt:'298.273 €',text:'Korrekt erfasst – Budget-Alert einrichten, monatlich kontrollieren.',id:'f_google'},
-  {cls:'g',lvl:'HINWEIS',name:'varify.io / Scripe / GS1',amt:'—',text:'In Lizenzliste, aber keine DATEV-Buchung erkennbar. Buchungsweg prüfen.',id:'f_varify'},
+  {cls:'g',lvl:'HINWEIS',name:'Google Cloud (298.273 €)',amt:'298.273 €',text:'Korrekt erfasst – Budget-Alert einrichten.',id:'f_google'},
+  {cls:'g',lvl:'HINWEIS',name:'varify.io / Scripe / GS1',amt:'—',text:'In Lizenzliste, aber keine DATEV-Buchung. Buchungsweg prüfen.',id:'f_varify'},
 ];
 
 function renderFindings(){
@@ -802,72 +763,62 @@ function renderFindings(){
       <div class="fc-h"><span class="fc-lvl">${f.lvl}</span><span class="fc-name">${f.name}</span><span class="fc-amt">${f.amt}</span></div>
       <div class="fc-text">${f.text}</div>
       <div style="display:flex;gap:6px;align-items:center;margin-top:6px">
-        ${noteBtn(f.id)}
-        <span style="font-size:10px;color:var(--ink3);font-family:monospace">Notiz hinzufügen</span>
+        ${noteBtn(f.id)}<span style="font-size:10px;color:var(--ink3);font-family:monospace">Notiz</span>
         ${res?'<span class="chip g" style="margin-left:auto">✓ Erledigt</span>':''}
-      </div>
-      ${notePanel(f.id,f.name)}
+      </div>${notePanel(f.id,f.name)}
     </div>`;
   }).join('');
 }
 
-// ════════════════════════════════════════════════════
-// ALL NOTES VIEW
-// ════════════════════════════════════════════════════
+function renderAll(){renderFindings();renderPruef();renderOk();renderLic();restoreAllBtns();}
+
+function updateScores(){
+  const v=getByQuelle('Vertragsdokument').length;
+  const l=getByQuelle('Lizenzliste').length;
+  const ok=getByQuelle('DATEV – In Lizenzliste').length;
+  const p=getByQuelle('DATEV – Zu prüfen').length;
+  document.getElementById('s-vertraege').textContent=v;
+  document.getElementById('s-lizenzen').textContent=l;
+  document.getElementById('s-ok').textContent=ok;
+  document.getElementById('s-pruef').textContent=p;
+  document.getElementById('h-total').textContent=v+l+ok+p;
+  document.getElementById('h-pruef').textContent=p;
+  document.getElementById('h-ok').textContent=ok;
+  let open=0,total=0,done=0;
+  Object.values(allNotes).forEach(n=>{if(n?.length){total++;if(n.every(x=>x.resolved))done++;else open++;}});
+  document.getElementById('s-notes').textContent=open;
+  document.getElementById('s-notes-sub').textContent=`${total} gesamt · ${done} erledigt`;
+  document.getElementById('tb-notes').textContent=total;
+  renderFindings();
+}
+
 function nfil(f){
-  nFilter=f;
-  ['all','open','done'].forEach(k=>document.getElementById('nf-'+k)?.classList.toggle('on',k===f));
+  nFilter=f;['all','open','done'].forEach(k=>document.getElementById('nf-'+k)?.classList.toggle('on',k===f));
   renderAllNotes();
 }
 
 function renderAllNotes(){
   const el=document.getElementById('all-notes-container');
-  const allIds=Object.keys(allNotes).filter(id=>allNotes[id]?.length);
-  const filtered=allIds.filter(id=>{
-    const notes=allNotes[id];const res=notes.every(n=>n.resolved);
+  const ids=Object.keys(allNotes).filter(id=>allNotes[id]?.length).filter(id=>{
+    const n=allNotes[id];const res=n.every(x=>x.resolved);
     return nFilter==='all'||(nFilter==='open'&&!res)||(nFilter==='done'&&res);
   });
-  if(!filtered.length){
-    el.innerHTML='<div style="padding:36px;text-align:center;color:var(--ink3);font-family:monospace;font-size:11px">Keine Notizen in diesem Filter.</div>';
-    return;
-  }
-  el.innerHTML=filtered.map(id=>{
-    const notes=allNotes[id];const name=allData[id]?.name||id;
+  if(!ids.length){el.innerHTML='<div style="padding:36px;text-align:center;color:var(--ink3);font-family:monospace;font-size:11px">Keine Notizen in diesem Filter.</div>';return;}
+  el.innerHTML=ids.map(id=>{
+    const notes=allNotes[id];const name=allData[id]?.name||id;const herkunft=allData[id]?.herkunft||'';
     const res=notes.every(n=>n.resolved);
     return `<div class="all-note-item ${res?'res':''}">
-      <div class="an-head"><span class="an-name">${esc(name)}</span><span class="an-st ${res?'done':'open'}">${res?'✓ Erledigt':'● Offen'}</span></div>
-      ${notes.map((n,i)=>`<div class="note-item">
-        <div class="ni-meta"><span class="ni-author">${esc(n.autor)}</span><span class="ni-time">${new Date(n.created_at).toLocaleDateString('de-DE')}</span></div>
-        <span class="ni-text">${esc(n.text)}</span>
-        <button class="ni-del" onclick="deleteNote('${id}','${n.id}');renderAllNotes()">✕</button>
-      </div>`).join('')}
+      <div class="an-head">
+        <span class="an-name">${esc(name)}</span>
+        ${herkunftBadge(herkunft)}
+        <span class="an-st ${res?'done':'open'}">${res?'✓ Erledigt':'● Offen'}</span>
+      </div>
+      ${notes.map((n,i)=>`<div class="note-item"><div class="ni-meta"><span class="ni-author">${esc(n.autor)}</span><span class="ni-time">${new Date(n.created_at).toLocaleDateString('de-DE')}</span></div><span class="ni-text">${esc(n.text)}</span><button class="ni-del" onclick="deleteNote('${id}','${n.id}');renderAllNotes()">✕</button></div>`).join('')}
       <div style="margin-top:7px;display:flex;gap:6px">
-        ${res?`<button class="btn-reopen" style="display:inline" onclick="reopenNote('${id}');renderAllNotes()">↺ Öffnen</button>`
-              :`<button class="btn-ok2" onclick="resolveNote('${id}');renderAllNotes()">✓ Erledigt</button>`}
+        ${res?`<button class="btn-reopen" style="display:inline" onclick="reopenNote('${id}');renderAllNotes()">↺ Öffnen</button>`:`<button class="btn-ok2" onclick="resolveNote('${id}');renderAllNotes()">✓ Erledigt</button>`}
       </div>
     </div>`;
   }).join('');
-}
-
-// ════════════════════════════════════════════════════
-// SCORES & FILTER
-// ════════════════════════════════════════════════════
-function updateScores(){
-  const pruef=getPruef().length, ok=getOk().length, total=pruef+ok;
-  document.getElementById('s-total').textContent=total;
-  document.getElementById('s-ok').textContent=ok;
-  document.getElementById('s-pruef').textContent=pruef;
-  document.getElementById('h-total').textContent=total;
-  document.getElementById('h-ok').textContent=ok;
-  document.getElementById('h-pruef').textContent=pruef;
-  let openNotes=0,totalNotes=0;
-  Object.values(allNotes).forEach(notes=>{
-    if(notes?.length){totalNotes++;if(!notes.every(n=>n.resolved))openNotes++;}
-  });
-  document.getElementById('s-notes').textContent=openNotes;
-  document.getElementById('s-notes-sub').textContent=`${totalNotes} gesamt · ${totalNotes-openNotes} erledigt`;
-  document.getElementById('tb-notes').textContent=totalNotes;
-  renderFindings();
 }
 
 function filterTbl(tbId,q,cntId){
@@ -884,35 +835,22 @@ function filterTbl(tbId,q,cntId){
 }
 
 function togCanc(btn){
-  showCanc=!showCanc;
-  btn.textContent=showCanc?'Gekündigte ausblenden':'Gekündigte einblenden';
-  btn.classList.toggle('on',showCanc);
-  renderLic();
+  showCanc=!showCanc;btn.textContent=showCanc?'Gekündigte ausblenden':'Gekündigte einblenden';
+  btn.classList.toggle('on',showCanc);renderLic();
 }
 
-// ════════════════════════════════════════════════════
-// TABS & TOAST
-// ════════════════════════════════════════════════════
 function showTab(id,btn){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+id).classList.add('active');
-  btn.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');btn.classList.add('active');
   if(id==='notizen')renderAllNotes();
+  if(id==='vertraege')renderVertraege();
 }
 
 let toastTimer;
-function toast(msg){
-  document.getElementById('toast-msg').textContent=msg;
-  document.getElementById('toast').classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(hideToast,2500);
-}
+function toast(msg){document.getElementById('toast-msg').textContent=msg;document.getElementById('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(hideToast,2500);}
 function hideToast(){document.getElementById('toast').classList.remove('show');}
 
-// ════════════════════════════════════════════════════
-// INIT
-// ════════════════════════════════════════════════════
 init();
 </script>
 </body>
