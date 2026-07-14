@@ -475,7 +475,9 @@ async function reopenNote(id){
 
 async function uploadDoc(id,file){
   if(!connected){toast('⚠ Upload nur mit Supabase-Verbindung');return;}
-  const path=`${id}/${Date.now()}_${file.name}`;
+  // Sanitize filename: replace spaces and special chars
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const path=`${id}/${Date.now()}_${safeName}`;
   const {error:upErr}=await SB.storage.from('dokumente').upload(path,file);
   if(upErr){toast('⚠ '+upErr.message);return;}
   const doc={eintrag_id:id,dateiname:file.name,storage_path:path,dateityp:file.type,groesse:file.size,hochgeladen_von:author()};
@@ -490,10 +492,21 @@ async function deleteDoc(id,docId,path){
 }
 
 async function openDoc(path){
+  // Normalize path: replace spaces
+  const cleanPath = path.replace(/ /g,'_');
+  try{
+    // Try signed URL with clean path
+    const {data,error}=await SB.storage.from('dokumente').createSignedUrl(cleanPath,3600);
+    if(data?.signedUrl){
+      window.open(data.signedUrl,'_blank');
+      return;
+    }
+  }catch(e){}
+  // Try original path
   try{
     const {data,error}=await SB.storage.from('dokumente').createSignedUrl(path,3600);
     if(data?.signedUrl) window.open(data.signedUrl,'_blank');
-    else toast('⚠ Dokument nicht gefunden – bitte nochmal versuchen');
+    else toast('⚠ Dokument nicht gefunden. Bitte Datei löschen und neu hochladen.');
   }catch(e){ toast('⚠ '+e.message); }
 }
 
