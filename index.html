@@ -636,34 +636,54 @@ function restoreAllBtns(){Object.keys(allData).forEach(id=>{updateNoteBtn(id);up
 // ── RENDER ────────────────────────────────────────────────────────────────
 function getByQuelle(q){return Object.values(allData).filter(r=>r.quelle===q);}
 
-function editField(id, feld, label, multiline){
-  const cur = allEdits[id+'_'+feld] !== undefined ? allEdits[id+'_'+feld] : (allData[id]?.[feld]||'');
-  const val = prompt(`${label} bearbeiten:`, cur);
-  if(val !== null && val !== cur){
-    saveEdit(id, feld, val);
-    allEdits[id+'_'+feld] = val;
-    renderVertraege(); // re-render cards
-  }
+// Inline editing for contract card fields
+function ccMakeEditable(el, id, feld, multiline){
+  el.style.cursor='pointer';
+  el.title='Klicken zum Bearbeiten';
+  el.addEventListener('click', function(e){
+    if(el.querySelector('input,textarea')) return;
+    const cur = allEdits[id+'_'+feld] !== undefined ? allEdits[id+'_'+feld] : (el.dataset.orig||'');
+    el.style.cursor='default';
+    if(multiline){
+      const ta = document.createElement('textarea');
+      ta.value = cur; ta.rows = 4;
+      ta.style.cssText='width:100%;padding:4px 7px;border:1.5px solid var(--acc);border-radius:3px;font-size:11px;font-family:system-ui;resize:vertical;outline:none;background:var(--acc-lt);box-shadow:0 0 0 2px rgba(27,47,212,.1)';
+      el.innerHTML=''; el.appendChild(ta); ta.focus();
+      const commit=()=>{ const v=ta.value.trim(); if(v!==el.dataset.orig){ saveEdit(id,feld,v); el.dataset.orig=v; } el.style.color=allEdits[id+'_'+feld]!==undefined?'var(--acc)':''; el.style.cursor='pointer'; el.textContent=v||'—'; };
+      ta.addEventListener('blur', commit);
+      ta.addEventListener('keydown', ev=>{ if(ev.key==='Escape'){ el.style.cursor='pointer'; el.textContent=cur||'—'; } });
+    } else {
+      const inp = document.createElement('input');
+      inp.value = cur; inp.type='text';
+      inp.style.cssText='width:100%;padding:2px 6px;border:1.5px solid var(--acc);border-radius:3px;font-size:11px;font-family:system-ui;outline:none;background:var(--acc-lt);box-shadow:0 0 0 2px rgba(27,47,212,.1)';
+      el.innerHTML=''; el.appendChild(inp); inp.focus(); inp.select();
+      const commit=()=>{ const v=inp.value.trim(); if(v!==el.dataset.orig){ saveEdit(id,feld,v); el.dataset.orig=v; } el.style.color=allEdits[id+'_'+feld]!==undefined?'var(--acc)':''; el.style.cursor='pointer'; el.textContent=v||'—'; };
+      inp.addEventListener('blur', commit);
+      inp.addEventListener('keydown', ev=>{ if(ev.key==='Enter') inp.blur(); if(ev.key==='Escape'){ el.style.cursor='pointer'; el.textContent=cur||'—'; } });
+    }
+    e.stopPropagation();
+  });
 }
 
 function ccField(id, feld, label, val){
   const edited = allEdits[id+'_'+feld] !== undefined ? allEdits[id+'_'+feld] : val;
   const isEdited = allEdits[id+'_'+feld] !== undefined;
-  return `<div class="cc-row" style="display:flex;align-items:baseline;gap:6px">
-    <span><strong>${label}:</strong> <span style="${isEdited?'color:var(--acc)':''}">${esc(edited)||'—'}</span></span>
-    <button onclick="editField('${id}','${feld}','${label}',false)" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--ink3);padding:1px 4px;border-radius:2px;flex-shrink:0" title="Bearbeiten">✎</button>
+  return `<div class="cc-row" style="margin-bottom:5px">
+    <div style="font-size:9px;font-family:monospace;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px">${label}</div>
+    <div class="cc-editable-field" data-id="${id}" data-feld="${feld}" data-orig="${esc(val)}" data-ml="false"
+      style="padding:3px 6px;border:1px solid var(--rule);border-radius:3px;background:var(--white);font-size:11.5px;color:${isEdited?'var(--acc)':'var(--ink)'};min-height:24px;cursor:pointer"
+      title="Klicken zum Bearbeiten">${esc(edited)||'—'}</div>
   </div>`;
 }
 
 function ccFieldLong(id, feld, label, val){
   const edited = allEdits[id+'_'+feld] !== undefined ? allEdits[id+'_'+feld] : val;
   const isEdited = allEdits[id+'_'+feld] !== undefined;
-  return `<div class="cc-row" style="margin-bottom:4px">
-    <div style="display:flex;align-items:center;gap:4px;margin-bottom:2px">
-      <strong style="font-size:10px">${label}:</strong>
-      <button onclick="editField('${id}','${feld}','${label}',true)" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--ink3);padding:1px 4px;border-radius:2px" title="Bearbeiten">✎</button>
-    </div>
-    <div style="font-size:10.5px;color:${isEdited?'var(--acc)':'var(--ink2)'};white-space:pre-wrap;line-height:1.5">${esc(edited)||'—'}</div>
+  return `<div class="cc-row" style="margin-bottom:8px">
+    <div style="font-size:9px;font-family:monospace;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px">${label}</div>
+    <div class="cc-editable-field" data-id="${id}" data-feld="${feld}" data-orig="${esc(val)}" data-ml="true"
+      style="padding:5px 7px;border:1px solid var(--rule);border-radius:3px;background:var(--white);font-size:11px;color:${isEdited?'var(--acc)':'var(--ink2)'};white-space:pre-wrap;line-height:1.5;cursor:pointer;min-height:36px"
+      title="Klicken zum Bearbeiten">${esc(edited)||'—'}</div>
   </div>`;
 }
 
@@ -717,6 +737,12 @@ function renderVertraege(){
   }).join('');
   rows.forEach(r=>{updateNoteBtn(r.id);updateDocBtn(r.id);});
   document.getElementById('tb-v').textContent=rows.length;
+
+  // Attach inline editing to all card fields
+  document.querySelectorAll('.cc-editable-field').forEach(el=>{
+    const id=el.dataset.id, feld=el.dataset.feld, ml=el.dataset.ml==='true';
+    ccMakeEditable(el, id, feld, ml);
+  });
 }
 
 function renderPruef(){
