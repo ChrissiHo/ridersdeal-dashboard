@@ -693,6 +693,70 @@ function ccFieldLong(id, feld, label, val){
   </div>`;
 }
 
+
+// ── DIV-BASED PANELS FOR CONTRACT CARDS ─────────────────────────────────
+function notePanelDiv(id,title){
+  return `<div class="sub-div" id="nrow_${id}" style="display:none;margin-top:6px">
+    <div class="note-panel" id="np_${id}">
+      <div class="np-head"><span class="np-title">💬 ${esc(title)}</span><button class="np-close" onclick="closeSubDiv('note','${id}')">✕</button></div>
+      <div class="notes-list" id="nl_${id}"></div>
+      <div class="np-input-row">
+        <textarea class="np-ta" id="nta_${id}" placeholder="Notiz … (Strg+Enter)" onkeydown="if(event.ctrlKey&&event.key==='Enter'){event.preventDefault();addNote('${id}')}"></textarea>
+        <div class="np-acts">
+          <button class="btn-send" onclick="addNote('${id}')">Senden</button>
+          <button class="btn-ok2" id="nok_${id}" onclick="resolveNote('${id}')">✓ Erledigt</button>
+          <button class="btn-reopen" id="nro_${id}" onclick="reopenNote('${id}')">↺ Öffnen</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function docPanelDiv(id,title){
+  return `<div class="sub-div" id="drow_${id}" style="display:none;margin-top:6px">
+    <div class="doc-panel" id="dp_${id}">
+      <div class="np-head"><span class="np-title" style="color:var(--acc)">📎 ${esc(title)}</span><button class="np-close" onclick="closeSubDiv('doc','${id}')">✕</button></div>
+      <div class="doc-list" id="dl_${id}"></div>
+      <div class="upload-row">
+        <input type="file" class="upload-input" id="uf_${id}" accept=".pdf,.doc,.docx,.xlsx,.png,.jpg" onchange="uploadDoc('${id}',this.files[0])">
+        <button class="btn-upload" onclick="document.getElementById('uf_${id}').click()">📤 Hochladen</button>
+        <span class="upload-label">PDF, Word, Excel, Bilder</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleSubDiv(type,id){
+  const rowId=(type==='note'?'nrow_':'drow_')+id;
+  const el=document.getElementById(rowId);if(!el)return;
+  const wasOpen=el.style.display!=='none';
+  // close all same type
+  document.querySelectorAll('.sub-div').forEach(d=>{
+    const isNote=d.id.startsWith('nrow_');const isDoc=d.id.startsWith('drow_');
+    if((type==='note'&&isNote)||(type==='doc'&&isDoc)) d.style.display='none';
+  });
+  if(!wasOpen){
+    el.style.display='block';
+    if(type==='note'){renderNoteList(id);setTimeout(()=>document.getElementById('nta_'+id)?.focus(),50);}
+    if(type==='doc') renderDocList(id);
+  }
+}
+
+function closeSubDiv(type,id){
+  const el=document.getElementById((type==='note'?'nrow_':'drow_')+id);
+  if(el) el.style.display='none';
+}
+
+function noteBtnDiv(id){
+  const n=allNotes[id];const cnt=n?.length||0;const res=cnt&&n.every(x=>x.resolved);
+  return `<button class="act-btn ${res?'done':cnt?'has':''}" id="nbtn_${id}" onclick="toggleSubDiv('note','${id}')" title="Notiz hinzufügen">${res?'✅':cnt?'💬':'＋'}</button>`;
+}
+
+function docBtnDiv(id){
+  const d=allDocs[id]||[];
+  return `<button class="act-btn ${d.length?'has-doc':''}" id="dbtn_${id}" onclick="toggleSubDiv('doc','${id}')" title="Dokument hochladen">📎${d.length?`<span style="font-size:9px;font-family:monospace;color:var(--acc)">${d.length}</span>`:''}</button>`;
+}
+
 function renderVertraege(){
   const rows=getByQuelle('Vertragsdokument');
   const container=document.getElementById('vertraege-container');
@@ -729,19 +793,19 @@ function renderVertraege(){
           <div class="cc-col-title">Ansprechpartner</div>
           ${ccFieldLong(r.id,'ext_ansprechpartner','Extern',r.ext_ansprechpartner||'')}
           ${ccFieldLong(r.id,'int_ansprechpartner','Intern',r.int_ansprechpartner||'')}
-          <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
-            ${docBtn(r.id)}
+          <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+            ${docBtnDiv(r.id)}
             <span style="font-size:10px;color:var(--ink3);font-family:monospace">Dokument</span>
-            ${noteBtn(r.id)}
+            ${noteBtnDiv(r.id)}
             <span style="font-size:10px;color:var(--ink3);font-family:monospace">Notiz</span>
           </div>
         </div>
       </div>
-      ${docPanel(r.id,r.name)}
-      ${notePanel(r.id,r.name)}
+      ${docPanelDiv(r.id,r.name)}
+      ${notePanelDiv(r.id,r.name)}
     </div>`;
   }).join('');
-  rows.forEach(r=>{updateNoteBtn(r.id);updateDocBtn(r.id);});
+  rows.forEach(r=>{updateNoteBtn(r.id);updateDocBtn(r.id);renderNoteList(r.id);renderDocList(r.id);});
   document.getElementById('tb-v').textContent=rows.length;
 
   // Attach inline editing to all card fields
