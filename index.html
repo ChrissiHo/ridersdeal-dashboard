@@ -491,18 +491,9 @@ async function deleteDoc(id,docId,path){
 
 async function openDoc(path){
   try{
-    // Try public URL first
-    const {data}=SB.storage.from('dokumente').getPublicUrl(path);
-    if(data?.publicUrl){
-      window.open(data.publicUrl,'_blank');
-      return;
-    }
-  }catch(e){}
-  // Fallback: signed URL (works even for non-public buckets)
-  try{
     const {data,error}=await SB.storage.from('dokumente').createSignedUrl(path,3600);
     if(data?.signedUrl) window.open(data.signedUrl,'_blank');
-    else toast('⚠ Dokument konnte nicht geöffnet werden');
+    else toast('⚠ Dokument nicht gefunden – bitte nochmal versuchen');
   }catch(e){ toast('⚠ '+e.message); }
 }
 
@@ -610,11 +601,13 @@ function renderNoteList(id){
 function renderDocList(id){
   const el=document.getElementById('dl_'+id);if(!el)return;
   const docs=allDocs[id]||[];
-  el.innerHTML=!docs.length?'<div class="empty-notes">Noch keine Dokumente.</div>':
+  el.innerHTML=!docs.length?'<div class="empty-notes">Noch keine Dokumente hochgeladen.</div>':
     docs.map(d=>`<div class="doc-item">
-      <span class="doc-name" onclick="openDoc('${d.storage_path}')">${esc(d.dateiname)}</span>
-      <span style="font-size:9px;color:var(--ink3);font-family:monospace">${d.hochgeladen_von}</span>
-      <button class="doc-del" onclick="deleteDoc('${id}','${d.id}','${d.storage_path}')">✕</button>
+      <span class="doc-name" onclick="openDoc('${d.storage_path}')" style="cursor:pointer;color:var(--acc);text-decoration:underline;flex:1;font-size:11.5px">
+        📄 ${esc(d.dateiname)}
+      </span>
+      <span style="font-size:9px;color:var(--ink3);font-family:monospace;margin:0 6px">${d.hochgeladen_von||''}</span>
+      <button class="doc-del" onclick="deleteDoc('${id}','${d.id}','${d.storage_path}')" style="opacity:1;color:var(--ink3);font-size:11px">✕</button>
     </div>`).join('');
 }
 
