@@ -184,6 +184,23 @@ tbody td:last-child{border-right:none}
 .loading{display:flex;align-items:center;justify-content:center;padding:60px;color:var(--ink3);font-family:monospace;gap:12px;font-size:12px}
 .spinner{width:20px;height:20px;border:2px solid var(--rule);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ACTION MENU */
+.action-menu{position:fixed;z-index:200;background:var(--white);border:1px solid var(--rule);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.15);min-width:220px;overflow:hidden}
+.am-item{padding:10px 14px;cursor:pointer;font-size:12px;color:var(--ink);transition:background .1s}
+.am-item:hover{background:var(--bg)}
+.am-item.am-danger{color:var(--red)}
+.am-item.am-danger:hover{background:var(--red-lt)}
+.am-desc{display:block;font-size:10px;color:var(--ink3);margin-top:1px}
+.am-sep{height:1px;background:var(--rule)}
+.am-btn{background:none;border:1px solid var(--rule);border-radius:3px;cursor:pointer;font-size:11px;padding:2px 7px;color:var(--ink3);transition:all .1s}
+.am-btn:hover{border-color:var(--ink);color:var(--ink)}
+/* ARCHIV */
+.archiv-item{background:var(--white);border:1px solid var(--rule);border-radius:4px;padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;opacity:.75}
+.archiv-item:hover{opacity:1}
+.archiv-name{font-weight:600;font-size:12px;flex:1}
+.archiv-meta{font-size:10px;color:var(--ink3);font-family:monospace}
+
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .panel.active>*{animation:fadeUp .22s ease both}
 
@@ -234,6 +251,7 @@ tbody td:last-child{border-right:none}
   <button class="tab" onclick="showTab('lizenzen',this)">📊 Lizenzliste<span class="tbadge a" id="tb-l">…</span></button>
   <button class="tab" onclick="showTab('notizen',this)">💬 Notizen<span class="tbadge a" id="tb-notes">0</span></button>
   <button class="tab" onclick="showTab('kosten',this)">💶 Kosten</button>
+  <button class="tab" onclick="showTab('archiv',this)">📦 Archiv<span class="tbadge" id="tb-archiv">0</span></button>
 </div>
 
 <div class="wrap">
@@ -370,6 +388,21 @@ tbody td:last-child{border-right:none}
       <div class="cost-row"><span class="cn">Plumrocket ⚠</span><span class="ca r">~9.980 €</span></div>
       <div class="cost-total" style="background:var(--red)"><span class="ct-l">GESAMT ungeklärt</span><span class="ct-a">~140.848 €</span></div>
     </div>
+  </div>
+</div>
+
+
+<!-- ARCHIV -->
+<div id="tab-archiv" class="panel">
+  <div class="sec-h">
+    <span class="sec-title">📦 Archiv</span>
+    <span class="sec-cnt">Archivierte Einträge — nicht mehr in aktiven Listen · Kosten nicht mitgezählt</span>
+  </div>
+  <div style="font-size:10.5px;color:var(--ink3);margin-bottom:14px">
+    Archivierte Einträge können jederzeit wiederhergestellt oder dauerhaft gelöscht werden.
+  </div>
+  <div id="archiv-container">
+    <div style="padding:40px;text-align:center;color:var(--ink3);font-family:monospace;font-size:11px">Noch keine archivierten Einträge.</div>
   </div>
 </div>
 
@@ -758,7 +791,7 @@ function docBtnDiv(id){
 }
 
 function renderVertraege(){
-  const rows=getByQuelle('Vertragsdokument');
+  const rows=getByQuelle('Vertragsdokument').filter(r=>!r.archiviert && r.status!=='📦 Archiviert');
   const container=document.getElementById('vertraege-container');
   container.innerHTML=`
     <div style="font-size:10.5px;color:var(--ink3);margin-bottom:12px;font-family:monospace">
@@ -801,6 +834,9 @@ function renderVertraege(){
             <span style="font-size:10px;color:var(--ink3);font-family:monospace">Dokument</span>
             ${noteBtnDiv(r.id)}
             <span style="font-size:10px;color:var(--ink3);font-family:monospace">Notiz</span>
+            <button data-menu-id="${r.id}" onclick="actionMenu('${r.id}','${esc(r.name)}')"
+              style="margin-left:auto;background:none;border:1px solid var(--rule);color:var(--ink3);border-radius:3px;padding:3px 10px;cursor:pointer;font-size:11px"
+              title="Aktionen">⋯ Aktionen</button>
           </div>
         </div>
       </div>
@@ -820,7 +856,7 @@ function renderVertraege(){
 
 function renderPruef(){
   const tb=document.getElementById('pruef-body');
-  const rows=getByQuelle('DATEV – Zu prüfen');
+  const rows=getByQuelle('DATEV – Zu prüfen').filter(r=>!r.archiviert && r.status!=='📦 Archiviert');
   tb.innerHTML=rows.map((r,i)=>{
     const sk=`${r.id}_massnahme`;
     const cur=allEdits[sk]!==undefined?allEdits[sk]:(r.massnahme||'');
@@ -836,6 +872,7 @@ function renderPruef(){
       <td class="editable" data-orig="${esc(r.massnahme||'')}" id="cell_${sk}" style="${allEdits[sk]?'color:var(--acc)':''}"><div class="td-sub">${esc(cur)}</div></td>
       <td>${docBtn(r.id)}</td>
       <td>${noteBtn(r.id)}</td>
+      <td><button class="am-btn" data-menu-id="${r.id}" onclick="actionMenu('${r.id}','${esc(r.name)}')" title="Aktionen">⋯</button></td>
     </tr>${docPanel(r.id,r.name)}${notePanel(r.id,r.name)}`;
   }).join('');
   rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_massnahme`);if(el)makeEditable(el,r.id,'massnahme',true);});
@@ -845,7 +882,7 @@ function renderPruef(){
 
 function renderOk(){
   const tb=document.getElementById('ok-body');
-  const rows=getByQuelle('DATEV – In Lizenzliste');
+  const rows=getByQuelle('DATEV – In Lizenzliste').filter(r=>!r.archiviert && r.status!=='📦 Archiviert');
   tb.innerHTML=rows.map((r,i)=>{
     const sk=`${r.id}_status`;
     const cur=allEdits[sk]!==undefined?allEdits[sk]:(r.massnahme||r.status||'');
@@ -860,6 +897,7 @@ function renderOk(){
       <td class="s-ok editable" data-orig="${esc(r.massnahme||r.status||'')}" id="cell_${sk}" style="${allEdits[sk]?'color:var(--acc)':''}">${esc(cur)}</td>
       <td>${docBtn(r.id)}</td>
       <td>${noteBtn(r.id)}</td>
+      <td><button class="am-btn" data-menu-id="${r.id}" onclick="actionMenu('${r.id}','${esc(r.name)}')" title="Aktionen">⋯</button></td>
     </tr>${docPanel(r.id,r.name)}${notePanel(r.id,r.name)}`;
   }).join('');
   rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_status`);if(el)makeEditable(el,r.id,'status',false);});
@@ -869,7 +907,7 @@ function renderOk(){
 
 function renderLic(){
   const tb=document.getElementById('lic-body');
-  const rows=getByQuelle('Lizenzliste');
+  const rows=getByQuelle('Lizenzliste').filter(r=>!r.archiviert && r.status!=='📦 Archiviert');
   tb.innerHTML=rows.map((r,i)=>{
     const canc=(r.status||'').toLowerCase().includes('gekündigt');
     if(canc&&!showCanc) return '';
@@ -886,6 +924,7 @@ function renderLic(){
       <td class="editable ${canc?'s-canc':'s-ok'}" data-orig="${esc(r.status||'')}" id="cell_${sk}" style="${allEdits[sk]?'color:var(--acc)':''}">${esc(cur)||'—'}</td>
       <td>${docBtn(r.id)}</td>
       <td>${noteBtn(r.id)}</td>
+      <td><button class="am-btn" data-menu-id="${r.id}" onclick="actionMenu('${r.id}','${esc(r.name)}')" title="Aktionen">⋯</button></td>
     </tr>${docPanel(r.id,r.name)}${notePanel(r.id,r.name)}`;
   }).join('');
   rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_status`);if(el)makeEditable(el,r.id,'status',false);});
@@ -923,6 +962,102 @@ function renderFindings(){
 
 function renderAll(){renderFindings();renderPruef();renderOk();renderLic();restoreAllBtns();}
 
+
+// ── ARCHIVE & DELETE ──────────────────────────────────────────────────────
+async function archiveEintrag(id, name){
+  if(!confirm(`"${name}" archivieren?\n\nDer Eintrag wird ins Archiv verschoben und taucht nicht mehr in den aktiven Listen auf.\nKosten werden nicht mehr mitgezählt. Im Archiv-Tab bleibt er erhalten.`)) return;
+  if(connected){
+    const {error} = await SB.from('eintraege').update({archiviert: true, status: '📦 Archiviert'}).eq('id', id);
+    if(error){ toast('⚠ Fehler: '+error.message); return; }
+  }
+  if(allData[id]){ allData[id].archiviert = true; allData[id].status = '📦 Archiviert'; }
+  toast(`📦 "${name}" archiviert`);
+  updateScores();
+  renderPruef(); renderOk(); renderLic(); renderVertraege(); renderArchiv();
+}
+
+async function restoreEintrag(id, name){
+  if(connected){
+    await SB.from('eintraege').update({archiviert: false, status: 'Aktiv'}).eq('id', id);
+  }
+  if(allData[id]){ allData[id].archiviert = false; allData[id].status = 'Aktiv'; }
+  toast(`↺ "${name}" wiederhergestellt`);
+  updateScores();
+  renderPruef(); renderOk(); renderLic(); renderVertraege(); renderArchiv();
+}
+
+async function deleteEintrag(id, name){
+  if(!confirm(`"${name}" wirklich dauerhaft löschen?\n\nDies kann NICHT rückgängig gemacht werden.\nAlle Notizen und Dokumente werden ebenfalls gelöscht.`)) return;
+  if(connected){
+    await SB.from('notizen').delete().eq('eintrag_id', id);
+    await SB.from('edits').delete().eq('eintrag_id', id);
+    const docs = allDocs[id]||[];
+    for(const d of docs){ await SB.storage.from('dokumente').remove([d.storage_path]); }
+    await SB.from('dokumente').delete().eq('eintrag_id', id);
+    const {error} = await SB.from('eintraege').delete().eq('id', id);
+    if(error){ toast('⚠ Fehler: '+error.message); return; }
+  }
+  delete allData[id]; delete allNotes[id]; delete allDocs[id];
+  toast(`🗑 "${name}" gelöscht`);
+  updateScores();
+  renderPruef(); renderOk(); renderLic(); renderVertraege(); renderArchiv();
+}
+
+function actionMenu(id, name){
+  // Close any open menu
+  document.querySelectorAll('.action-menu').forEach(m=>m.remove());
+  const menu = document.createElement('div');
+  menu.className = 'action-menu';
+  menu.innerHTML = `
+    <div class="am-item" onclick="archiveEintrag('${id}','${esc(name)}');this.closest('.action-menu').remove()">
+      📦 Archivieren
+      <span class="am-desc">Aus aktiven Listen entfernen, aber behalten</span>
+    </div>
+    <div class="am-sep"></div>
+    <div class="am-item am-danger" onclick="deleteEintrag('${id}','${esc(name)}');this.closest('.action-menu').remove()">
+      🗑 Dauerhaft löschen
+      <span class="am-desc">Komplett entfernen — nicht rückgängig machbar</span>
+    </div>
+  `;
+  document.body.appendChild(menu);
+  // Position near click
+  const btn = document.querySelector(`[data-menu-id="${id}"]`);
+  if(btn){
+    const rect = btn.getBoundingClientRect();
+    menu.style.top = (rect.bottom + window.scrollY + 4)+'px';
+    menu.style.left = (rect.right - 180 + window.scrollX)+'px';
+  }
+  // Close on outside click
+  setTimeout(()=>{
+    document.addEventListener('click', function close(e){
+      if(!menu.contains(e.target)){ menu.remove(); document.removeEventListener('click',close); }
+    });
+  }, 100);
+}
+
+
+function renderArchiv(){
+  const archived = Object.values(allData).filter(r=>r.archiviert);
+  const el = document.getElementById('archiv-container');
+  const badge = document.getElementById('tb-archiv');
+  if(badge) badge.textContent = archived.length;
+  if(!archived.length){
+    el.innerHTML='<div style="padding:40px;text-align:center;color:var(--ink3);font-family:monospace;font-size:11px">Noch keine archivierten Einträge.</div>';
+    return;
+  }
+  el.innerHTML = archived.map(r=>`
+    <div class="archiv-item">
+      <div>
+        <div class="archiv-name">${esc(r.name)}</div>
+        <div class="archiv-meta">${r.quelle||''} · ${r.herkunft||''} · ${r.kosten_monat?r.kosten_monat+' €/Mon.':''}</div>
+      </div>
+      <span class="hbadge hb-lic" style="background:#8A919F">📦 Archiviert</span>
+      <button class="am-btn" onclick="restoreEintrag('${r.id}','${esc(r.name)}')" style="color:var(--grn);border-color:var(--grn)">↺ Wiederherstellen</button>
+      <button class="am-btn" onclick="deleteEintrag('${r.id}','${esc(r.name)}')" style="color:var(--red);border-color:var(--red)">🗑 Löschen</button>
+    </div>
+  `).join('');
+}
+
 function updateScores(){
   const v=getByQuelle('Vertragsdokument').length;
   const l=getByQuelle('Lizenzliste').length;
@@ -941,6 +1076,9 @@ function updateScores(){
   document.getElementById('s-notes-sub').textContent=`${total} gesamt · ${done} erledigt`;
   document.getElementById('tb-notes').textContent=total;
   renderFindings();
+  const archivCount = Object.values(allData).filter(r=>r.archiviert).length;
+  const badge = document.getElementById('tb-archiv');
+  if(badge) badge.textContent = archivCount;
 }
 
 function nfil(f){
@@ -996,6 +1134,7 @@ function showTab(id,btn){
   document.getElementById('tab-'+id).classList.add('active');btn.classList.add('active');
   if(id==='notizen')renderAllNotes();
   if(id==='vertraege')renderVertraege();
+  if(id==='archiv')renderArchiv();
 }
 
 let toastTimer;
