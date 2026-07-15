@@ -777,13 +777,16 @@ function renderVertraege(){
       <div class="cc-body">
         <div class="cc-col">
           <div class="cc-col-title">Vertragsdaten</div>
-          ${ccField(r.id,'erste_buchung','Start',r.erste_buchung||'')}
-          ${ccField(r.id,'laufzeit_bis','Ende',r.laufzeit_bis||'')}
-          ${ccField(r.id,'kuendigung_bis','Kündigung bis',r.kuendigung_bis||'')}
+          ${ccField(r.id,'erste_buchung','Vertragsbeginn',r.erste_buchung||'')}
+          ${ccField(r.id,'laufzeit_bis','Vertragsende',r.laufzeit_bis||'')}
           ${ccField(r.id,'kosten_monat','Kosten/Mon.',r.kosten_monat||'')}
           ${ccField(r.id,'buchungsbeispiel','Referenz',r.buchungsbeispiel||'')}
           ${ccField(r.id,'status','Status',r.status||'')}
           ${ccField(r.id,'abteilung','Abteilung',r.abteilung||'')}
+          <div style="height:1px;background:var(--rule);margin:8px 0"></div>
+          <div style="font-size:9px;font-family:monospace;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-weight:600">Kündigungskonditionen</div>
+          ${ccField(r.id,'kuendigung_frist','⏰ Kündigungsfrist',r.kuendigung_frist||'')}
+          ${ccField(r.id,'mindestlaufzeit','📅 Mindestlaufzeit',r.mindestlaufzeit||'')}
         </div>
         <div class="cc-col">
           <div class="cc-col-title">Konditionen & Notizen</div>
