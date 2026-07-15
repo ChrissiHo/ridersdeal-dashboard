@@ -318,7 +318,7 @@ tbody td:last-child{border-right:none}
     <span class="tcnt" id="lic-cnt">wird geladen …</span>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>#</th><th>Herkunft</th><th>Vertragsname</th><th>Abteilung</th><th>Laufzeit bis</th><th>Kündigung bis</th><th style="text-align:right">Kosten/Mon.</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
+    <thead><tr><th>#</th><th>Herkunft</th><th>Vertragsname</th><th>Abteilung</th><th>⏰ Kündigungsfrist</th><th>📅 Mindestlaufzeit</th><th style="text-align:right">Kosten/Mon.</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
     <tbody id="lic-body"><tr><td colspan="10"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
   </table></div>
 </div>
@@ -877,8 +877,8 @@ function renderLic(){
       <td>${herkunftBadge(r.herkunft)}</td>
       <td class="td-name" style="${canc?'text-decoration:line-through;color:var(--ink3)':''}">${esc(r.name)}</td>
       <td><span class="chip n">${esc(r.abteilung)||'—'}</span></td>
-      <td class="mono">${r.laufzeit_bis&&r.laufzeit_bis!=='NaT'?r.laufzeit_bis:'—'}</td>
-      <td class="mono" style="color:var(--ora)">${r.kuendigung_bis&&r.kuendigung_bis!=='NaT'?r.kuendigung_bis:'—'}</td>
+      <td style="font-size:11px;color:var(--red)">${r.kuendigung_frist||'—'}</td>
+      <td style="font-size:11px;color:var(--ink2)">${r.mindestlaufzeit||'—'}</td>
       <td class="amt">${r.kosten_monat?r.kosten_monat+' €':'—'}</td>
       <td class="editable ${canc?'s-canc':'s-ok'}" data-orig="${esc(r.status||'')}" id="cell_${sk}" style="${allEdits[sk]?'color:var(--acc)':''}">${esc(cur)||'—'}</td>
       <td>${docBtn(r.id)}</td>
