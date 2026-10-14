@@ -247,6 +247,8 @@ tbody td:last-child{border-right:none}
 .rv-err{background:var(--red-lt);border:1px solid #F0C4BF;color:var(--red);border-radius:4px;padding:8px 10px;font-size:11px;line-height:1.5;margin-bottom:12px}
 .modal-f{display:flex;gap:8px;justify-content:flex-end;padding:12px 18px;border-top:1px solid var(--rule);background:#FAFAF8}
 @media(max-width:640px){.rv-grid{grid-template-columns:1fr}.vt-sum{grid-template-columns:1fr}}
+.ap-miss{color:var(--ora);font-size:10.5px;font-family:monospace;white-space:nowrap}
+.ap-cell{font-size:11px;color:var(--ink2);min-width:120px}
 </style>
 </head>
 <body>
@@ -344,8 +346,8 @@ tbody td:last-child{border-right:none}
     <span class="tcnt" id="pruef-cnt">wird geladen …</span>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>#</th><th>Herkunft</th><th>Anbieter</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>Maßnahme</th><th>📎</th><th>💬</th></tr></thead>
-    <tbody id="pruef-body"><tr><td colspan="10"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
+    <thead><tr><th>#</th><th>Herkunft</th><th>Anbieter</th><th>👤 Ansprechpartner intern</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>Maßnahme</th><th>📎</th><th>💬</th></tr></thead>
+    <tbody id="pruef-body"><tr><td colspan="12"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
   </table></div>
 </div>
 
@@ -360,8 +362,8 @@ tbody td:last-child{border-right:none}
     <span class="tcnt" id="ok-cnt">wird geladen …</span>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>#</th><th>Herkunft</th><th>Anbieter</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
-    <tbody id="ok-body"><tr><td colspan="10"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
+    <thead><tr><th>#</th><th>Herkunft</th><th>Anbieter</th><th>👤 Ansprechpartner intern</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
+    <tbody id="ok-body"><tr><td colspan="12"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
   </table></div>
 </div>
 
@@ -377,8 +379,8 @@ tbody td:last-child{border-right:none}
     <span class="tcnt" id="lic-cnt">wird geladen …</span>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>#</th><th>Herkunft</th><th>Vertragsname</th><th>Abteilung</th><th>⏰ Kündigungsfrist</th><th>📅 Mindestlaufzeit</th><th style="text-align:right">Kosten/Mon.</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
-    <tbody id="lic-body"><tr><td colspan="10"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
+    <thead><tr><th>#</th><th>Herkunft</th><th>Vertragsname</th><th>Abteilung</th><th>👤 Ansprechpartner intern</th><th>⏰ Kündigungsfrist</th><th>📅 Mindestlaufzeit</th><th style="text-align:right">Kosten/Mon.</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
+    <tbody id="lic-body"><tr><td colspan="12"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
   </table></div>
 </div>
 
@@ -623,7 +625,8 @@ function commitEdit(el,inp,id,feld){
 
 function renderEC(el,id,feld){
   const val=allEdits[id+'_'+feld]!==undefined?allEdits[id+'_'+feld]:(el.dataset.orig||'');
-  el.textContent=val;el.style.color=allEdits[id+'_'+feld]!==undefined?'var(--acc)':'';
+  if(feld==='int_ansprechpartner'&&!val) el.innerHTML=AP_HINT; else el.textContent=val;
+  el.style.color=allEdits[id+'_'+feld]!==undefined?'var(--acc)':'';
 }
 
 function noteBtn(id){
@@ -739,7 +742,7 @@ function ccMakeEditable(el, id, feld, multiline){
       ta.value = cur; ta.rows = 4;
       ta.style.cssText='width:100%;padding:4px 7px;border:1.5px solid var(--acc);border-radius:3px;font-size:11px;font-family:system-ui;resize:vertical;outline:none;background:var(--acc-lt);box-shadow:0 0 0 2px rgba(27,47,212,.1)';
       el.innerHTML=''; el.appendChild(ta); ta.focus();
-      const commit=()=>{ const v=ta.value.trim(); if(v!==el.dataset.orig){ saveEdit(id,feld,v); el.dataset.orig=v; } el.style.color=allEdits[id+'_'+feld]!==undefined?'var(--acc)':''; el.style.cursor='pointer'; el.textContent=v||'—'; };
+      const commit=()=>{ const v=ta.value.trim(); if(v!==el.dataset.orig){ saveEdit(id,feld,v); el.dataset.orig=v; } el.style.color=allEdits[id+'_'+feld]!==undefined?'var(--acc)':''; el.style.cursor='pointer'; if(!v&&feld==='int_ansprechpartner') el.innerHTML=AP_HINT; else el.textContent=v||'—'; };
       ta.addEventListener('blur', commit);
       ta.addEventListener('keydown', ev=>{ if(ev.key==='Escape'){ el.style.cursor='pointer'; el.textContent=cur||'—'; } });
     } else {
@@ -747,7 +750,7 @@ function ccMakeEditable(el, id, feld, multiline){
       inp.value = cur; inp.type='text';
       inp.style.cssText='width:100%;padding:2px 6px;border:1.5px solid var(--acc);border-radius:3px;font-size:11px;font-family:system-ui;outline:none;background:var(--acc-lt);box-shadow:0 0 0 2px rgba(27,47,212,.1)';
       el.innerHTML=''; el.appendChild(inp); inp.focus(); inp.select();
-      const commit=()=>{ const v=inp.value.trim(); if(v!==el.dataset.orig){ saveEdit(id,feld,v); el.dataset.orig=v; } el.style.color=allEdits[id+'_'+feld]!==undefined?'var(--acc)':''; el.style.cursor='pointer'; el.textContent=v||'—'; };
+      const commit=()=>{ const v=inp.value.trim(); if(v!==el.dataset.orig){ saveEdit(id,feld,v); el.dataset.orig=v; } el.style.color=allEdits[id+'_'+feld]!==undefined?'var(--acc)':''; el.style.cursor='pointer'; if(!v&&feld==='int_ansprechpartner') el.innerHTML=AP_HINT; else el.textContent=v||'—'; };
       inp.addEventListener('blur', commit);
       inp.addEventListener('keydown', ev=>{ if(ev.key==='Enter') inp.blur(); if(ev.key==='Escape'){ el.style.cursor='pointer'; el.textContent=cur||'—'; } });
     }
@@ -773,7 +776,7 @@ function ccFieldLong(id, feld, label, val){
     <div style="font-size:9px;font-family:monospace;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px">${label}</div>
     <div class="cc-editable-field" data-id="${id}" data-feld="${feld}" data-orig="${esc(val)}" data-ml="true"
       style="padding:5px 7px;border:1px solid var(--rule);border-radius:3px;background:var(--white);font-size:11px;color:${isEdited?'var(--acc)':'var(--ink2)'};white-space:pre-wrap;line-height:1.5;cursor:pointer;min-height:36px"
-      title="Klicken zum Bearbeiten">${esc(edited)||'—'}</div>
+      title="Klicken zum Bearbeiten">${esc(edited)||(feld==='int_ansprechpartner'?AP_HINT:'—')}</div>
   </div>`;
 }
 
@@ -888,7 +891,7 @@ function renderVertraege(){
         <div class="cc-col">
           <div class="cc-col-title">Ansprechpartner</div>
           ${ccFieldLong(r.id,'ext_ansprechpartner','Extern',r.ext_ansprechpartner||'')}
-          ${ccFieldLong(r.id,'int_ansprechpartner','Intern',r.int_ansprechpartner||'')}
+          ${ccFieldLong(r.id,'int_ansprechpartner','👤 Intern',apDefault(r))}
           <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
             ${docBtnDiv(r.id)}
             <span style="font-size:10px;color:var(--ink3);font-family:monospace">Dokument</span>
@@ -1389,7 +1392,7 @@ function renderVertragReview(d,fehler){
       ${f('kuendigung_bis','Kündigung spätestens am',d.kuendigung_spaetestens||'')}
       <div class="rv-sec">Weitere Angaben</div>
       ${t('ext','Ansprechpartner extern',d.ext_ansprechpartner||'','')}
-      ${t('int','Ansprechpartner intern','','')}
+      ${t('int','Ansprechpartner intern',apGuess({name:d.anbieter||''}),'')}
       ${t('konditionen','Konditionen & Besonderheiten',d.konditionen||'')}
     </div>`;
   document.getElementById('vt-modal-foot').innerHTML=`
@@ -1434,6 +1437,49 @@ async function saveNewVertrag(){
   toast(`✓ Vertrag „${name}" gespeichert`);
 }
 
+// ── ANSPRECHPARTNER INTERN ───────────────────────────────────────────────
+// Kürzel aus der Lizenzliste (Spalte "Verantwortlich"). Fehlende Namen hier ergänzen.
+const KUERZEL={KDO:'Katharina Dorn',CHO:'Christina Höfer',EMW:'Evelyn März-Weichselgartner',RRE:'Rasso Reng',GRE:'German Reng'};
+// Zuordnung Anbieter/Lizenz -> Verantwortliche (aus Lizenzliste + bekannten Verträgen). Reihenfolge = Priorität.
+const AP_MAP=[
+  [/productbay|varify/i,'LWo'],
+  [/microsoft|office 365|m365/i,'KDo, CHo'],
+  [/google workspace|1password|arbeitswolke/i,'CHo, EMW'],
+  [/aws|amazon web services/i,'KDo'],[/google cloud/i,'KDo'],[/vimeo/i,'KDo'],
+  [/claude|anthropic/i,'KDo'],[/aftership/i,'KDo'],[/freenet/i,'KDo'],[/placetel/i,'KDo'],
+  [/bunny/i,'KDo'],[/atlassian|jira|confluence/i,'KDo'],[/domainoffensive/i,'KDo'],
+  [/consentmanager|cookie/i,'KDo'],[/odoo/i,'KDo'],[/adobe|magento/i,'KDo'],[/wornet/i,'KDo'],
+  [/much(\b|\.| lizen)/i,'KDo'],[/sevenflow/i,'KDo'],
+  [/gs1/i,'ARu'],[/limaloo|ionos/i,'ARu'],[/capcut/i,'ARu'],
+  [/zendesk/i,'KHa'],[/concept\s*&?\s*serv/i,'KHa'],
+  [/storyclash|metricool/i,'TKu'],[/scripe/i,'OGu'],
+  [/awin|cleverpush|klaviyo|idealo|chatgpt|openai|telekom|magentamobil/i,'RRe'],
+  [/strom prien|vattenfall|telefon internet prien|vodafone|miete prien|maximilian bausch/i,'GRe'],
+  [/asam|praevent/i,'CHo'],[/personio/i,'EMW']
+];
+function apFormat(kz){
+  return String(kz).split(/\s*,\s*/).filter(Boolean).map(k=>{const n=KUERZEL[k.trim().toUpperCase()];return n?`${n} (${k.trim()})`:k.trim();}).join(', ');
+}
+function apGuess(r){
+  if(r.quelle==='DATEV – Zu prüfen') return '';          // ungeklärte Buchungen: kein Ansprechpartner bekannt
+  if(r.quelle==='DATEV – In Lizenzliste'){                // nur über die verknüpfte Lizenz zuordnen
+    for(const [re,kz] of AP_MAP){ if(re.test(String(r.massnahme||r.status||''))) return apFormat(kz); }
+    return '';
+  }
+  const txt=[r.status,r.massnahme,r.name,r.buchungsbeispiel].filter(Boolean).join(' | ');
+  for(const [re,kz] of AP_MAP){ if(re.test(String(r.status||''))||re.test(String(r.massnahme||''))) return apFormat(kz); }
+  for(const [re,kz] of AP_MAP){ if(re.test(txt)) return apFormat(kz); }
+  return '';
+}
+function apDefault(r){ return (r.int_ansprechpartner||'').trim() || apGuess(r); }
+const AP_HINT='<span class="ap-miss">⚠ Ansprechpartner angeben</span>';
+function apCell(r){
+  const k=r.id+'_int_ansprechpartner', def=apDefault(r);
+  const v=allEdits[k]!==undefined?allEdits[k]:def;
+  return `<td class="editable ap-cell" id="cell_${k}" data-orig="${esc(def).replace(/"/g,'&quot;')}" style="${allEdits[k]!==undefined?'color:var(--acc)':''}" title="Klicken zum Bearbeiten">${v?esc(v):AP_HINT}</td>`;
+}
+function apAttach(rows){ rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_int_ansprechpartner`);if(el)makeEditable(el,r.id,'int_ansprechpartner',false);}); }
+
 
 function renderPruef(){
   const tb=document.getElementById('pruef-body');
@@ -1446,6 +1492,7 @@ function renderPruef(){
       <td style="font-family:monospace;font-size:10px;color:var(--ink3)">${i+1}</td>
       <td>${herkunftBadge(r.herkunft)}</td>
       <td class="td-name">${esc(r.name)}</td>
+      ${apCell(r)}
       <td><div class="td-sub">${esc(r.buchungsbeispiel)}</div></td>
       <td class="mono">${r.erste_buchung||''}</td>
       <td class="mono">${r.letzte_buchung||''}</td>
@@ -1457,6 +1504,7 @@ function renderPruef(){
     </tr>${docPanel(r.id,r.name)}${notePanel(r.id,r.name)}`;
   }).join('');
   rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_massnahme`);if(el)makeEditable(el,r.id,'massnahme',true);});
+  apAttach(rows);
   document.getElementById('pruef-cnt').textContent=rows.length+' Einträge';
   document.getElementById('tb-p').textContent=rows.length;
 }
@@ -1471,6 +1519,7 @@ function renderOk(){
       <td style="font-family:monospace;font-size:10px;color:var(--ink3)">${i+1}</td>
       <td>${herkunftBadge(r.herkunft)}</td>
       <td class="td-name">${esc(r.name)}</td>
+      ${apCell(r)}
       <td><div class="td-sub">${esc(r.buchungsbeispiel)}</div></td>
       <td class="mono">${r.erste_buchung||''}</td>
       <td class="mono">${r.letzte_buchung||''}</td>
@@ -1482,6 +1531,7 @@ function renderOk(){
     </tr>${docPanel(r.id,r.name)}${notePanel(r.id,r.name)}`;
   }).join('');
   rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_status`);if(el)makeEditable(el,r.id,'status',false);});
+  apAttach(rows);
   document.getElementById('ok-cnt').textContent=rows.length+' Einträge';
   document.getElementById('tb-ok').textContent=rows.length;
 }
@@ -1499,6 +1549,7 @@ function renderLic(){
       <td>${herkunftBadge(r.herkunft)}</td>
       <td class="td-name" style="${canc?'text-decoration:line-through;color:var(--ink3)':''}">${esc(r.name)}</td>
       <td><span class="chip n">${esc(r.abteilung)||'—'}</span></td>
+      ${apCell(r)}
       <td style="font-size:11px;color:var(--red)">${r.kuendigung_frist||'—'}</td>
       <td style="font-size:11px;color:var(--ink2)">${r.mindestlaufzeit||'—'}</td>
       <td class="amt">${r.kosten_monat?r.kosten_monat+' €':'—'}</td>
@@ -1509,6 +1560,7 @@ function renderLic(){
     </tr>${docPanel(r.id,r.name)}${notePanel(r.id,r.name)}`;
   }).join('');
   rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_status`);if(el)makeEditable(el,r.id,'status',false);});
+  apAttach(rows);
   const vis=rows.filter(r=>!(r.status||'').toLowerCase().includes('gekündigt')||showCanc).length;
   document.getElementById('lic-cnt').textContent=vis+' Einträge';
   document.getElementById('tb-l').textContent=rows.length;
