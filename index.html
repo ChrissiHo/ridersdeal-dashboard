@@ -261,6 +261,17 @@ tbody td:last-child{border-right:none}
 .btn-add{padding:5px 11px;background:var(--acc);color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:11px;font-weight:600}
 .btn-add:hover{background:#1526b8}
 .hb-manuell{background:#6B5BD6;color:#fff}
+.grp-row td{background:var(--ink);color:#fff;font-size:11.5px;font-weight:700;padding:7px 10px;cursor:pointer;user-select:none;letter-spacing:.02em}
+.grp-row td .gs{font-weight:400;font-family:monospace;font-size:10px;color:rgba(255,255,255,.65);margin-left:8px}
+.grp-row td .gt{display:inline-block;width:14px;color:rgba(255,255,255,.6)}
+.grp-row.col td{background:#3A4049}
+.kat-sel{font-size:10.5px;padding:2px 4px;border:1px solid var(--rule);border-radius:3px;background:var(--white);color:var(--ink2);max-width:150px;cursor:pointer}
+.kat-sel:hover{border-color:var(--acc)}
+.vt-grp{margin:22px 0 10px;display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:5px;cursor:pointer;user-select:none}
+.vt-grp b{font-size:14px}
+.vt-grp span{font-family:monospace;font-size:10.5px;color:var(--ink3)}
+.seed-box{background:var(--acc-lt);border:1px solid #C9D0F7;border-radius:4px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}
+.hb-port{background:#0F6E56;color:#fff}
 </style>
 </head>
 <body>
@@ -344,6 +355,10 @@ tbody td:last-child{border-right:none}
     <button class="btn-ghost" onclick="openVertragManuell()">✍ Manuell anlegen (ohne PDF)</button>
     <span style="font-size:10.5px;color:var(--ink3);font-family:monospace">PDF wird automatisch analysiert – Kosten (netto), Laufzeit & Kündigungsfrist werden vorausgefüllt</span>
   </div>
+  <div class="seed-box" id="seed-box" style="display:none">
+    <span>🛡 Noch keine Versicherungen erfasst. Die 8 aktiven Policen aus dem Versicherungsportfolio (Stand Juni 2026) können direkt übernommen werden.</span>
+    <button class="btn-new" onclick="seedVersicherungen()">Versicherungen übernehmen</button>
+  </div>
   <div id="vertraege-summary"></div>
   <div id="vertraege-container"><div class="loading"><div class="spinner"></div>Lade Verträge …</div></div>
 </div>
@@ -360,8 +375,8 @@ tbody td:last-child{border-right:none}
     <span class="tcnt" id="pruef-cnt">wird geladen …</span>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>#</th><th>Herkunft</th><th>Anbieter</th><th>👤 Ansprechpartner intern</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>✂ Gekündigt</th><th>Maßnahme</th><th>📎</th><th>💬</th></tr></thead>
-    <tbody id="pruef-body"><tr><td colspan="13"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
+    <thead><tr><th>#</th><th>Herkunft</th><th>Anbieter</th><th>🗂 Kategorie</th><th>👤 Ansprechpartner intern</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>✂ Gekündigt</th><th>Maßnahme</th><th>📎</th><th>💬</th></tr></thead>
+    <tbody id="pruef-body"><tr><td colspan="14"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
   </table></div>
 </div>
 
@@ -377,8 +392,8 @@ tbody td:last-child{border-right:none}
     <span class="tcnt" id="ok-cnt">wird geladen …</span>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>#</th><th>Herkunft</th><th>Anbieter</th><th>👤 Ansprechpartner intern</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>✂ Gekündigt</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
-    <tbody id="ok-body"><tr><td colspan="13"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
+    <thead><tr><th>#</th><th>Herkunft</th><th>Anbieter</th><th>🗂 Kategorie</th><th>👤 Ansprechpartner intern</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>✂ Gekündigt</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
+    <tbody id="ok-body"><tr><td colspan="14"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
   </table></div>
 </div>
 
@@ -395,8 +410,8 @@ tbody td:last-child{border-right:none}
     <span class="tcnt" id="lic-cnt">wird geladen …</span>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>#</th><th>Herkunft</th><th>Vertragsname</th><th>Abteilung</th><th>👤 Ansprechpartner intern</th><th>⏰ Kündigungsfrist</th><th>📅 Mindestlaufzeit</th><th style="text-align:right">Kosten/Mon.</th><th>✂ Gekündigt</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
-    <tbody id="lic-body"><tr><td colspan="13"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
+    <thead><tr><th>#</th><th>Herkunft</th><th>Vertragsname</th><th>🗂 Kategorie</th><th>Abteilung</th><th>👤 Ansprechpartner intern</th><th>⏰ Kündigungsfrist</th><th>📅 Mindestlaufzeit</th><th style="text-align:right">Kosten/Mon.</th><th>✂ Gekündigt</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
+    <tbody id="lic-body"><tr><td colspan="14"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
   </table></div>
 </div>
 
@@ -494,6 +509,7 @@ function herkunftBadge(h){
   if(h==='Vertragsdokument') return '<span class="hbadge hb-vertrag">📄 Vertrag</span>';
   if(h==='DATEV') return '<span class="hbadge hb-datev">⚠️ DATEV</span>';
   if(h.includes('DATEV')) return '<span class="hbadge hb-datev-lic">✅ DATEV+Liste</span>';
+  if(h==='Versicherungsportfolio') return '<span class="hbadge hb-port">🛡 Portfolio</span>';
   if(h==='Manuell') return '<span class="hbadge hb-manuell">✍ Manuell</span>';
   if(h==='Lizenzliste') return '<span class="hbadge hb-lic">📊 Lizenzliste</span>';
   return `<span class="hbadge chip-n">${esc(h)}</span>`;
@@ -865,16 +881,14 @@ function renderVertraege(){
   const rows=Object.values(allData).filter(r=>r.quelle==='Vertragsdokument').filter(r=>!r.archiviert && r.status!=='📦 Archiviert');
   const container=document.getElementById('vertraege-container');
   renderVertragSummary(rows);
+  const sb=document.getElementById('seed-box');
+  if(sb) sb.style.display = connected && !rows.some(r=>katOf(r)==='Versicherungen') ? 'flex' : 'none';
   if(!rows.length){
     container.innerHTML=`<div class="vt-empty">Noch keine Verträge erfasst.<br>Lade oben ein Vertrags-PDF hoch – es wird automatisch ausgelesen und du kannst die Werte vor dem Speichern prüfen.</div>`;
     document.getElementById('tb-v').textContent=0;
     return;
   }
-  container.innerHTML=`
-    <div style="font-size:10.5px;color:var(--ink3);margin-bottom:12px;font-family:monospace">
-      ✎ = Feld bearbeiten · 📎 = Dokument hochladen · 💬 = Notiz hinzufügen
-    </div>
-  `+rows.map(r=>{
+  const cardFn=r=>{
     const notes=allNotes[r.id]||[];const docs=allDocs[r.id]||[];
     return `<div class="contract-card">
       <div class="cc-head">
@@ -884,6 +898,7 @@ function renderVertraege(){
         ${docs.length?`<span style="font-family:monospace;font-size:9px;color:#4ADE80">📎 ${docs.length} Dok.</span>`:''}
         ${notes.length?`<span style="font-family:monospace;font-size:9px;color:var(--note-border)">💬 ${notes.length} Notiz(en)</span>`:''}
         <span class="cc-head-meta" style="margin-left:auto">${esc(r.abteilung||'')}</span>
+        ${katSel(r)}
       </div>
       <div class="cc-body">
         <div class="cc-col">
@@ -926,7 +941,13 @@ function renderVertraege(){
       ${docPanelDiv(r.id,r.name)}
       ${notePanelDiv(r.id,r.name)}
     </div>`;
-  }).join('');
+  };
+  container.innerHTML=`<div style="font-size:10.5px;color:var(--ink3);margin-bottom:4px;font-family:monospace">✎ = Feld bearbeiten · 📎 = Dokument hochladen · 💬 = Notiz hinzufügen · Klick auf eine Kategorie klappt sie ein</div>`
+    + groupByKat(rows).map(([kat,list])=>{
+        const s=sumKosten(list), col=collapsedGrp.has('vt|'+kat);
+        return `<div class="vt-grp" onclick="toggleGrp('vt|${esc(kat)}')"><b>${col?'▸':'▾'} ${katIcon(kat)} ${esc(kat)}</b><span>${list.length} ${list.length===1?'Vertrag':'Verträge'}${s.m?` · ${fmtEuro(s.m)} € / Monat · ${fmtEuro(s.j)} € / Jahr`:''}</span></div>`
+          + (col?'':list.map(cardFn).join(''));
+      }).join('');
   rows.forEach(r=>{updateNoteBtn(r.id);updateDocBtn(r.id);renderNoteList(r.id);renderDocList(r.id);});
   document.getElementById('tb-v').textContent=rows.length;
 
@@ -1396,6 +1417,7 @@ function renderVertragReview(d,fehler){
     <div class="rv-grid">
       <div class="rv-sec">Vertrag</div>
       ${f('name','Anbieter / Vertragsname *',d.anbieter||'')}
+      <div class="rv-f"><label for="rv_kategorie">Kategorie</label>${katOptions('rv_kategorie',katOf({id:'_neu',name:(d.anbieter||'')+' '+(d.vertragsgegenstand||'')}))}</div>
       ${f('abteilung','Abteilung',d.abteilung||'')}
       ${f('gegenstand','Vertragsgegenstand',d.vertragsgegenstand||'')}
       ${f('vertragsnr','Vertragsnr. / Referenz',d.vertragsnummer||'')}
@@ -1441,7 +1463,7 @@ async function saveNewVertrag(){
   ].filter(Boolean).join('\n');
   const row={
     id,name,quelle:'Vertragsdokument',herkunft:vtPending.file?'Vertragsdokument':'Manuell',status:'Aktiv',archiviert:false,
-    abteilung:v('abteilung'),
+    abteilung:v('abteilung'),kategorie:v('kategorie'),
     erste_buchung:v('beginn'),laufzeit_bis:v('ende'),
     kosten_monat:fmtEuro(km),kosten_jahr:fmtEuro(kj),
     kuendigung_frist:v('kuendigung_frist'),mindestlaufzeit:v('mindestlaufzeit'),
@@ -1502,6 +1524,98 @@ function apCell(r){
 function apAttach(rows){ rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_int_ansprechpartner`);if(el)makeEditable(el,r.id,'int_ansprechpartner',false);}); }
 
 
+// ── KATEGORIEN ───────────────────────────────────────────────────────────
+// Reihenfolge = Anzeige-Reihenfolge und Erkennungs-Priorität
+const KATEGORIEN=[
+  ['Versicherungen','🛡',/versicher|police\b|haftpflicht|cyberschutz|\bd\s?&\s?o\b|rückruf|vkb|mrh trowe/i],
+  ['Miete & Nebenkosten','🏢',/miete|\bstrom|nebenkosten|vattenfall|heizung|hausverwaltung|reinigung|gebäude/i],
+  ['Dienstleister & Beratung','🤝',/concept\s*&?\s*serv|sevenflow|mprotect|asam|praevent|datenschutz|reclay|gs1|steuerberat|rechtsanwalt|agentur|freelance|beratung|sancken|kolomiets|ppg digital|softonomika|eduardo|regular trade/i],
+  ['Telekommunikation & Internet','📞',/freenet|placetel|telefon|internet|telekom|vodafone|m-net|\bmnet\b|\bdsl\b|mobilfunk|magentamobil/i],
+  ['Marketing & Vertrieb','📣',/klaviyo|awin|cleverpush|idealo|billiger|storyclash|metricool|scripe|capcut|adference|sistrix|mailchimp|canva|productbay|varify|vimeo|google ads|meta ads|newsletter/i],
+  ['Personal & HR','👥',/personio|jobrad|lohn|gehalt|\bbav\b|weiterbildung|benefit/i],
+  ['Software & IT','💻',/aws|google|microsoft|claude|chatgpt|openai|atlassian|jira|confluence|adobe|magento|hosting|odoo|zendesk|bunny|consentmanager|much|domainoffensive|wornet|aftership|webseite|dropbox|zoom|mailstore|datev|1password|elasticsuite|fino|lizenz|software|plumrocket|exchange|force net|apple|cloud|server/i],
+];
+const KAT_NAMES=[...KATEGORIEN.map(k=>k[0]),'Sonstiges'];
+function katIcon(k){ return (KATEGORIEN.find(x=>x[0]===k)||[,'📦'])[1]; }
+function katOf(r){
+  const e=allEdits[r.id+'_kategorie']; if(e) return e;
+  if(r.kategorie) return r.kategorie;
+  const linked=r.quelle==='DATEV – In Lizenzliste'?String(r.massnahme||r.status||''):'';
+  for(const [k,,re] of KATEGORIEN) if(linked&&re.test(linked)) return k;
+  const txt=[r.name,r.buchungsbeispiel,r.quelle==='DATEV – Zu prüfen'?r.massnahme:''].filter(Boolean).join(' | ');
+  for(const [k,,re] of KATEGORIEN) if(re.test(txt)) return k;
+  return 'Sonstiges';
+}
+function katOptions(id,sel){ return `<select class="kat-sel" id="${id}" style="max-width:none;width:100%;padding:6px 8px;font-size:12px">${KAT_NAMES.map(k=>`<option ${k===sel?'selected':''}>${k}</option>`).join('')}</select>`; }
+function katSel(r){
+  const cur=katOf(r);
+  return `<select class="kat-sel" title="Kategorie ändern" onclick="event.stopPropagation()" onchange="setKat('${r.id}',this.value)">${KAT_NAMES.map(k=>`<option value="${k}" ${k===cur?'selected':''}>${katIcon(k)} ${k}</option>`).join('')}</select>`;
+}
+async function setKat(id,k){
+  await saveEdit(id,'kategorie',k); allEdits[id+'_kategorie']=k;
+  toast(`🗂 Kategorie: ${k}`); rerenderAll();
+}
+function groupByKat(rows){
+  const g={}; rows.forEach(r=>{ (g[katOf(r)]??=[]).push(r); });
+  const order=[...KAT_NAMES, ...Object.keys(g).filter(k=>!KAT_NAMES.includes(k))];
+  return order.filter(k=>g[k]).map(k=>[k,g[k]]);
+}
+function sumKosten(list){
+  let m=0,j=0;
+  list.forEach(r=>{
+    let km=parseEuro(cur(r.id,'kosten_monat',r.kosten_monat)), kj=parseEuro(cur(r.id,'kosten_jahr',r.kosten_jahr));
+    if(km===null&&kj!==null) km=kj/12; if(kj===null&&km!==null) kj=km*12;
+    if(km!==null&&!kInfo(r).on){ m+=km; j+=kj; }
+  });
+  return {m,j};
+}
+const collapsedGrp=new Set();
+function toggleGrp(key){ collapsedGrp.has(key)?collapsedGrp.delete(key):collapsedGrp.add(key); rerenderAll(); }
+function groupedHtml(rows,rowFn,cols,kind){
+  let i=0; const tb=kind;
+  return groupByKat(rows).map(([kat,list])=>{
+    const key=(rows[0]?.quelle||'')+'|'+kat, col=collapsedGrp.has(key);
+    let info=`${list.length} ${list.length===1?'Eintrag':'Einträge'}`;
+    if(kind==='kosten'){ const s=sumKosten(list); if(s.m) info+=` · ${fmtEuro(s.m)} € / Monat (ohne Gekündigte)`; }
+    if(kind==='betrag'){ const t=list.reduce((a,r)=>a+(parseFloat(r.betrag_raw)||parseEuro(r.betrag)||0),0); if(t) info+=` · Σ ${fmtEuro(t)} €`; }
+    const head=`<tr class="grp-row ${col?'col':''}" onclick="toggleGrp('${esc(key)}')"><td colspan="${cols}"><span class="gt">${col?'▸':'▾'}</span>${katIcon(kat)} ${esc(kat)}<span class="gs">${info}</span></td></tr>`;
+    const body=list.map(r=>rowFn(r,i++)).join('');
+    return head+(col?'':body);
+  }).join('');
+}
+
+// ── VERSICHERUNGSPORTFOLIO ÜBERNEHMEN (Stand Juni 2026) ──────────────────
+const VERS_SEED=[
+  ['Gewerbe-Police Gebäude/Inhalt/BU (Leitvertrag)','GS081506380200 / GP000008150638',19570.78,'04.12.2015','04.12.2026','04.09.2026','Prämie laut Übersicht 19.570,78 € (Kundenspiegel: 20.089,06 €). VKB-Umstellungsangebot Inhalt+BU+Elektronik: 15.197,97 €/Jahr bei 3 Jahren Laufzeit – Freigabe German Reng offen. BU-Summe 4,3 vs. 4,2 Mio. € klären.'],
+  ['Betriebshaftpflicht','H 000003625264',6017.83,'13.08.2020','04.12.2026','04.09.2026','Selbstbehaltzahlung zu Schadensfall 210 25 801918 noch bestätigen.'],
+  ['Cyberschutz','H 000003620625',2752.11,'01.08.2019','31.12.2026','30.09.2026','Deckungssumme 10 Mio. €.'],
+  ['D&O-Versicherung','H 000003621548',3878.09,'15.11.2019','31.12.2026','30.09.2026','Alternative MRH Trowe/Berkley: 2.727 € bei 3 Mio. € Deckung – Wechselentscheidung German Reng offen.'],
+  ['Rückruf-Haftpflicht','H 000003621558',1547.00,'22.08.2019','04.12.2026','04.09.2026','Schriftliche Bestätigung Futtermittel + Sicherheitsequipment mitversichert steht aus.'],
+  ['Elektronikversicherung','EL000008150638',285.84,'18.05.2018','04.12.2026','04.09.2026','Im VKB-Umstellungsangebot enthalten. Summenreduzierung Unterhaching auf 25.000 € + Software 2.000 € beauftragen.'],
+  ['Warentransportversicherung','TG000725471000',2142.00,'01.01.2020','01.01.2027','01.10.2026','Zzgl. ca. 2.500 € Nachzahlung nach Umsatzmeldung. Deckungslücke: Versendungen an Kunden nicht versichert. Alternative MRH Trowe: 2.000 €/Jahr.'],
+  ['Ausstellungs-/Zeltversicherung','TA000714161000',357.00,'20.05.2019','01.01.2027','01.10.2026',''],
+];
+async function seedVersicherungen(){
+  if(!connected){toast('⚠ Nur mit Supabase-Verbindung');return;}
+  if(!confirm('8 Versicherungspolicen (Stand Juni 2026) als Verträge anlegen?')) return;
+  const t=Date.now().toString(36);
+  const rows=VERS_SEED.map(([name,nr,jahr,beginn,ende,kuend,notiz],i)=>({
+    id:`vers_${i}_${t}`, name:'VKB – '+name, quelle:'Vertragsdokument', herkunft:'Versicherungsportfolio',
+    kategorie:'Versicherungen', status:'Aktiv', archiviert:false, abteilung:'Geschäftsführung',
+    buchungsbeispiel:nr, erste_buchung:beginn, laufzeit_bis:ende,
+    kosten_jahr:fmtEuro(jahr), kosten_monat:fmtEuro(jahr/12),
+    kuendigung_frist:'3 Monate vor Ablauf', kuendigung_bis:kuend,
+    ext_ansprechpartner:'Herr Muhammet Top (VKB/SVS)\nMuhammet.Top@sparkassenvs.de · 0151/280 480 49',
+    int_ansprechpartner:'Christina Höfer (CHo), German Reng (GRe)',
+    massnahme:['Stand Juni 2026 – bitte aktualisieren.','Versicherungsprämie (enthält Versicherungsteuer, keine USt).',notiz].filter(Boolean).join('\n')
+  }));
+  const {error}=await SB.from('eintraege').insert(rows);
+  if(error){toast('⚠ '+error.message);return;}
+  rows.forEach(r=>allData[r.id]=r);
+  rerenderAll(); updateScores(); toast('🛡 8 Versicherungen übernommen');
+}
+
+
 // ── KÜNDIGUNG MARKIEREN ──────────────────────────────────────────────────
 function deDate(s){ const m=String(s||'').match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/); return m?new Date(+m[3],+m[2]-1,+m[1]):null; }
 function kInfo(r){
@@ -1551,12 +1665,12 @@ function rerenderAll(){ renderPruef();renderOk();renderLic();renderVertraege();r
 
 // ── EINTRAG MANUELL HINZUFÜGEN ───────────────────────────────────────────
 const ADD_FIELDS={
-  'Lizenzliste':[['name','Vertragsname / Lizenz *'],['abteilung','Abteilung'],['int_ansprechpartner','Ansprechpartner intern'],
+  'Lizenzliste':[['name','Vertragsname / Lizenz *'],['kategorie','Kategorie','kat'],['abteilung','Abteilung'],['int_ansprechpartner','Ansprechpartner intern'],
     ['kosten_monat','Kosten / Monat netto (€)'],['kuendigung_frist','Kündigungsfrist'],['mindestlaufzeit','Mindestlaufzeit'],
     ['laufzeit_bis','Laufzeit bis'],['status','Status (z.B. monatl. kündbar)']],
-  'DATEV – Zu prüfen':[['name','Anbieter *'],['int_ansprechpartner','Ansprechpartner intern'],['buchungsbeispiel','Buchungstext'],
+  'DATEV – Zu prüfen':[['name','Anbieter *'],['kategorie','Kategorie','kat'],['int_ansprechpartner','Ansprechpartner intern'],['buchungsbeispiel','Buchungstext'],
     ['betrag','Betrag (€)'],['erste_buchung','Erste Buchung'],['letzte_buchung','Letzte Buchung'],['massnahme','Maßnahme','full']],
-  'DATEV – In Lizenzliste':[['name','Anbieter *'],['int_ansprechpartner','Ansprechpartner intern'],['buchungsbeispiel','Buchungstext'],
+  'DATEV – In Lizenzliste':[['name','Anbieter *'],['kategorie','Kategorie','kat'],['int_ansprechpartner','Ansprechpartner intern'],['buchungsbeispiel','Buchungstext'],
     ['betrag','Betrag (€)'],['erste_buchung','Erste Buchung'],['letzte_buchung','Letzte Buchung'],['massnahme','Zugehörige Lizenz (z.B. ✓ AWS)','full']]
 };
 const ADD_TITEL={'Lizenzliste':'📊 Lizenz hinzufügen','DATEV – Zu prüfen':'⚠ Buchung „Zu prüfen“ hinzufügen','DATEV – In Lizenzliste':'✅ Bekannte Buchung hinzufügen'};
@@ -1566,7 +1680,7 @@ function openAddModal(q){
   addQuelle=q;
   document.querySelector('#vt-modal .modal-h b').textContent=ADD_TITEL[q];
   document.getElementById('vt-modal-body').innerHTML=`<div class="rv-grid">${ADD_FIELDS[q].map(([f,l,cls])=>
-    `<div class="rv-f ${cls||''}"><label for="ad_${f}">${l}</label>${cls==='full'?`<textarea id="ad_${f}"></textarea>`:`<input id="ad_${f}">`}</div>`).join('')}
+    `<div class="rv-f ${cls||''}"><label for="ad_${f}">${l}</label>${cls==='full'?`<textarea id="ad_${f}"></textarea>`:cls==='kat'?katOptions('ad_'+f,''):`<input id="ad_${f}">`}</div>`).join('')}
     <div class="rv-f full"><label>Datumsangaben bitte als TT.MM.JJJJ</label></div></div>`;
   document.getElementById('vt-modal-foot').innerHTML=`<button class="btn-ghost" onclick="closeVertragModal()">Abbrechen</button>
     <button class="btn-new" id="ad-save" onclick="saveAddEntry()">✓ Speichern</button>`;
@@ -1602,7 +1716,7 @@ function openVertragManuell(){
 function renderPruef(){
   const tb=document.getElementById('pruef-body');
   const rows=getByQuelle('DATEV – Zu prüfen').filter(r=>!r.archiviert && r.status!=='📦 Archiviert');
-  tb.innerHTML=rows.map((r,i)=>{
+  const rowFn=(r,i)=>{
     const sk=`${r.id}_massnahme`;
     const cur=allEdits[sk]!==undefined?allEdits[sk]:(r.massnahme||'');
     const neg=(r.betrag_raw||0)<0;
@@ -1610,6 +1724,7 @@ function renderPruef(){
       <td style="font-family:monospace;font-size:10px;color:var(--ink3)">${i+1}</td>
       <td>${herkunftBadge(r.herkunft)}</td>
       <td class="td-name" style="${kInfo(r).on?'text-decoration:line-through;color:var(--ink3)':''}">${esc(r.name)}</td>
+      <td>${katSel(r)}</td>
       ${apCell(r)}
       <td><div class="td-sub">${esc(r.buchungsbeispiel)}</div></td>
       <td class="mono">${r.erste_buchung||''}</td>
@@ -1621,7 +1736,8 @@ function renderPruef(){
       <td>${noteBtn(r.id)}</td>
       <td><button class="am-btn" data-menu-id="${r.id}" onclick="actionMenu('${r.id}','${esc(r.name)}')" title="Aktionen">⋯</button></td>
     </tr>${docPanel(r.id,r.name)}${notePanel(r.id,r.name)}`;
-  }).join('');
+  };
+  tb.innerHTML=groupedHtml(rows,rowFn,14,'betrag');
   rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_massnahme`);if(el)makeEditable(el,r.id,'massnahme',true);});
   apAttach(rows);
   document.getElementById('pruef-cnt').textContent=rows.length+' Einträge';
@@ -1631,13 +1747,14 @@ function renderPruef(){
 function renderOk(){
   const tb=document.getElementById('ok-body');
   const rows=getByQuelle('DATEV – In Lizenzliste').filter(r=>!r.archiviert && r.status!=='📦 Archiviert');
-  tb.innerHTML=rows.map((r,i)=>{
+  const rowFn=(r,i)=>{
     const sk=`${r.id}_status`;
     const cur=allEdits[sk]!==undefined?allEdits[sk]:(r.massnahme||r.status||'');
     return `<tr class="dr ${i%2?'even':''}" data-id="${r.id}" data-name="${esc(r.name).toLowerCase()}">
       <td style="font-family:monospace;font-size:10px;color:var(--ink3)">${i+1}</td>
       <td>${herkunftBadge(r.herkunft)}</td>
       <td class="td-name" style="${kInfo(r).on?'text-decoration:line-through;color:var(--ink3)':''}">${esc(r.name)}</td>
+      <td>${katSel(r)}</td>
       ${apCell(r)}
       <td><div class="td-sub">${esc(r.buchungsbeispiel)}</div></td>
       <td class="mono">${r.erste_buchung||''}</td>
@@ -1649,7 +1766,8 @@ function renderOk(){
       <td>${noteBtn(r.id)}</td>
       <td><button class="am-btn" data-menu-id="${r.id}" onclick="actionMenu('${r.id}','${esc(r.name)}')" title="Aktionen">⋯</button></td>
     </tr>${docPanel(r.id,r.name)}${notePanel(r.id,r.name)}`;
-  }).join('');
+  };
+  tb.innerHTML=groupedHtml(rows,rowFn,14,'betrag');
   rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_status`);if(el)makeEditable(el,r.id,'status',false);});
   apAttach(rows);
   document.getElementById('ok-cnt').textContent=rows.length+' Einträge';
@@ -1659,7 +1777,7 @@ function renderOk(){
 function renderLic(){
   const tb=document.getElementById('lic-body');
   const rows=getByQuelle('Lizenzliste').filter(r=>!r.archiviert && r.status!=='📦 Archiviert');
-  tb.innerHTML=rows.map((r,i)=>{
+  const rowFn=(r,i)=>{
     const canc=kInfo(r).on;
     if(canc&&!showCanc) return '';
     const sk=`${r.id}_status`;
@@ -1668,6 +1786,7 @@ function renderLic(){
       <td style="font-family:monospace;font-size:10px;color:var(--ink3)">${i+1}</td>
       <td>${herkunftBadge(r.herkunft)}</td>
       <td class="td-name" style="${canc?'text-decoration:line-through;color:var(--ink3)':''}">${esc(r.name)}</td>
+      <td>${katSel(r)}</td>
       <td><span class="chip n">${esc(r.abteilung)||'—'}</span></td>
       ${apCell(r)}
       <td style="font-size:11px;color:var(--red)">${r.kuendigung_frist||'—'}</td>
@@ -1679,7 +1798,8 @@ function renderLic(){
       <td>${noteBtn(r.id)}</td>
       <td><button class="am-btn" data-menu-id="${r.id}" onclick="actionMenu('${r.id}','${esc(r.name)}')" title="Aktionen">⋯</button></td>
     </tr>${docPanel(r.id,r.name)}${notePanel(r.id,r.name)}`;
-  }).join('');
+  };
+  tb.innerHTML=groupedHtml(rows,rowFn,14,'kosten');
   rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_status`);if(el)makeEditable(el,r.id,'status',false);});
   apAttach(rows);
   const vis=rows.filter(r=>!kInfo(r).on||showCanc).length;
@@ -1875,6 +1995,11 @@ function filterTbl(tbId,q,cntId){
     if(show)n++;
   });
   if(cntId)document.getElementById(cntId).textContent=n+' Einträge';
+  document.querySelectorAll(`#${tbId} tr.grp-row`).forEach(g=>{
+    let x=g.nextElementSibling, any=false;
+    while(x&&!x.classList.contains('grp-row')){ if(x.classList.contains('dr')&&x.style.display!=='none') any=true; x=x.nextElementSibling; }
+    g.style.display=(any||!q)?'':'none';
+  });
 }
 
 function togCanc(btn){
