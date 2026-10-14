@@ -249,6 +249,18 @@ tbody td:last-child{border-right:none}
 @media(max-width:640px){.rv-grid{grid-template-columns:1fr}.vt-sum{grid-template-columns:1fr}}
 .ap-miss{color:var(--ora);font-size:10.5px;font-family:monospace;white-space:nowrap}
 .ap-cell{font-size:11px;color:var(--ink2);min-width:120px}
+.kd-on,.kd-off{display:inline-block;font-size:10.5px;font-family:monospace;padding:2px 7px;border-radius:3px;cursor:pointer;white-space:nowrap}
+.kd-on{background:var(--red-lt);color:var(--red);border:1px solid #F0C4BF;font-weight:600}
+.kd-on.past{background:#EEE;color:var(--ink3);border-color:var(--rule)}
+.kd-off{color:var(--ink3);border:1px dashed var(--rule)}
+.kd-off:hover,.kd-on:hover{border-color:var(--acc)}
+.kd-ed{display:flex;gap:5px;align-items:center;flex-wrap:wrap;font-size:11px}
+.kd-ed input[type=date]{padding:2px 4px;border:1px solid var(--acc);border-radius:3px;font-size:11px}
+.kd-ed button{padding:2px 7px;border-radius:3px;border:1px solid var(--rule);background:var(--white);cursor:pointer;font-size:10.5px}
+.kd-ed button.ok{background:var(--acc);color:#fff;border-color:var(--acc)}
+.btn-add{padding:5px 11px;background:var(--acc);color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:11px;font-weight:600}
+.btn-add:hover{background:#1526b8}
+.hb-manuell{background:#6B5BD6;color:#fff}
 </style>
 </head>
 <body>
@@ -329,6 +341,7 @@ tbody td:last-child{border-right:none}
   <div class="sec-h"><span class="sec-title">📄 Hauptverträge aus Dokumenten</span><span class="sec-cnt">Kosten jeweils netto</span></div>
   <div class="vt-bar">
     <button class="btn-new" onclick="openVertragModal()">＋ Vertrag hochladen (PDF)</button>
+    <button class="btn-ghost" onclick="openVertragManuell()">✍ Manuell anlegen (ohne PDF)</button>
     <span style="font-size:10.5px;color:var(--ink3);font-family:monospace">PDF wird automatisch analysiert – Kosten (netto), Laufzeit & Kündigungsfrist werden vorausgefüllt</span>
   </div>
   <div id="vertraege-summary"></div>
@@ -343,11 +356,12 @@ tbody td:last-child{border-right:none}
   </div>
   <div class="toolbar">
     <input class="search" type="text" placeholder="Suchen …" oninput="filterTbl('pruef-body',this.value,'pruef-cnt')">
+    <button class="btn-add" onclick="openAddModal('DATEV – Zu prüfen')">＋ Eintrag hinzufügen</button>
     <span class="tcnt" id="pruef-cnt">wird geladen …</span>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>#</th><th>Herkunft</th><th>Anbieter</th><th>👤 Ansprechpartner intern</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>Maßnahme</th><th>📎</th><th>💬</th></tr></thead>
-    <tbody id="pruef-body"><tr><td colspan="12"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
+    <thead><tr><th>#</th><th>Herkunft</th><th>Anbieter</th><th>👤 Ansprechpartner intern</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>✂ Gekündigt</th><th>Maßnahme</th><th>📎</th><th>💬</th></tr></thead>
+    <tbody id="pruef-body"><tr><td colspan="13"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
   </table></div>
 </div>
 
@@ -359,11 +373,12 @@ tbody td:last-child{border-right:none}
   </div>
   <div class="toolbar">
     <input class="search" type="text" placeholder="Suchen …" oninput="filterTbl('ok-body',this.value,'ok-cnt')">
+    <button class="btn-add" onclick="openAddModal('DATEV – In Lizenzliste')">＋ Eintrag hinzufügen</button>
     <span class="tcnt" id="ok-cnt">wird geladen …</span>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>#</th><th>Herkunft</th><th>Anbieter</th><th>👤 Ansprechpartner intern</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
-    <tbody id="ok-body"><tr><td colspan="12"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
+    <thead><tr><th>#</th><th>Herkunft</th><th>Anbieter</th><th>👤 Ansprechpartner intern</th><th>Buchungsbeispiel</th><th>Erste</th><th>Letzte</th><th style="text-align:right">Betrag</th><th>✂ Gekündigt</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
+    <tbody id="ok-body"><tr><td colspan="13"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
   </table></div>
 </div>
 
@@ -375,12 +390,13 @@ tbody td:last-child{border-right:none}
   </div>
   <div class="toolbar">
     <input class="search" type="text" placeholder="Suchen …" oninput="filterTbl('lic-body',this.value,'lic-cnt')">
+    <button class="btn-add" onclick="openAddModal('Lizenzliste')">＋ Eintrag hinzufügen</button>
     <button class="fb ct-tog" onclick="togCanc(this)">Gekündigte einblenden</button>
     <span class="tcnt" id="lic-cnt">wird geladen …</span>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>#</th><th>Herkunft</th><th>Vertragsname</th><th>Abteilung</th><th>👤 Ansprechpartner intern</th><th>⏰ Kündigungsfrist</th><th>📅 Mindestlaufzeit</th><th style="text-align:right">Kosten/Mon.</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
-    <tbody id="lic-body"><tr><td colspan="12"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
+    <thead><tr><th>#</th><th>Herkunft</th><th>Vertragsname</th><th>Abteilung</th><th>👤 Ansprechpartner intern</th><th>⏰ Kündigungsfrist</th><th>📅 Mindestlaufzeit</th><th style="text-align:right">Kosten/Mon.</th><th>✂ Gekündigt</th><th>Status</th><th>📎</th><th>💬</th></tr></thead>
+    <tbody id="lic-body"><tr><td colspan="13"><div class="loading"><div class="spinner"></div>Lade …</div></td></tr></tbody>
   </table></div>
 </div>
 
@@ -478,6 +494,7 @@ function herkunftBadge(h){
   if(h==='Vertragsdokument') return '<span class="hbadge hb-vertrag">📄 Vertrag</span>';
   if(h==='DATEV') return '<span class="hbadge hb-datev">⚠️ DATEV</span>';
   if(h.includes('DATEV')) return '<span class="hbadge hb-datev-lic">✅ DATEV+Liste</span>';
+  if(h==='Manuell') return '<span class="hbadge hb-manuell">✍ Manuell</span>';
   if(h==='Lizenzliste') return '<span class="hbadge hb-lic">📊 Lizenzliste</span>';
   return `<span class="hbadge chip-n">${esc(h)}</span>`;
 }
@@ -845,7 +862,7 @@ function docBtnDiv(id){
 }
 
 function renderVertraege(){
-  const rows=getByQuelle('Vertragsdokument').filter(r=>!r.archiviert && r.status!=='📦 Archiviert');
+  const rows=Object.values(allData).filter(r=>r.quelle==='Vertragsdokument').filter(r=>!r.archiviert && r.status!=='📦 Archiviert');
   const container=document.getElementById('vertraege-container');
   renderVertragSummary(rows);
   if(!rows.length){
@@ -862,7 +879,8 @@ function renderVertraege(){
     return `<div class="contract-card">
       <div class="cc-head">
         <span class="cc-head-name">${esc(r.name)}</span>
-        <span class="hbadge hb-vertrag">📄 Vertragsdokument</span>
+        ${herkunftBadge(r.herkunft||'Vertragsdokument')}
+        ${kInfo(r).on?`<span class="hbadge" style="background:var(--red);color:#fff">✂ GEKÜNDIGT${kInfo(r).zum?' zum '+esc(kInfo(r).zum):''}</span>`:''}
         ${docs.length?`<span style="font-family:monospace;font-size:9px;color:#4ADE80">📎 ${docs.length} Dok.</span>`:''}
         ${notes.length?`<span style="font-family:monospace;font-size:9px;color:var(--note-border)">💬 ${notes.length} Notiz(en)</span>`:''}
         <span class="cc-head-meta" style="margin-left:auto">${esc(r.abteilung||'')}</span>
@@ -883,6 +901,8 @@ function renderVertraege(){
           ${ccField(r.id,'mindestlaufzeit','📅 Mindestlaufzeit',r.mindestlaufzeit||'')}
           ${ccField(r.id,'verlaengerung','🔁 Verlängerung',r.verlaengerung||'')}
           ${ccField(r.id,'kuendigung_bis','🚨 Kündigung spätestens',r.kuendigung_bis||'')}
+          <div style="font-size:9px;font-family:monospace;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin:6px 0 3px">✂ Gekündigt</div>
+          <div>${kHtml(r)}</div>
         </div>
         <div class="cc-col">
           <div class="cc-col-title">Konditionen & Notizen</div>
@@ -1317,6 +1337,7 @@ function renderVertragSummary(rows){
 function openVertragModal(){
   if(!connected){toast('⚠ Upload nur mit Supabase-Verbindung');return;}
   vtPending=null;
+  document.querySelector('#vt-modal .modal-h b').textContent='📄 Neuer Vertrag';
   document.getElementById('vt-modal-body').innerHTML=`
     <div class="drop" id="vt-drop" onclick="document.getElementById('vt-file').click()">
       <div class="big">📄</div>
@@ -1370,8 +1391,8 @@ function renderVertragReview(d,fehler){
   const hinweise=[d.kosten_berechnung,d.unsicherheiten].filter(Boolean).join('\n');
   document.getElementById('vt-modal-body').innerHTML=`
     ${fehler?`<div class="rv-err"><b>Automatische Analyse fehlgeschlagen:</b> ${esc(fehler)}<br>Du kannst die Felder manuell ausfüllen – das PDF wird trotzdem gespeichert.</div>`
-            :`<div class="rv-hint">✓ Automatisch ausgelesen – bitte alle Werte prüfen und bei Bedarf korrigieren, bevor du speicherst. Leere Felder wurden im Dokument nicht gefunden.${hinweise?`<br><br><b>Hinweise der Analyse:</b><br>${esc(hinweise).replace(/\n/g,'<br>')}`:''}</div>`}
-    <div style="font-size:10.5px;color:var(--ink3);font-family:monospace;margin-bottom:10px">📎 ${esc(vtPending.file.name)}</div>
+            :!vtPending.file?'':`<div class="rv-hint">✓ Automatisch ausgelesen – bitte alle Werte prüfen und bei Bedarf korrigieren, bevor du speicherst. Leere Felder wurden im Dokument nicht gefunden.${hinweise?`<br><br><b>Hinweise der Analyse:</b><br>${esc(hinweise).replace(/\n/g,'<br>')}`:''}</div>`}
+    ${vtPending.file?`<div style="font-size:10.5px;color:var(--ink3);font-family:monospace;margin-bottom:10px">📎 ${esc(vtPending.file.name)}</div>`:''}
     <div class="rv-grid">
       <div class="rv-sec">Vertrag</div>
       ${f('name','Anbieter / Vertragsname *',d.anbieter||'')}
@@ -1397,7 +1418,7 @@ function renderVertragReview(d,fehler){
     </div>`;
   document.getElementById('vt-modal-foot').innerHTML=`
     <button class="btn-ghost" onclick="closeVertragModal()">Abbrechen</button>
-    <button class="btn-ghost" onclick="document.getElementById('vt-file').click()">Anderes PDF</button>
+    ${vtPending.file?`<button class="btn-ghost" onclick="document.getElementById('vt-file').click()">Anderes PDF</button>`:''}
     <button class="btn-new" id="vt-save" onclick="saveNewVertrag()">✓ Vertrag speichern</button>`;
 }
 
@@ -1419,7 +1440,7 @@ async function saveNewVertrag(){
     v('konditionen')
   ].filter(Boolean).join('\n');
   const row={
-    id,name,quelle:'Vertragsdokument',herkunft:'Vertragsdokument',status:'Aktiv',archiviert:false,
+    id,name,quelle:'Vertragsdokument',herkunft:vtPending.file?'Vertragsdokument':'Manuell',status:'Aktiv',archiviert:false,
     abteilung:v('abteilung'),
     erste_buchung:v('beginn'),laufzeit_bis:v('ende'),
     kosten_monat:fmtEuro(km),kosten_jahr:fmtEuro(kj),
@@ -1431,7 +1452,7 @@ async function saveNewVertrag(){
   const {error}=await SB.from('eintraege').insert(row);
   if(error){toast('⚠ '+error.message);btn.disabled=false;btn.textContent='✓ Vertrag speichern';return;}
   allData[id]=row;
-  await uploadDoc(id,vtPending.file);
+  if(vtPending.file) await uploadDoc(id,vtPending.file);
   closeVertragModal();
   renderVertraege();updateScores();
   toast(`✓ Vertrag „${name}" gespeichert`);
@@ -1481,6 +1502,103 @@ function apCell(r){
 function apAttach(rows){ rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_int_ansprechpartner`);if(el)makeEditable(el,r.id,'int_ansprechpartner',false);}); }
 
 
+// ── KÜNDIGUNG MARKIEREN ──────────────────────────────────────────────────
+function deDate(s){ const m=String(s||'').match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/); return m?new Date(+m[3],+m[2]-1,+m[1]):null; }
+function kInfo(r){
+  const e1=allEdits[r.id+'_gekuendigt'], e2=allEdits[r.id+'_gekuendigt_zum'];
+  if(e1!==undefined) return {on:e1==='ja', zum:e2||''};
+  const st=String(allEdits[r.id+'_status']!==undefined?allEdits[r.id+'_status']:(r.status||''));
+  const on=/gekündigt/i.test(st);
+  const d=st.match(/(\d{1,2}\.\d{1,2}\.\d{4})/);
+  const lz=(r.laufzeit_bis&&r.laufzeit_bis!=='NaT')?r.laufzeit_bis:'';
+  return {on, zum: e2 || (d?d[1]:(on?lz:''))};
+}
+function kHtml(r){
+  const k=kInfo(r);
+  if(k.on){
+    const d=deDate(k.zum), past=d&&d<new Date(new Date().toDateString());
+    return `<span class="kd-on ${past?'past':''}" onclick="kEdit('${r.id}',this)" title="${past?'Vertrag ist ausgelaufen – ':''}Klicken zum Bearbeiten">✓ ${past?'beendet':'gekündigt'}${k.zum?' zum '+esc(k.zum):''}</span>`;
+  }
+  return `<span class="kd-off" onclick="kEdit('${r.id}',this)" title="Als gekündigt markieren">✗ nicht gekündigt</span>`;
+}
+function kEdit(id,el){
+  const r=allData[id]; if(!r) return;
+  const k=kInfo(r), d=deDate(k.zum);
+  const iso=d?`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`:'';
+  const box=document.createElement('div'); box.className='kd-ed';
+  box.innerHTML=`<span>gekündigt zum</span><input type="date" value="${iso}">
+    <button class="ok">✓ Speichern</button>${k.on?'<button class="rm">Kündigung entfernen</button>':''}<button class="x">✕</button>`;
+  box.addEventListener('click',e=>e.stopPropagation());
+  el.replaceWith(box); box.querySelector('input').focus();
+  box.querySelector('.x').onclick=()=>rerenderAll();
+  box.querySelector('.ok').onclick=async()=>{
+    const v=box.querySelector('input').value;
+    if(!v){ toast('⚠ Bitte Datum wählen, zu dem gekündigt wurde'); return; }
+    const [y,m,dd]=v.split('-');
+    await saveEdit(id,'gekuendigt','ja'); await saveEdit(id,'gekuendigt_zum',`${dd}.${m}.${y}`);
+    allEdits[id+'_gekuendigt']='ja'; allEdits[id+'_gekuendigt_zum']=`${dd}.${m}.${y}`;
+    toast(`✂ „${r.name}" als gekündigt zum ${dd}.${m}.${y} markiert`); rerenderAll();
+  };
+  const rm=box.querySelector('.rm');
+  if(rm) rm.onclick=async()=>{
+    if(!confirm(`Kündigung bei „${r.name}" wirklich entfernen?`)) return;
+    await saveEdit(id,'gekuendigt','nein'); await saveEdit(id,'gekuendigt_zum','');
+    allEdits[id+'_gekuendigt']='nein'; allEdits[id+'_gekuendigt_zum']='';
+    rerenderAll();
+  };
+}
+function rerenderAll(){ renderPruef();renderOk();renderLic();renderVertraege();restoreAllBtns(); }
+
+// ── EINTRAG MANUELL HINZUFÜGEN ───────────────────────────────────────────
+const ADD_FIELDS={
+  'Lizenzliste':[['name','Vertragsname / Lizenz *'],['abteilung','Abteilung'],['int_ansprechpartner','Ansprechpartner intern'],
+    ['kosten_monat','Kosten / Monat netto (€)'],['kuendigung_frist','Kündigungsfrist'],['mindestlaufzeit','Mindestlaufzeit'],
+    ['laufzeit_bis','Laufzeit bis'],['status','Status (z.B. monatl. kündbar)']],
+  'DATEV – Zu prüfen':[['name','Anbieter *'],['int_ansprechpartner','Ansprechpartner intern'],['buchungsbeispiel','Buchungstext'],
+    ['betrag','Betrag (€)'],['erste_buchung','Erste Buchung'],['letzte_buchung','Letzte Buchung'],['massnahme','Maßnahme','full']],
+  'DATEV – In Lizenzliste':[['name','Anbieter *'],['int_ansprechpartner','Ansprechpartner intern'],['buchungsbeispiel','Buchungstext'],
+    ['betrag','Betrag (€)'],['erste_buchung','Erste Buchung'],['letzte_buchung','Letzte Buchung'],['massnahme','Zugehörige Lizenz (z.B. ✓ AWS)','full']]
+};
+const ADD_TITEL={'Lizenzliste':'📊 Lizenz hinzufügen','DATEV – Zu prüfen':'⚠ Buchung „Zu prüfen“ hinzufügen','DATEV – In Lizenzliste':'✅ Bekannte Buchung hinzufügen'};
+let addQuelle=null;
+function openAddModal(q){
+  if(!connected){toast('⚠ Hinzufügen nur mit Supabase-Verbindung');return;}
+  addQuelle=q;
+  document.querySelector('#vt-modal .modal-h b').textContent=ADD_TITEL[q];
+  document.getElementById('vt-modal-body').innerHTML=`<div class="rv-grid">${ADD_FIELDS[q].map(([f,l,cls])=>
+    `<div class="rv-f ${cls||''}"><label for="ad_${f}">${l}</label>${cls==='full'?`<textarea id="ad_${f}"></textarea>`:`<input id="ad_${f}">`}</div>`).join('')}
+    <div class="rv-f full"><label>Datumsangaben bitte als TT.MM.JJJJ</label></div></div>`;
+  document.getElementById('vt-modal-foot').innerHTML=`<button class="btn-ghost" onclick="closeVertragModal()">Abbrechen</button>
+    <button class="btn-new" id="ad-save" onclick="saveAddEntry()">✓ Speichern</button>`;
+  document.getElementById('vt-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('ad_name')?.focus(),50);
+}
+async function saveAddEntry(){
+  const q=addQuelle, v=f=>(document.getElementById('ad_'+f)?.value||'').trim();
+  const name=v('name'); if(!name){toast('⚠ Bitte einen Namen eintragen');return;}
+  const btn=document.getElementById('ad-save'); btn.disabled=true; btn.textContent='Speichere …';
+  const pref={'Lizenzliste':'lic','DATEV – Zu prüfen':'datev_pruef','DATEV – In Lizenzliste':'datev_ok'}[q];
+  const id=`${pref}_m_${Date.now().toString(36)}`;
+  const row={id,name,quelle:q,herkunft:'Manuell',archiviert:false};
+  ADD_FIELDS[q].forEach(([f])=>{ if(f!=='name'&&v(f)) row[f]=v(f); });
+  if(row.kosten_monat){ const n=parseEuro(row.kosten_monat); if(n!==null) row.kosten_monat=fmtEuro(n); }
+  if(row.betrag){ const n=parseEuro(row.betrag); if(n!==null){ row.betrag=fmtEuro(n); row.betrag_raw=n; } }
+  if(q==='DATEV – Zu prüfen') row.status=row.status||'⚠ Zu prüfen';
+  if(q==='DATEV – In Lizenzliste') row.status=row.status||'✓ Erfasst';
+  const {error}=await SB.from('eintraege').insert(row);
+  if(error){ toast('⚠ '+error.message); btn.disabled=false; btn.textContent='✓ Speichern'; return; }
+  allData[id]=row; closeVertragModal(); rerenderAll(); updateScores();
+  toast(`✓ „${name}" hinzugefügt`);
+}
+function openVertragManuell(){
+  if(!connected){toast('⚠ Nur mit Supabase-Verbindung');return;}
+  vtPending={file:null,data:{}};
+  document.querySelector('#vt-modal .modal-h b').textContent='📄 Vertrag manuell anlegen';
+  document.getElementById('vt-modal').classList.add('open');
+  renderVertragReview({},'');
+}
+
+
 function renderPruef(){
   const tb=document.getElementById('pruef-body');
   const rows=getByQuelle('DATEV – Zu prüfen').filter(r=>!r.archiviert && r.status!=='📦 Archiviert');
@@ -1491,12 +1609,13 @@ function renderPruef(){
     return `<tr class="dr ${i%2?'even':''}" data-id="${r.id}" data-name="${esc(r.name).toLowerCase()}">
       <td style="font-family:monospace;font-size:10px;color:var(--ink3)">${i+1}</td>
       <td>${herkunftBadge(r.herkunft)}</td>
-      <td class="td-name">${esc(r.name)}</td>
+      <td class="td-name" style="${kInfo(r).on?'text-decoration:line-through;color:var(--ink3)':''}">${esc(r.name)}</td>
       ${apCell(r)}
       <td><div class="td-sub">${esc(r.buchungsbeispiel)}</div></td>
       <td class="mono">${r.erste_buchung||''}</td>
       <td class="mono">${r.letzte_buchung||''}</td>
       <td class="amt ${neg?'neg':''}">${r.betrag?r.betrag+' €':'—'}</td>
+      <td>${kHtml(r)}</td>
       <td class="editable" data-orig="${esc(r.massnahme||'')}" id="cell_${sk}" style="${allEdits[sk]?'color:var(--acc)':''}"><div class="td-sub">${esc(cur)}</div></td>
       <td>${docBtn(r.id)}</td>
       <td>${noteBtn(r.id)}</td>
@@ -1518,12 +1637,13 @@ function renderOk(){
     return `<tr class="dr ${i%2?'even':''}" data-id="${r.id}" data-name="${esc(r.name).toLowerCase()}">
       <td style="font-family:monospace;font-size:10px;color:var(--ink3)">${i+1}</td>
       <td>${herkunftBadge(r.herkunft)}</td>
-      <td class="td-name">${esc(r.name)}</td>
+      <td class="td-name" style="${kInfo(r).on?'text-decoration:line-through;color:var(--ink3)':''}">${esc(r.name)}</td>
       ${apCell(r)}
       <td><div class="td-sub">${esc(r.buchungsbeispiel)}</div></td>
       <td class="mono">${r.erste_buchung||''}</td>
       <td class="mono">${r.letzte_buchung||''}</td>
       <td class="amt">${r.betrag?r.betrag+' €':'—'}</td>
+      <td>${kHtml(r)}</td>
       <td class="s-ok editable" data-orig="${esc(r.massnahme||r.status||'')}" id="cell_${sk}" style="${allEdits[sk]?'color:var(--acc)':''}">${esc(cur)}</td>
       <td>${docBtn(r.id)}</td>
       <td>${noteBtn(r.id)}</td>
@@ -1540,7 +1660,7 @@ function renderLic(){
   const tb=document.getElementById('lic-body');
   const rows=getByQuelle('Lizenzliste').filter(r=>!r.archiviert && r.status!=='📦 Archiviert');
   tb.innerHTML=rows.map((r,i)=>{
-    const canc=(r.status||'').toLowerCase().includes('gekündigt');
+    const canc=kInfo(r).on;
     if(canc&&!showCanc) return '';
     const sk=`${r.id}_status`;
     const cur=allEdits[sk]!==undefined?allEdits[sk]:(r.status||'');
@@ -1553,6 +1673,7 @@ function renderLic(){
       <td style="font-size:11px;color:var(--red)">${r.kuendigung_frist||'—'}</td>
       <td style="font-size:11px;color:var(--ink2)">${r.mindestlaufzeit||'—'}</td>
       <td class="amt">${r.kosten_monat?r.kosten_monat+' €':'—'}</td>
+      <td>${kHtml(r)}</td>
       <td class="editable ${canc?'s-canc':'s-ok'}" data-orig="${esc(r.status||'')}" id="cell_${sk}" style="${allEdits[sk]?'color:var(--acc)':''}">${esc(cur)||'—'}</td>
       <td>${docBtn(r.id)}</td>
       <td>${noteBtn(r.id)}</td>
@@ -1561,7 +1682,7 @@ function renderLic(){
   }).join('');
   rows.forEach(r=>{const el=document.getElementById(`cell_${r.id}_status`);if(el)makeEditable(el,r.id,'status',false);});
   apAttach(rows);
-  const vis=rows.filter(r=>!(r.status||'').toLowerCase().includes('gekündigt')||showCanc).length;
+  const vis=rows.filter(r=>!kInfo(r).on||showCanc).length;
   document.getElementById('lic-cnt').textContent=vis+' Einträge';
   document.getElementById('tb-l').textContent=rows.length;
 }
