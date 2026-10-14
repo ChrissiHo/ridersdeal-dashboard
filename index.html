@@ -272,6 +272,12 @@ tbody td:last-child{border-right:none}
 .vt-grp span{font-family:monospace;font-size:10.5px;color:var(--ink3)}
 .seed-box{background:var(--acc-lt);border:1px solid #C9D0F7;border-radius:4px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}
 .hb-port{background:#0F6E56;color:#fff}
+.bz-row{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--rule)}
+.bz-row .fn{font-size:11.5px;font-weight:600;word-break:break-all}
+.bz-row .st{font-size:10px;font-family:monospace;color:var(--ink3);grid-column:1}
+.bz-row select{grid-column:2;grid-row:1/3;width:100%;padding:5px 6px;border:1px solid var(--rule);border-radius:3px;font-size:11.5px}
+.bz-row.ok select{border-color:var(--grn);background:var(--grn-lt)}
+.bz-row.warn select{border-color:#EAD38A;background:var(--yel-lt)}
 </style>
 </head>
 <body>
@@ -353,6 +359,7 @@ tbody td:last-child{border-right:none}
   <div class="vt-bar">
     <button class="btn-new" onclick="openVertragModal()">＋ Vertrag hochladen (PDF)</button>
     <button class="btn-ghost" onclick="openVertragManuell()">✍ Manuell anlegen (ohne PDF)</button>
+    <button class="btn-ghost" onclick="document.getElementById('bulk-file').click()">📎 PDFs bestehenden Verträgen zuordnen</button>
     <span style="font-size:10.5px;color:var(--ink3);font-family:monospace">PDF wird automatisch analysiert – Kosten (netto), Laufzeit & Kündigungsfrist werden vorausgefüllt</span>
   </div>
   <div class="seed-box" id="seed-box" style="display:none">
@@ -490,6 +497,7 @@ tbody td:last-child{border-right:none}
     <div class="modal-f" id="vt-modal-foot"></div>
   </div>
 </div>
+<input type="file" id="bulk-file" accept="application/pdf,.pdf" multiple style="display:none" onchange="bulkZuordnen([...this.files]);this.value=''">
 <input type="file" id="vt-file" accept="application/pdf,.pdf" style="display:none" onchange="handleVertragFile(this.files[0]);this.value=''">
 
 <script>
@@ -1613,6 +1621,73 @@ async function seedVersicherungen(){
   if(error){toast('⚠ '+error.message);return;}
   rows.forEach(r=>allData[r.id]=r);
   rerenderAll(); updateScores(); toast('🛡 8 Versicherungen übernommen');
+}
+
+
+// ── MEHRERE PDFs BESTEHENDEN VERTRÄGEN ZUORDNEN ──────────────────────────
+const normTxt=s=>String(s||'').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/u\u0308/g,'ue').replace(/o\u0308/g,'oe').replace(/a\u0308/g,'ae');
+const STOPW=new Set(['vkb','versicherung','vertrag','gmbh','und','der','die','das','police','leitvertrag','gebaeude','inhalt']);
+function nrKeys(r){ return String(cur(r.id,'buchungsbeispiel',r.buchungsbeispiel)||'').split(/[\/,;]| - /).map(x=>normTxt(x).replace(/[^a-z0-9]/g,'')).filter(x=>x.length>=6); }
+function nameKeys(r){
+  const n=normTxt(r.name); const k=n.split(/[^a-z0-9&]+/).filter(w=>w.length>=4&&!STOPW.has(w));
+  if(/d\s?&\s?o/.test(n)) k.push('_do_','dundo','d&o');
+  return k;
+}
+function scoreDatei(fname,text,r){
+  const f='_'+normTxt(fname).replace(/\.pdf$/,'').replace(/[^a-z0-9&]+/g,'_')+'_';
+  const t=normTxt(text).replace(/\s+/g,''); let s=0, why=[];
+  if(nrKeys(r).some(k=>t.includes(k)||f.replace(/_/g,'').includes(k))){ s+=10; why.push('Vertragsnr.'); }
+  const nk=nameKeys(r).filter(k=>f.includes(k.startsWith('_')?k:k.replace(/&/g,'')));
+  if(nk.length){ s+=5*nk.length; why.push('Dateiname'); }
+  else if(nameKeys(r).filter(k=>!k.startsWith('_')).some(k=>t.includes(k.replace(/&/g,'')))) { s+=2; why.push('Text'); }
+  return {s,why};
+}
+async function bulkZuordnen(files){
+  if(!files.length) return;
+  if(!connected){toast('⚠ Nur mit Supabase-Verbindung');return;}
+  const vertr=Object.values(allData).filter(r=>r.quelle==='Vertragsdokument'&&!r.archiviert);
+  if(!vertr.length){toast('⚠ Noch keine Verträge vorhanden');return;}
+  const m=document.getElementById('vt-modal');
+  document.querySelector('#vt-modal .modal-h b').textContent='📎 PDFs Verträgen zuordnen';
+  m.classList.add('open');
+  document.getElementById('vt-modal-foot').innerHTML='';
+  const res=[];
+  for(let i=0;i<files.length;i++){
+    const f=files[i];
+    document.getElementById('vt-modal-body').innerHTML=`<div class="an-state"><div class="spinner"></div><div>Lese ${i+1} von ${files.length}: <b>${esc(f.name)}</b></div><div id="an-msg" style="font-size:10.5px;color:var(--ink3)"></div></div>`;
+    let text='';
+    try{ await loadScript(LIBS.pdf); pdfjsLib.GlobalWorkerOptions.workerSrc=LIBS.pdfWorker;
+      const pdf=await pdfjsLib.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise;
+      for(let p=1;p<=Math.min(pdf.numPages,6);p++) text+=await VX.pageText(await pdf.getPage(p))+'\n';
+    }catch(e){ console.warn(e); }
+    let sc=vertr.map(r=>({r,...scoreDatei(f.name,text,r)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s);
+    // gescannt & keine Zuordnung über Dateiname -> Texterkennung der ersten Seite
+    if(!sc.length && text.replace(/\s/g,'').length<100){
+      try{ setAnState('Gescanntes PDF – Texterkennung …'); const o=await pdfTextLesen(f); text=o.text;
+        sc=vertr.map(r=>({r,...scoreDatei(f.name,text,r)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s); }catch(e){ console.warn(e); }
+    }
+    const nrTreffer=sc.filter(x=>x.why.includes('Vertragsnr.')).length;
+    let pick='', status='';
+    if(nrTreffer>2){ status=`Übersichtsdokument – passt zu ${nrTreffer} Verträgen, bitte selbst wählen`; }
+    else if(sc.length && (sc.length===1 || sc[0].s>sc[1].s)){ pick=sc[0].r.id; status='Erkannt über '+sc[0].why.join(' + '); }
+    else if(sc.length){ status='Mehrere mögliche Verträge – bitte prüfen'; pick=sc[0].r.id; }
+    else status='Nicht erkannt – bitte Vertrag wählen';
+    res.push({f,pick,status,ok:!!pick&&nrTreffer<=2&&!(sc.length>1&&sc[0].s===sc[1].s)});
+  }
+  window._bz=res;
+  const opts=sel=>`<option value="">— nicht hochladen —</option>`+groupByKat(vertr).map(([k,l])=>`<optgroup label="${katIcon(k)} ${esc(k)}">${l.map(r=>`<option value="${r.id}" ${r.id===sel?'selected':''}>${esc(r.name)}${(allDocs[r.id]||[]).length?' (📎 '+allDocs[r.id].length+')':''}</option>`).join('')}</optgroup>`).join('');
+  document.getElementById('vt-modal-body').innerHTML=`<div class="rv-hint">Bitte Zuordnung prüfen. Grün = sicher erkannt, gelb = bitte kontrollieren. Ein Dokument (z.B. eine Gesamtübersicht) kannst du auch keinem Vertrag zuordnen.</div>`+
+    res.map((x,i)=>`<div class="bz-row ${x.ok?'ok':'warn'}"><div class="fn">📄 ${esc(x.f.name)}</div><div class="st">${esc(x.status)}</div><select id="bz_${i}">${opts(x.pick)}</select></div>`).join('');
+  document.getElementById('vt-modal-foot').innerHTML=`<button class="btn-ghost" onclick="closeVertragModal()">Abbrechen</button><button class="btn-new" id="bz-go" onclick="bulkHochladen()">📎 Zugeordnete hochladen</button>`;
+}
+async function bulkHochladen(){
+  const res=window._bz||[]; const btn=document.getElementById('bz-go'); btn.disabled=true;
+  let n=0;
+  for(let i=0;i<res.length;i++){
+    const id=document.getElementById('bz_'+i).value; if(!id) continue;
+    btn.textContent=`Lade hoch … ${n+1}`; await uploadDoc(id,res[i].f); n++;
+  }
+  closeVertragModal(); renderVertraege(); toast(`📎 ${n} Dokument(e) angehängt`);
 }
 
 
