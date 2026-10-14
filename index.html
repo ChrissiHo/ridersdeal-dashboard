@@ -211,6 +211,42 @@ tbody td:last-child{border-right:none}
 /* LEGENDE */
 .legende{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;font-size:10.5px;align-items:center}
 .legende-item{display:flex;align-items:center;gap:5px}
+
+/* ── VERTRAG-UPLOAD & ANALYSE ── */
+.vt-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.btn-new{padding:8px 14px;background:var(--acc);color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:12px;font-weight:600}
+.btn-new:hover{background:#1526b8}
+.btn-ghost{padding:8px 14px;background:var(--white);color:var(--ink2);border:1px solid var(--rule);border-radius:3px;cursor:pointer;font-size:12px}
+.btn-ghost:hover{border-color:var(--ink3)}
+.vt-sum{display:grid;grid-template-columns:repeat(3,minmax(140px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin-bottom:16px}
+.vt-sum>div{background:var(--white);padding:10px 14px}
+.vt-sum .l{font-family:monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.vt-sum .v{font-size:18px;font-weight:800;margin-top:2px}
+.vt-empty{padding:50px 20px;text-align:center;background:var(--white);border:1px dashed var(--rule);border-radius:4px;color:var(--ink3);font-size:12px;line-height:1.7}
+.modal-bg{position:fixed;inset:0;background:rgba(15,19,24,.55);z-index:90;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+.modal-bg.open{display:flex}
+.modal{background:var(--white);border-radius:6px;width:100%;max-width:760px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
+.modal-h{background:var(--ink);color:#fff;padding:14px 18px;display:flex;align-items:center;gap:10px}
+.modal-h b{font-size:14px;flex:1}
+.modal-h button{background:none;border:none;color:rgba(255,255,255,.6);font-size:16px;cursor:pointer}
+.modal-b{padding:18px}
+.drop{border:2px dashed var(--doc-border);background:var(--doc-bg);border-radius:6px;padding:36px 20px;text-align:center;cursor:pointer;transition:all .15s}
+.drop:hover,.drop.over{border-color:var(--acc);background:var(--acc-lt)}
+.drop .big{font-size:28px;margin-bottom:6px}
+.drop .t{font-size:13px;font-weight:600;color:var(--ink)}
+.drop .s{font-size:11px;color:var(--ink3);margin-top:4px}
+.an-state{display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 10px;color:var(--ink2);font-size:12px;text-align:center}
+.rv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.rv-grid .full{grid-column:1/-1}
+.rv-f label{display:block;font-size:9px;font-family:monospace;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.rv-f input,.rv-f textarea{width:100%;padding:6px 8px;border:1px solid var(--rule);border-radius:3px;font-size:12px;font-family:system-ui;outline:none;background:var(--white)}
+.rv-f input:focus,.rv-f textarea:focus{border-color:var(--acc);background:var(--acc-lt)}
+.rv-f textarea{resize:vertical;min-height:60px;line-height:1.45}
+.rv-sec{grid-column:1/-1;font-size:9px;font-family:monospace;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--ink);border-bottom:1px solid var(--rule);padding-bottom:4px;margin-top:6px}
+.rv-hint{background:var(--yel-lt);border:1px solid #EAD38A;color:#6B5200;border-radius:4px;padding:8px 10px;font-size:11px;line-height:1.5;margin-bottom:12px}
+.rv-err{background:var(--red-lt);border:1px solid #F0C4BF;color:var(--red);border-radius:4px;padding:8px 10px;font-size:11px;line-height:1.5;margin-bottom:12px}
+.modal-f{display:flex;gap:8px;justify-content:flex-end;padding:12px 18px;border-top:1px solid var(--rule);background:#FAFAF8}
+@media(max-width:640px){.rv-grid{grid-template-columns:1fr}.vt-sum{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -288,7 +324,12 @@ tbody td:last-child{border-right:none}
 
 <!-- VERTRÄGE -->
 <div id="tab-vertraege" class="panel">
-  <div class="sec-h"><span class="sec-title">📄 Hauptverträge aus Dokumenten</span><span class="sec-cnt">Vollständig aus Vertragsdokumenten extrahiert</span></div>
+  <div class="sec-h"><span class="sec-title">📄 Hauptverträge aus Dokumenten</span><span class="sec-cnt">Kosten jeweils netto</span></div>
+  <div class="vt-bar">
+    <button class="btn-new" onclick="openVertragModal()">＋ Vertrag hochladen (PDF)</button>
+    <span style="font-size:10.5px;color:var(--ink3);font-family:monospace">PDF wird automatisch analysiert – Kosten (netto), Laufzeit & Kündigungsfrist werden vorausgefüllt</span>
+  </div>
+  <div id="vertraege-summary"></div>
   <div id="vertraege-container"><div class="loading"><div class="spinner"></div>Lade Verträge …</div></div>
 </div>
 
@@ -407,6 +448,16 @@ tbody td:last-child{border-right:none}
 </div>
 
 </div>
+
+<!-- MODAL: VERTRAG HOCHLADEN -->
+<div class="modal-bg" id="vt-modal" onclick="if(event.target===this)closeVertragModal()">
+  <div class="modal">
+    <div class="modal-h"><b>📄 Neuer Vertrag</b><button onclick="closeVertragModal()">✕</button></div>
+    <div class="modal-b" id="vt-modal-body"></div>
+    <div class="modal-f" id="vt-modal-foot"></div>
+  </div>
+</div>
+<input type="file" id="vt-file" accept="application/pdf,.pdf" style="display:none" onchange="handleVertragFile(this.files[0]);this.value=''">
 
 <script>
 const { createClient } = supabase;
@@ -793,6 +844,12 @@ function docBtnDiv(id){
 function renderVertraege(){
   const rows=getByQuelle('Vertragsdokument').filter(r=>!r.archiviert && r.status!=='📦 Archiviert');
   const container=document.getElementById('vertraege-container');
+  renderVertragSummary(rows);
+  if(!rows.length){
+    container.innerHTML=`<div class="vt-empty">Noch keine Verträge erfasst.<br>Lade oben ein Vertrags-PDF hoch – es wird automatisch ausgelesen und du kannst die Werte vor dem Speichern prüfen.</div>`;
+    document.getElementById('tb-v').textContent=0;
+    return;
+  }
   container.innerHTML=`
     <div style="font-size:10.5px;color:var(--ink3);margin-bottom:12px;font-family:monospace">
       ✎ = Feld bearbeiten · 📎 = Dokument hochladen · 💬 = Notiz hinzufügen
@@ -812,14 +869,17 @@ function renderVertraege(){
           <div class="cc-col-title">Vertragsdaten</div>
           ${ccField(r.id,'erste_buchung','Vertragsbeginn',r.erste_buchung||'')}
           ${ccField(r.id,'laufzeit_bis','Vertragsende',r.laufzeit_bis||'')}
-          ${ccField(r.id,'kosten_monat','Kosten/Mon.',r.kosten_monat||'')}
-          ${ccField(r.id,'buchungsbeispiel','Referenz',r.buchungsbeispiel||'')}
+          ${ccField(r.id,'kosten_monat','💶 Kosten/Monat (netto)',r.kosten_monat||'')}
+          ${ccField(r.id,'kosten_jahr','💶 Kosten/Jahr (netto)',r.kosten_jahr||'')}
+          ${ccField(r.id,'buchungsbeispiel','Vertragsnr. / Referenz',r.buchungsbeispiel||'')}
           ${ccField(r.id,'status','Status',r.status||'')}
           ${ccField(r.id,'abteilung','Abteilung',r.abteilung||'')}
           <div style="height:1px;background:var(--rule);margin:8px 0"></div>
           <div style="font-size:9px;font-family:monospace;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-weight:600">Kündigungskonditionen</div>
           ${ccField(r.id,'kuendigung_frist','⏰ Kündigungsfrist',r.kuendigung_frist||'')}
           ${ccField(r.id,'mindestlaufzeit','📅 Mindestlaufzeit',r.mindestlaufzeit||'')}
+          ${ccField(r.id,'verlaengerung','🔁 Verlängerung',r.verlaengerung||'')}
+          ${ccField(r.id,'kuendigung_bis','🚨 Kündigung spätestens',r.kuendigung_bis||'')}
         </div>
         <div class="cc-col">
           <div class="cc-col-title">Konditionen & Notizen</div>
@@ -853,6 +913,527 @@ function renderVertraege(){
     ccMakeEditable(el, id, feld, ml);
   });
 }
+
+// ── VERTRAG HOCHLADEN & AUTOMATISCH ANALYSIEREN (kostenlos, im Browser) ──
+// ── KOSTENLOSE VERTRAGSANALYSE (regelbasiert, läuft komplett im Browser) ──
+const VX = (() => {
+  const INTERN = /ridersdeal|riders deal|equestrian brands|regbrand|ridersschoice|riderschoice/i;
+  const NUMWORDS = {ein:1,eine:1,einem:1,einen:1,einer:1,one:1,a:1,an:1,zwei:2,two:2,drei:3,three:3,vier:4,four:4,fünf:5,five:5,sechs:6,six:6,
+    sieben:7,seven:7,acht:8,eight:8,neun:9,nine:9,zehn:10,ten:10,zwölf:12,twelve:12,achtzehn:18,eighteen:18,vierundzwanzig:24,
+    'twenty-four':24,sechsunddreißig:36,'thirty-six':36,weitere:null};
+  const MON = {jan:1,januar:1,january:1,feb:2,februar:2,february:2,mär:3,märz:3,maerz:3,mar:3,march:3,apr:4,april:4,mai:5,may:5,
+    jun:6,juni:6,june:6,jul:7,juli:7,july:7,aug:8,august:8,sep:9,sept:9,september:9,okt:10,oktober:10,oct:10,october:10,
+    nov:11,november:11,dez:12,dezember:12,dec:12,december:12};
+  const NUMW = '(\\d{1,3}|' + Object.keys(NUMWORDS).filter(k=>NUMWORDS[k]).sort((a,b)=>b.length-a.length).join('|') + ')';
+
+  const toNum = w => { if(w==null) return null; w=String(w).toLowerCase(); return /^\d+$/.test(w)?parseInt(w):(NUMWORDS[w]??null); };
+  const pad = n => String(n).padStart(2,'0');
+  const subFrist=(x,tage)=>{ const d=new Date(x);
+    if(tage%30!==0){ d.setDate(d.getDate()-tage); return d; }
+    const n=tage/30, last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate()===d.getDate();
+    const t=new Date(d.getFullYear(),d.getMonth()-n,1), dim=new Date(t.getFullYear(),t.getMonth()+1,0).getDate();
+    t.setDate(last?dim:Math.min(d.getDate(),dim)); return t; };
+  const fmtD = d => d ? `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}` : '';
+
+  // ── Datumsangaben ──
+  function findDates(s){
+    const out=[]; let m;
+    const y4 = y => { y=parseInt(y); return y<100 ? 2000+y : y; };
+    const push=(d,mo,y,i)=>{ if(mo>=1&&mo<=12&&d>=1&&d<=31&&y>=1990&&y<=2100) out.push({date:new Date(y,mo-1,d),i}); };
+    let re=/\b(\d{1,2})\.\s?(\d{1,2})\.\s?(\d{4}|\d{2})\b/g; while(m=re.exec(s)) push(+m[1],+m[2],y4(m[3]),m.index);
+    re=/\b(\d{1,2})\/(\d{1,2})\/(\d{4}|\d{2})\b/g;
+    const us=/inc\.|llc|usd|\$/i.test(s.slice(0,5000));
+    while(m=re.exec(s)){ let a=+m[1],b=+m[2]; if(a>12) push(a,b,y4(m[3]),m.index); else if(b>12) push(b,a,y4(m[3]),m.index); else us?push(b,a,y4(m[3]),m.index):push(a,b,y4(m[3]),m.index); }
+    re=/\b(\d{1,2})(?:\.|st|nd|rd|th)?\s+([A-Za-zÄÖÜäöü]{3,9})\.?\s+(\d{4})\b/g;
+    while(m=re.exec(s)){ const mo=MON[m[2].toLowerCase()]; if(mo) push(+m[1],mo,+m[3],m.index); }
+    re=/\b([A-Za-z]{3,9})\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})\b/g;
+    while(m=re.exec(s)){ const mo=MON[m[1].toLowerCase()]; if(mo) push(+m[2],mo,+m[3],m.index); }
+    re=/\b(?:ab|zum|bis|vom|from|to|until)\s+(\d{2})\/(\d{4})\b/g; // MM/JJJJ
+    while(m=re.exec(s)) push(1,+m[1],+m[2],m.index);
+    return out.sort((a,b)=>a.i-b.i);
+  }
+
+  // ── Beträge ──
+  function parseAmount(raw){
+    let s=raw.replace(/\s(?=\d{3}\b)/g,'');            // "11 000" -> "11000"
+    const lc=s.lastIndexOf(','), ld=s.lastIndexOf('.');
+    if(lc>-1&&ld>-1){ s = lc>ld ? s.replace(/\./g,'').replace(',','.') : s.replace(/,/g,''); }
+    else if(lc>-1){ s = /,\d{2}$/.test(s) ? s.replace(',','.') : s.replace(/,/g,''); }
+    else if(ld>-1){ if(/\.\d{3}$/.test(s) && !/\.\d{3}\.\d/.test(s)) s=s.replace(/\./g,''); else if((s.match(/\./g)||[]).length>1) s=s.replace(/\.(?=\d{3})/g,''); }
+    const n=parseFloat(s); return isFinite(n)?n:null;
+  }
+  const AMT = /(?:(€|EUR|\$|USD|CHF|£|GBP)\s?)?(-?\d{1,3}(?:[.,\s]\d{3})*(?:[.,]\d{1,2})?|-?\d+(?:[.,]\d{1,2})?)(?:\s?(€|EUR|\$|USD|CHF|£|GBP|Euro))?/g;
+  function amountsIn(line){
+    const res=[]; let m; AMT.lastIndex=0;
+    while(m=AMT.exec(line)){
+      const cur=m[1]||m[3]; const hasDec=/[.,]\d{2}$/.test(m[2]);
+      if(!cur && !hasDec) continue;                    // ohne Währung nur Beträge mit ,xx
+      const after=line.slice(m.index+m[0].length, m.index+m[0].length+3);
+      if(/^\s?%/.test(after)) continue;
+      const v=parseAmount(m[2]); if(v===null||v<=0) continue;
+      if(/^(19|20)\d{2}$/.test(m[2])&&!cur) continue;
+      res.push({v, cur:(cur||'EUR').replace('€','EUR').replace('$','USD').replace('Euro','EUR'), raw:m[0].trim()});
+    }
+    return res;
+  }
+
+  function analyse(text){
+    const hinweise=[], fund={};
+    const lines=text.split('\n').map(l=>l.replace(/\s+/g,' ').trim()).filter(Boolean);
+    const flat=lines.join('\n');
+    const low=flat.toLowerCase();
+    // Fließtext-Zeilen zu Sätzen zusammenführen (Tabellenzeilen mit großen Lücken bleiben einzeln)
+    const raw=text.split('\n').map(l=>l.trim());
+    const blocks=[]; let cur='';
+    for(const l of raw){
+      const tab=/\S {3,}\S/.test(l);
+      if(!l||tab||/:$/.test(cur)||/^([●○■•▪☐☒✓\-–]|\d{1,2}(\.\d{1,2})*\.?\s|[IVX]+\s?[-–.])/.test(l)){ if(cur) blocks.push(cur); cur=tab?'':l; if(tab) blocks.push(l); continue; }
+      cur = cur ? (cur.endsWith('-')&&/^[a-zäöü]/.test(l) ? cur.slice(0,-1)+l : cur+' '+l) : l;
+    }
+    if(cur) blocks.push(cur);
+    const sentences=blocks.flatMap(b=>b.replace(/\s+/g,' ').split(/(?<=[.;!?])\s+(?=[A-ZÄÖÜ„"(\d])/)).map(s=>s.trim()).filter(Boolean);
+
+    // ── Anbieter ──
+    const firmRe=/([A-ZÄÖÜ][\wÄÖÜäöüß&'\-]*(?:\s+(?:&\s+)?[A-ZÄÖÜ\d][\wÄÖÜäöüß&'\-.]*){0,4}),?\s+(GmbH\s*&\s*Co\.?\s*KG|GmbH|AG|SE|UG(?:\s*\(haftungsbeschränkt\))?|KG|e\.\s?K\.|Inc\.?|Ltd\.?|Limited|LLC|B\.V\.|S\.A\.|S\.?r\.?l\.|Sp\.\s?z\s?o\.?o\.?)(?![\wäöü])/g;
+    const firms={}; let m;
+    for(const L of lines){ firmRe.lastIndex=0; while(m=firmRe.exec(L)){
+      let name=(m[1]+' '+m[2]).replace(/\s+/g,' ');
+      for(let k=0;k<4;k++) name=name.replace(/^(?:Ansprechpartner|Anbieter|Vertragspartner|Lieferant|Zwischen|Between|Und|And|Der|Die|Das|Den|Von|Mit|Bei|Docusign|Envelope|Firma|Auftragnehmer|Auftraggeber|Hereafter|Customer|Kunde|Verkäufer|Contact|Partner)\s+/i,'');
+      name=name.trim();
+      if(INTERN.test(name)||name.length<4) continue;
+      if(/^(Amtsgericht|Sitz|Registergericht|Geschäftsführer|Bank|Postbank|Commerzbank|Sparkasse|Deutsche Bank)/i.test(name)) continue;
+      firms[name]=(firms[name]||0)+1 + (flat.indexOf(L)<1500?1:0);
+    }}
+    const firmList=Object.entries(firms).sort((a,b)=>b[1]-a[1]);
+    let anbieter=firmList[0]?.[0]||'';
+    if(!anbieter){
+      const dom=(flat.match(/@([\w-]+)\./g)||[]).map(d=>d.slice(1,-1)).find(d=>!INTERN.test(d)&&!/gmail|gmx|web|outlook|hotmail|yahoo|t-online/i.test(d));
+      if(dom){ anbieter=dom.split('-').map(w=>w[0].toUpperCase()+w.slice(1)).join('-'); hinweise.push('Anbieter aus E-Mail-Domain abgeleitet – bitte vollständigen Namen eintragen.'); }
+      else hinweise.push('Anbieter nicht sicher erkannt.');
+    }
+
+    // ── Vertragsnummer ──
+    let vertragsnummer='';
+    m=flat.match(/(?:Vertrags|Kunden|Angebots|Auftrags|Bestell|Service Order|Contract|Customer)[\s-]*(?:nummer|nr\.?|no\.?|n°|number|#)\s*[:.]?\s*([A-Z0-9][A-Z0-9\-\/]{2,24}(?:\s-\s\d+)?)/i);
+    if(m) vertragsnummer=m[1].trim();
+
+    // ── Laufzeit (von – bis) ──
+    let beginn=null, ende=null;
+    for(const s of sentences){
+      const r=s.match(/(?:vom|von|ab|from|between)\s+(.{6,22}?)\s+(?:bis(?: zum)?|to|until|–|-)\s+(.{6,22})/i);
+      if(r && /laufzeit|vertrag|licen|lizenz|term|valid|gültig|period|zeitraum/i.test(s) && !/angebot|signed before|unterzeichnet/i.test(s)){
+        const d=findDates(r[0]); if(d.length>=2){ beginn=d[0].date; ende=d[1].date; fund.laufzeit=s; break; }
+      }
+    }
+    if(!beginn){
+      for(let i=0;i<lines.length;i++){
+        const l=lines[i];
+        if(/vertragsbeginn|laufzeitbeginn|leistungsbeginn|gelten ab dem|gilt ab dem|beginn der|beginnt|begins|beginning on|start(?:ing)? date|starts|effective (?:date|as of)|gültig ab|wirksam ab|inkrafttreten/i.test(l)){
+          const d=findDates(l+' '+(lines[i+1]||'')); if(d.length){ beginn=d[0].date; fund.beginn=l; break; }
+        }
+      }
+    }
+    if(!ende){
+      for(let i=0;i<lines.length;i++){
+        const l=lines[i];
+        if(/vertragsende|laufzeitende|endet am|endet zum|laufzeit bis|end date|expir|ends on/i.test(l) && !/angebot|gültig bis/i.test(l)){
+          const d=findDates(l+' '+(lines[i+1]||'')); if(d.length){ ende=d[0].date; fund.ende=l; break; }
+        }
+      }
+    }
+    const unbefristet=/unbefristet|auf unbestimmte zeit|indefinite|unlimited period/i.test(flat);
+
+    // ── Mindestlaufzeit ──
+    let mindest='', mindestMon=null;
+    const unitMon = u => /jahr|year/i.test(u)?12:/woche|week/i.test(u)?0.25:1;
+    const setM=(n,s)=>{ mindestMon=n; mindest=n%12===0&&n>=12?`${n} Monate (${n/12} ${n===12?'Jahr':'Jahre'})`:`${n} Monate`; fund.mindest=s; };
+    const passes=[
+      [/mindest(?:vertrags)?laufzeit|vertragslaufzeit|subscription term|initial term|feste laufzeit|festlaufzeit/i,
+       new RegExp('(?:mindest(?:vertrags)?laufzeit|vertragslaufzeit|subscription term|initial term|feste laufzeit|festlaufzeit)[^.\\n]{0,60}?'+NUMW+'\\)?\\s*\\(?(?:\\d+\\)\\s*)?(monat|jahr|month|year)','i')],
+      [/./, new RegExp(NUMW+'\\)?[ -](monat|jahr|month|year)e?s?[ -]*(?:contract|vertrag|laufzeit|mindestlaufzeit|subscription)','i')],
+    ];
+    for(const [pre,re] of passes){ if(mindest) break;
+      for(const s of sentences){ if(!pre.test(s)) continue; const r=s.match(re); if(r){ const n=toNum(r[1]); if(n){ setM(Math.round(n*unitMon(r[2])),s); break; } } } }
+    if(!mindest && beginn && ende){ const mon=Math.round((ende-beginn)/(1000*60*60*24*30.44)); if(mon>0){ mindest=`${mon} Monate (aus Laufzeit berechnet)`; mindestMon=mon; } }
+    if(!mindest){
+      for(const s of sentences){ if(!/laufzeit|vertragsdauer|term of|duration/i.test(s)||/kündig|notice|terminat|trial|probe/i.test(s)) continue;
+        const r=s.match(new RegExp('(?:laufzeit|vertragsdauer|term of|duration)[^.\\n]{0,50}?'+NUMW+'\\)?\\s*(?:\\(\\d+\\)\\s*)?(monat|jahr|month|year)','i'));
+        if(r){ const n=toNum(r[1]); if(n){ setM(Math.round(n*unitMon(r[2])),s); break; } } }
+    }
+    if(!mindest && unbefristet) mindest='unbefristet / keine';
+
+    // ── Kündigungsfrist ──
+    let frist='', fristTage=null;
+    const kSent=sentences.map(s=>s.replace(/ankündig/gi,'ANKUEND')).filter(s=>/kündig|kuendig|kündbar|notice|terminat|cancel/i.test(s)&&!/außerordentlich|wichtigem grund|for cause|material breach|insolven/i.test(s));
+    kSent.sort((a,b)=>(/kündigungsfrist|notice period|written notice/i.test(b)?1:0)-(/kündigungsfrist|notice period|written notice/i.test(a)?1:0));
+    if(/☒\s*jederzeit/.test(flat)){ frist='jederzeit kündbar'; fristTage=0; }
+    const uRe=new RegExp(NUMW+'\\)?\\s*(?:\\(\\d+\\)\\s*)?(werktag|arbeitstag|kalendertag|tag|woche|monat|quartal|business day|day|week|month)[a-zäöü]*','gi');
+    for(const s of (frist?[]:kSent)){
+      const kIdx=[...s.matchAll(/kündig|kuendig|kündbar|frist|notice|terminat|cancel/gi)].map(x=>x.index);
+      let r=null;
+      for(const x of s.matchAll(uRe)){
+        const pre=s.slice(Math.max(0,x.index-30),x.index);
+        if(/renew|verlänger|additional|weitere|trial|probe|laufzeit von|term of/i.test(pre)) continue;
+        if(kIdx.some(k=>Math.abs(k-x.index)<70)){ r=x; break; }
+      }
+      if(!r) continue;
+      if(/rechnung|zahlung|payment|invoice|fällig|widerruf|gewährleistung|haftung|aufbewahr|verjähr/i.test(s) && !/kündig|terminat|notice/i.test(s.slice(0,80))) continue;
+      const n=toNum(r[1]); if(!n) continue;
+      const u=r[2].toLowerCase();
+      const de = /woche|week/.test(u)?(n===1?'Woche':'Wochen'):/monat|month/.test(u)?(n===1?'Monat':'Monate'):/quartal/.test(u)?'Quartal':(n===1?'Tag':'Tage');
+      fristTage = n*(/woche|week/.test(u)?7:/monat|month/.test(u)?30:/quartal/.test(u)?91:1);
+      let zum='';
+      const z=s.match(/zum\s+(ende\s+(?:des|eines|der)\s+[a-zäöü]+(?:\s+[a-zäöü]+)?|monatsende|quartalsende|jahresende|halbjahresende|laufzeitende|vertragsende|ablauf\s+der\s+[a-zäöü]+)/i)
+          || s.match(/(end of (?:the )?(?:current |initial |subscription |renewal )?(?:term|month|quarter|year|period))/i);
+      if(z) zum=' zum '+(/end of/i.test(z[1])?(/month/i.test(z[1])?'Monatsende':/quarter/i.test(z[1])?'Quartalsende':/year/i.test(z[1])?'Jahresende':'Laufzeitende'):z[1].replace(/\s+/g,' '));
+      else if(/in advance|prior|vorher|im voraus|vor ablauf|vor ende/i.test(s)) zum=' vor Laufzeitende';
+      frist=`${n} ${de}${zum}`; fund.frist=s; break;
+    }
+    if(!frist && kSent.some(s=>/jederzeit|any time|anytime/i.test(s))){ frist='jederzeit kündbar'; fristTage=0; }
+    if(!frist && /monatlich kündbar|monthly cancel/i.test(flat)){ frist='monatlich kündbar'; fristTage=30; }
+    if(!frist && /(?:according to|gemäß|laut|gem\.)\s+(?:the\s+)?(?:tos|agb|terms)/i.test(kSent.join(' ')+' '+flat)) frist='laut AGB des Anbieters (nicht im Dokument)';
+
+    // ── Verlängerung ──
+    let verl='', verlMon=null;
+    for(const s of sentences){
+      if(!/verlänger|renew|prolong/i.test(s)) continue;
+      if(/nicht automatisch|keine automatische|not automatically|no automatic/i.test(s)){ verl='keine automatische Verlängerung'; fund.verl=s; break; }
+      const r=s.match(new RegExp('(?:um|for|by|jeweils|weitere|additional|successive|further)\\s+(?:weitere\\s+|additional\\s+|jeweils\\s+)?'+NUMW+'\\)?\\s*(?:\\(\\d+\\)\\s*)?[- ]?(monat|jahr|month|year)','i'));
+      if(r){ const n=toNum(r[1]); if(n){ verlMon=n*unitMon(r[2]); verl=`automatisch um ${verlMon} Monate`; fund.verl=s; break; } }
+      if(/stillschweigend|automatisch|automatically|auto-renew/i.test(s)){ verl='automatische Verlängerung (Dauer prüfen)'; fund.verl=s; break; }
+    }
+
+    // ── Kosten ──
+    const RX={
+      mon:/monatl|pro monat|je monat|\/\s?monat|mtl\.?|monthly|per month|\/\s?mo\b|p\.\s?m\.|monatsgebühr|monatspauschale|grundgebühr/i,
+      jahr:/jährl|jaehrl|pro jahr|kalenderjahr|geschäftsjahr|vertragsjahr|je jahr|\/\s?jahr|p\.\s?a\.|per year|per annum|yearly|annual|jahresgebühr|jahresbeitrag|jahreslizenz|jahrespauschale/i,
+      quart:/quartal|quarterly|per quarter/i,
+      net:/netto|zzgl|zuzügl|ex\.? vat|excl|exkl|plus vat|ohne mwst|ohne ust|net\b|vat not included/i,
+      gross:/brutto|inkl\.?\s*(mwst|ust)|incl\.?\s*vat|gesamtbetrag|zahlbetrag|endbetrag/i,
+      tax:/umsatzsteuer|mehrwertsteuer|mwst\.?\s*\d|ust\.?\s*\d|vat\s*\d|\d\s?%\s*(ust|mwst|vat)/i,
+      total:/summe|gesamt|total|zwischensumme|subtotal/i,
+      skip:/mind\.|mindestens|jedoch|% der|stunde|std\.|per hour|hourly|stundensatz|tagessatz|per day|je tag|iban|bic|stammkapital|haftung|vertragsstrafe|overage|überschreit|schadensersatz|mahn|verzug|zinsen|pro (?:paket|sendung|stück|anruf|minute|ticket|kg)|je (?:paket|sendung|stück|anruf|minute|ticket|kg)|per (?:package|parcel|minute|call|unit)/i,
+      once:/einmalig|einrichtung|setup|set-up|pauschal|onboarding|one-time|one time|implementierung|audit/i
+    };
+    const cands=[];
+    lines.forEach((l,i)=>{
+      const am=amountsIn(l); if(!am.length) return;
+      const ctx=(lines[i-1]||'')+' '+l;
+      if(RX.skip.test(l)||RX.tax.test(l)) return;
+      am.forEach(a=>cands.push({...a,line:l,
+        mon:RX.mon.test(l)||(RX.mon.test(ctx)&&!RX.jahr.test(l)), jahr:RX.jahr.test(l), quart:RX.quart.test(l),
+        net:RX.net.test(l), gross:RX.gross.test(l)&&!RX.net.test(l), total:RX.total.test(l), once:RX.once.test(ctx)}));
+    });
+    const best=list=>list.sort((a,b)=>(b.total-a.total)||(b.net-a.net)||(b.v-a.v))[0];
+    const toNet=c=>{ if(c.gross){ hinweise.push(`Bruttobetrag ${c.raw} mit 19 % USt auf netto zurückgerechnet.`); return c.v/1.19; } return c.v; };
+    let km=null, kj=null, einmal=null, waehrung='EUR', basis='';
+    const recurring=cands.filter(c=>!c.once||c.mon||c.jahr);
+    const cm=best(recurring.filter(c=>c.mon&&!c.jahr));
+    const cj=best(recurring.filter(c=>c.jahr));
+    const cq=best(recurring.filter(c=>c.quart&&!c.mon&&!c.jahr));
+    if(cm){ km=toNet(cm); waehrung=cm.cur; basis=cm.line; }
+    if(cj){ kj=toNet(cj); waehrung=cj.cur; basis=basis||cj.line; }
+    if(!cm&&!cj&&cq){ kj=toNet(cq)*4; waehrung=cq.cur; basis=cq.line; hinweise.push('Quartalsbetrag × 4 = Jahreskosten.'); }
+    if(km===null&&kj===null){
+      const tot=best(cands.filter(c=>c.total||c.net));
+      if(tot){
+        const term12=/12\)?\s*(monat|month)|twelve|jährlich|annual|yearly|pro jahr/i.test(low);
+        const monthly=/monatlich|monthly|pro monat|je monat/i.test(low);
+        const once=RX.once.test(low.slice(0,4000)) && !term12 && !monthly;
+        if(once){ einmal=toNet(tot); hinweise.push(`${tot.raw} als Einmalbetrag erkannt (keine wiederkehrenden Kosten gefunden).`); }
+        else if(monthly&&!term12){ km=toNet(tot); hinweise.push(`Gesamtbetrag ${tot.raw} als Monatsbetrag interpretiert – bitte prüfen.`); }
+        else { kj=toNet(tot); hinweise.push(`Gesamtbetrag ${tot.raw} als Jahresbetrag interpretiert – bitte prüfen.`); }
+        waehrung=tot.cur; basis=tot.line;
+      }
+    }
+    const onceC=best(cands.filter(c=>c.once&&!c.mon&&!c.jahr&&c.v>=10&&(c.cur!=='EUR'||/€|eur/i.test(c.raw)||c.total||c.net)));
+    if(onceC && einmal===null && onceC.line!==basis) einmal=toNet(onceC);
+    if(km===null&&kj!==null) km=kj/12;
+    if(kj===null&&km!==null) kj=km*12;
+    if(km===null&&kj===null&&einmal===null) hinweise.push('Keine Kosten gefunden – bitte manuell eintragen (evtl. stehen die Preise in einem separaten Angebot).');
+    if(waehrung!=='EUR') hinweise.push(`Beträge in ${waehrung} – nicht in Euro umgerechnet.`);
+    if(basis) fund.kosten=basis;
+
+    // ── Zahlungsintervall ──
+    let intervall='';
+    if(/billing cycle:?\s*quarterly|quartalsweise|vierteljährlich/i.test(flat)) intervall='quartalsweise';
+    else if(/billing cycle:?\s*monthly|monatlich im voraus|monatliche abrechnung|monatlich abgerechnet/i.test(flat)) intervall='monatlich';
+    else if(/billing cycle:?\s*annual|jährlich im voraus|jährliche abrechnung|jährlich abgerechnet|per year|pro jahr/i.test(flat)) intervall='jährlich';
+    else if(cm) intervall='monatlich'; else if(cj) intervall='jährlich';
+
+    // ── Kontakt extern ──
+    const mails=[...new Set((flat.match(/[\w.+-]+@[\w-]+\.[\w.-]+/g)||[]).filter(e=>!INTERN.test(e)&&!/^(ar\.|billing|invoice|rechnung|buchhaltung|noreply|no-reply|datenschutz|privacy|legal)/i.test(e)))].slice(0,3);
+    const kontakt=[];
+    for(const e of mails){
+      const l=lines.find(x=>x.includes(e))||'';
+      const n=null&&l.match(/(?:ansprechpartner(?:in)?|kontakt|contact|account manager|berater(?:in)?)\s*(?:email)?\s*:?\s*((?:Herr|Frau)\s+)?([A-ZÄÖÜ][a-zäöüß]+\s+[A-ZÄÖÜ][a-zäöüß\-]+)/);
+      let nm=n?n[2]:'';
+      if(!nm){ const before=l.slice(0,l.indexOf(e)); const nn=before.match(/([A-ZÄÖÜ][a-zäöüß]+\s+[A-ZÄÖÜ][a-zäöüß\-]+)[\s\d\/()+-]*$/); if(nn&&!/Contact|Email|Kontakt|Mail/i.test(nn[1])&&!INTERN.test(nn[1])) nm=nn[1]; }
+      const ph=l.match(/(\+?\d[\d\s\/()-]{6,18}\d)/);
+      kontakt.push([nm,e,ph?ph[1].trim():''].filter(Boolean).join(', '));
+    }
+    const nameLine=flat.match(new RegExp((anbieter.split(' ')[0]||'xxx')+'\\s+(?:contact|ansprechpartner)\\s*:\\s*([A-ZÄÖÜ][a-zäöüß]+\\s+[A-ZÄÖÜ][a-zäöüß\\-]+)','i'));
+    if(nameLine && !kontakt.some(k=>k.includes(nameLine[1]))) kontakt.unshift(nameLine[1]);
+    const tel=flat.match(/(?:tel\.?|telefon|phone|fon)\s*:?\s*(\+?[\d\s\/()-]{7,20}\d)/i);
+    if(tel && !INTERN.test(lines.find(l=>l.includes(tel[1]))||'')) kontakt.push('Tel. '+tel[1].trim());
+
+    // ── Kündigung spätestens ──
+    let spaet='';
+    const addM=(d,n)=>{ const x=new Date(d); x.setMonth(x.getMonth()+n); return x; };
+    let endD=ende;
+    if(!endD && beginn && mindestMon){ endD=addM(beginn,Math.round(mindestMon)); endD.setDate(endD.getDate()-1); }
+    if(!endD && fristTage>0 && /jahresende|monatsende|quartalsende/i.test(frist)){
+      // unbefristet: nächster mögliche Termin zum Jahres-/Quartals-/Monatsende
+      const today=new Date(); today.setHours(0,0,0,0);
+      const dl=x=>subFrist(x,fristTage);
+      const step=/jahresende/i.test(frist)?12:/quartalsende/i.test(frist)?3:1;
+      let e=new Date(today.getFullYear(), /jahresende/i.test(frist)?12:(/quartalsende/i.test(frist)?Math.ceil((today.getMonth()+1)/3)*3:today.getMonth()+1), 0);
+      let g=0; while(dl(e)<today && g++<40) e=new Date(e.getFullYear(), e.getMonth()+1+step, 0);
+      spaet=fmtD(dl(e)); hinweise.push(`Nächstmöglicher Kündigungstermin: ${fmtD(e)} → Kündigung spätestens ${spaet}.`);
+    }
+    if(endD && fristTage!==null && fristTage>0){
+      const today=new Date(); today.setHours(0,0,0,0);
+      const step=verlMon||mindestMon||12;
+      let e=new Date(endD), guard=0;
+      const dl=x=>subFrist(x,fristTage);
+      while(dl(e)<today && verl && !/keine/.test(verl) && guard++<20){ e=addM(new Date(e.getFullYear(),e.getMonth(),e.getDate()+1),Math.round(step)); e.setDate(e.getDate()-1); }
+      spaet=fmtD(dl(e));
+      if(dl(e)<today) hinweise.push('Berechneter Kündigungstermin liegt in der Vergangenheit – Vertrag evtl. bereits verlängert, bitte prüfen.');
+      if(e.getTime()!==endD.getTime()) hinweise.push(`Laufzeitende nach automatischer Verlängerung: ${fmtD(e)}.`);
+    }
+
+    // ── Konditionen (kurze Stichpunkte) ──
+    const kond=[];
+    const kw=/preiserhöh|preisanpass|price increase|then-current pricing|zahlungsziel|zahlbar innerhalb|payment within|due immediately|sonderkündig|exclusive of discounts|overage charges|mindestabnahme|mindestumsatz/i;
+    for(const s of sentences){ if(kw.test(s)&&s.length>25&&s.length<240&&!/\s{3,}/.test(s)&&!kond.includes(s)) kond.push(s); if(kond.length>=4) break; }
+
+    // ── Fundstellen als Hinweise ──
+    const cut=s=>s.length>140?s.slice(0,137)+'…':s;
+    if(fund.frist) hinweise.push('Kündigungsfrist aus: „'+cut(fund.frist)+'“');
+    if(fund.kosten) hinweise.push('Kosten aus: „'+cut(fund.kosten)+'“');
+    if(!frist) hinweise.push('Kündigungsfrist nicht gefunden – steht evtl. in den AGB.');
+    if(!beginn) hinweise.push('Vertragsbeginn nicht gefunden.');
+
+    return {
+      anbieter, vertragsgegenstand:'', vertragsnummer, abteilung:'',
+      vertragsbeginn:fmtD(beginn), vertragsende: ende?fmtD(ende):(unbefristet?'unbefristet':''),
+      mindestlaufzeit:mindest, verlaengerung:verl, kuendigungsfrist:frist, kuendigung_spaetestens:spaet,
+      kosten_monat_netto: km!==null?Math.round(km*100)/100:null,
+      kosten_jahr_netto: kj!==null?Math.round(kj*100)/100:null,
+      einmalkosten_netto: einmal!==null?Math.round(einmal*100)/100:null,
+      zahlungsintervall:intervall, waehrung,
+      ext_ansprechpartner:kontakt.join('\n'), konditionen:kond.join('\n'),
+      unsicherheiten:hinweise.join('\n'), kosten_berechnung:''
+    };
+  }
+
+  // Text aus pdf.js-Seite zeilenweise rekonstruieren
+  async function pageText(page){
+    const tc=await page.getTextContent();
+    const rows=[];
+    for(const it of tc.items){
+      if(!it.str) continue;
+      const y=Math.round(it.transform[5]), x=it.transform[4];
+      let r=rows.find(r=>Math.abs(r.y-y)<=3); if(!r){ r={y,items:[]}; rows.push(r); }
+      r.items.push({x,s:it.str,w:it.width||0});
+    }
+    rows.sort((a,b)=>b.y-a.y);
+    return rows.map(r=>{ r.items.sort((a,b)=>a.x-b.x); let out='',endX=null;
+      for(const it of r.items){ if(endX!==null) out+= (it.x-endX>15)?'   ':(it.x-endX>1?' ':''); out+=it.s; endX=it.x+it.w; }
+      return out; }).join('\n');
+  }
+
+  return { analyse, pageText, findDates, parseAmount };
+})();
+
+const LIBS={pdf:'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+  pdfWorker:'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
+  ocr:'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js'};
+const _libs={};
+function loadScript(src){ return _libs[src] ||= new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('Bibliothek konnte nicht geladen werden: '+src));document.head.appendChild(s);}); }
+function setAnState(msg){ const el=document.getElementById('an-msg'); if(el) el.textContent=msg; }
+
+async function pdfTextLesen(file){
+  await loadScript(LIBS.pdf);
+  pdfjsLib.GlobalWorkerOptions.workerSrc=LIBS.pdfWorker;
+  const pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+  const max=Math.min(pdf.numPages,40); let text='';
+  for(let i=1;i<=max;i++){ setAnState(`Lese Seite ${i} von ${max} …`); text+=await VX.pageText(await pdf.getPage(i))+'\n'; }
+  let ocr=false;
+  if(text.replace(/\s/g,'').length < 80*max){        // gescanntes PDF -> Texterkennung
+    ocr=true; await loadScript(LIBS.ocr);
+    setAnState('Gescanntes PDF – Texterkennung wird geladen …');
+    const worker=await Tesseract.createWorker('deu+eng');
+    const pages=Math.min(pdf.numPages,10); text='';
+    for(let i=1;i<=pages;i++){
+      setAnState(`Texterkennung Seite ${i} von ${pages} … (dauert pro Seite einige Sekunden)`);
+      const page=await pdf.getPage(i), vp=page.getViewport({scale:2});
+      const cv=document.createElement('canvas'); cv.width=vp.width; cv.height=vp.height;
+      await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
+      const {data}=await worker.recognize(cv); text+=data.text+'\n';
+    }
+    await worker.terminate();
+  }
+  return {text,ocr};
+}
+let vtPending = null; // {file, data}
+
+function escAttr(s){return esc(s).replace(/"/g,'&quot;');}
+function cur(id,feld,val){return allEdits[id+'_'+feld]!==undefined?allEdits[id+'_'+feld]:val;}
+
+// "1.234,56 €" / "1234.56" / 1234.56 -> Zahl
+function parseEuro(v){
+  if(v===null||v===undefined||v==='')return null;
+  if(typeof v==='number')return isFinite(v)?v:null;
+  let s=String(v).replace(/[^\d,.\-]/g,'');
+  if(!s)return null;
+  if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');
+  else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,'');
+  const n=parseFloat(s);return isFinite(n)?n:null;
+}
+function fmtEuro(n){return n===null||n===undefined||!isFinite(n)?'':n.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+function renderVertragSummary(rows){
+  const el=document.getElementById('vertraege-summary');if(!el)return;
+  if(!rows.length){el.innerHTML='';return;}
+  let m=0,y=0,unbekannt=0;
+  rows.forEach(r=>{
+    let km=parseEuro(cur(r.id,'kosten_monat',r.kosten_monat)), kj=parseEuro(cur(r.id,'kosten_jahr',r.kosten_jahr));
+    if(km===null&&kj!==null)km=kj/12;
+    if(kj===null&&km!==null)kj=km*12;
+    if(km===null){unbekannt++;return;}
+    m+=km;y+=kj;
+  });
+  el.innerHTML=`<div class="vt-sum">
+    <div><div class="l">Verträge aktiv</div><div class="v">${rows.length}</div></div>
+    <div><div class="l">Σ Kosten / Monat netto</div><div class="v" style="color:var(--acc)">${fmtEuro(m)} €</div></div>
+    <div><div class="l">Σ Kosten / Jahr netto</div><div class="v" style="color:var(--acc)">${fmtEuro(y)} €</div>${unbekannt?`<div style="font-size:9px;color:var(--red);font-family:monospace;margin-top:2px">${unbekannt} Vertrag/Verträge ohne Kostenangabe</div>`:''}</div>
+  </div>`;
+}
+
+function openVertragModal(){
+  if(!connected){toast('⚠ Upload nur mit Supabase-Verbindung');return;}
+  vtPending=null;
+  document.getElementById('vt-modal-body').innerHTML=`
+    <div class="drop" id="vt-drop" onclick="document.getElementById('vt-file').click()">
+      <div class="big">📄</div>
+      <div class="t">Vertrags-PDF hier ablegen oder klicken</div>
+      <div class="s">Wird automatisch ausgelesen: Kosten netto (Monat & Jahr), Laufzeit, Kündigungsfrist · max. 25 MB</div>
+    </div>`;
+  document.getElementById('vt-modal-foot').innerHTML=`<button class="btn-ghost" onclick="closeVertragModal()">Abbrechen</button>`;
+  document.getElementById('vt-modal').classList.add('open');
+  const d=document.getElementById('vt-drop');
+  ['dragenter','dragover'].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.add('over');}));
+  ['dragleave','drop'].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.remove('over');}));
+  d.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)handleVertragFile(f);});
+}
+function closeVertragModal(){document.getElementById('vt-modal').classList.remove('open');vtPending=null;}
+
+function fileToBase64(file){
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=()=>rej(new Error('Datei konnte nicht gelesen werden'));r.readAsDataURL(file);});
+}
+
+async function handleVertragFile(file){
+  if(!file)return;
+  if(!/pdf$/i.test(file.type)&&!/\.pdf$/i.test(file.name)){toast('⚠ Bitte ein PDF auswählen');return;}
+  if(file.size>25*1024*1024){toast('⚠ PDF ist größer als 25 MB');return;}
+  document.getElementById('vt-modal').classList.add('open');
+  document.getElementById('vt-modal-body').innerHTML=`<div class="an-state"><div class="spinner"></div>
+    <div><b>${esc(file.name)}</b> wird analysiert …</div>
+    <div id="an-msg" style="font-size:10.5px;color:var(--ink3)">Starte …</div></div>`;
+  document.getElementById('vt-modal-foot').innerHTML='';
+  let data={}, fehler='';
+  try{
+    const {text,ocr}=await pdfTextLesen(file);
+    if(text.replace(/\s/g,'').length<50) throw new Error('Im PDF wurde kein lesbarer Text gefunden.');
+    setAnState('Werte werden ausgelesen …');
+    data=VX.analyse(text);
+    if(ocr) data.unsicherheiten='Gescanntes Dokument – Text per Texterkennung gelesen, Werte besonders sorgfältig prüfen.\n'+(data.unsicherheiten||'');
+  }catch(e){
+    console.error(e);
+    fehler=e.message;
+  }
+  vtPending={file,data};
+  renderVertragReview(data,fehler);
+}
+
+function renderVertragReview(d,fehler){
+  // Fehlende Monats-/Jahreswerte gegenseitig ergänzen
+  let km=parseEuro(d.kosten_monat_netto), kj=parseEuro(d.kosten_jahr_netto);
+  if(km===null&&kj!==null)km=kj/12;
+  if(kj===null&&km!==null)kj=km*12;
+  const f=(id,label,val,cls='')=>`<div class="rv-f ${cls}"><label for="rv_${id}">${label}</label><input id="rv_${id}" value="${escAttr(val||'')}"></div>`;
+  const t=(id,label,val,cls='full')=>`<div class="rv-f ${cls}"><label for="rv_${id}">${label}</label><textarea id="rv_${id}">${esc(val||'')}</textarea></div>`;
+  const hinweise=[d.kosten_berechnung,d.unsicherheiten].filter(Boolean).join('\n');
+  document.getElementById('vt-modal-body').innerHTML=`
+    ${fehler?`<div class="rv-err"><b>Automatische Analyse fehlgeschlagen:</b> ${esc(fehler)}<br>Du kannst die Felder manuell ausfüllen – das PDF wird trotzdem gespeichert.</div>`
+            :`<div class="rv-hint">✓ Automatisch ausgelesen – bitte alle Werte prüfen und bei Bedarf korrigieren, bevor du speicherst. Leere Felder wurden im Dokument nicht gefunden.${hinweise?`<br><br><b>Hinweise der Analyse:</b><br>${esc(hinweise).replace(/\n/g,'<br>')}`:''}</div>`}
+    <div style="font-size:10.5px;color:var(--ink3);font-family:monospace;margin-bottom:10px">📎 ${esc(vtPending.file.name)}</div>
+    <div class="rv-grid">
+      <div class="rv-sec">Vertrag</div>
+      ${f('name','Anbieter / Vertragsname *',d.anbieter||'')}
+      ${f('abteilung','Abteilung',d.abteilung||'')}
+      ${f('gegenstand','Vertragsgegenstand',d.vertragsgegenstand||'')}
+      ${f('vertragsnr','Vertragsnr. / Referenz',d.vertragsnummer||'')}
+      <div class="rv-sec" style="color:var(--acc)">💶 Kosten (netto)</div>
+      ${f('kosten_monat','Kosten / Monat netto (€)',fmtEuro(km))}
+      ${f('kosten_jahr','Kosten / Jahr netto (€)',fmtEuro(kj))}
+      ${f('zahlungsintervall','Zahlungsintervall',d.zahlungsintervall||'')}
+      ${f('einmalkosten','Einmalkosten netto (€)',fmtEuro(parseEuro(d.einmalkosten_netto)))}
+      <div class="rv-sec" style="color:var(--red)">⏰ Laufzeit & Kündigung</div>
+      ${f('beginn','Vertragsbeginn',d.vertragsbeginn||'')}
+      ${f('ende','Vertragsende / Laufzeit bis',d.vertragsende||'')}
+      ${f('mindestlaufzeit','Mindestlaufzeit',d.mindestlaufzeit||'')}
+      ${f('kuendigung_frist','Kündigungsfrist',d.kuendigungsfrist||'')}
+      ${f('verlaengerung','Automatische Verlängerung',d.verlaengerung||'')}
+      ${f('kuendigung_bis','Kündigung spätestens am',d.kuendigung_spaetestens||'')}
+      <div class="rv-sec">Weitere Angaben</div>
+      ${t('ext','Ansprechpartner extern',d.ext_ansprechpartner||'','')}
+      ${t('int','Ansprechpartner intern','','')}
+      ${t('konditionen','Konditionen & Besonderheiten',d.konditionen||'')}
+    </div>`;
+  document.getElementById('vt-modal-foot').innerHTML=`
+    <button class="btn-ghost" onclick="closeVertragModal()">Abbrechen</button>
+    <button class="btn-ghost" onclick="document.getElementById('vt-file').click()">Anderes PDF</button>
+    <button class="btn-new" id="vt-save" onclick="saveNewVertrag()">✓ Vertrag speichern</button>`;
+}
+
+async function saveNewVertrag(){
+  if(!vtPending)return;
+  const v=id=>(document.getElementById('rv_'+id)?.value||'').trim();
+  const name=v('name');
+  if(!name){toast('⚠ Bitte Anbieter / Vertragsname eintragen');document.getElementById('rv_name').focus();return;}
+  const btn=document.getElementById('vt-save');btn.disabled=true;btn.textContent='Speichere …';
+  const slug=name.toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,30);
+  const id=`vertrag_${slug||'neu'}_${Date.now().toString(36)}`;
+  let km=parseEuro(v('kosten_monat')), kj=parseEuro(v('kosten_jahr'));
+  if(km===null&&kj!==null)km=kj/12;
+  if(kj===null&&km!==null)kj=km*12;
+  const konditionen=[
+    v('gegenstand')?'Gegenstand: '+v('gegenstand'):'',
+    v('zahlungsintervall')?'Zahlungsintervall: '+v('zahlungsintervall'):'',
+    v('einmalkosten')?'Einmalkosten netto: '+v('einmalkosten')+' €':'',
+    v('konditionen')
+  ].filter(Boolean).join('\n');
+  const row={
+    id,name,quelle:'Vertragsdokument',herkunft:'Vertragsdokument',status:'Aktiv',archiviert:false,
+    abteilung:v('abteilung'),
+    erste_buchung:v('beginn'),laufzeit_bis:v('ende'),
+    kosten_monat:fmtEuro(km),kosten_jahr:fmtEuro(kj),
+    kuendigung_frist:v('kuendigung_frist'),mindestlaufzeit:v('mindestlaufzeit'),
+    verlaengerung:v('verlaengerung'),kuendigung_bis:v('kuendigung_bis'),
+    buchungsbeispiel:v('vertragsnr'),massnahme:konditionen,
+    ext_ansprechpartner:v('ext'),int_ansprechpartner:v('int')
+  };
+  const {error}=await SB.from('eintraege').insert(row);
+  if(error){toast('⚠ '+error.message);btn.disabled=false;btn.textContent='✓ Vertrag speichern';return;}
+  allData[id]=row;
+  await uploadDoc(id,vtPending.file);
+  closeVertragModal();
+  renderVertraege();updateScores();
+  toast(`✓ Vertrag „${name}" gespeichert`);
+}
+
 
 function renderPruef(){
   const tb=document.getElementById('pruef-body');
@@ -960,7 +1541,7 @@ function renderFindings(){
   }).join('');
 }
 
-function renderAll(){renderFindings();renderPruef();renderOk();renderLic();restoreAllBtns();}
+function renderAll(){renderFindings();renderPruef();renderOk();renderLic();renderVertraege();restoreAllBtns();}
 
 
 // ── ARCHIVE & DELETE ──────────────────────────────────────────────────────
