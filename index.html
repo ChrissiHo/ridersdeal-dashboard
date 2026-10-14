@@ -278,6 +278,11 @@ tbody td:last-child{border-right:none}
 .bz-row select{grid-column:2;grid-row:1/3;width:100%;padding:5px 6px;border:1px solid var(--rule);border-radius:3px;font-size:11.5px}
 .bz-row.ok select{border-color:var(--grn);background:var(--grn-lt)}
 .bz-row.warn select{border-color:#EAD38A;background:var(--yel-lt)}
+.imp-sec{font-size:10px;font-family:monospace;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin:14px 0 6px;color:var(--ink)}
+.imp-row{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--rule);font-size:11.5px}
+.imp-row input{margin-top:2px}
+.imp-row .d{font-size:10.5px;color:var(--ink3);font-family:monospace;margin-top:2px;line-height:1.5}
+.imp-row .d s{color:var(--red)} .imp-row .d b{color:var(--grn)}
 </style>
 </head>
 <body>
@@ -294,6 +299,10 @@ tbody td:last-child{border-right:none}
       <span class="hm"><strong id="h-pruef">…</strong> ⚠ zu prüfen</span>
       <span class="hm"><strong id="h-ok">…</strong> ✓ bekannt</span>
     </div>
+  </div>
+  <div style="display:flex;gap:6px;margin-left:auto;margin-right:10px">
+    <button class="btn-ghost" style="padding:6px 10px;font-size:11px" onclick="exportExcel()" title="Alle Einträge als Excel herunterladen – z.B. für den Abgleich in Claude">📥 Excel-Export</button>
+    <button class="btn-ghost" style="padding:6px 10px;font-size:11px" onclick="document.getElementById('imp-file').click()" title="Abgeglichene Excel-Datei wieder einspielen">📤 Abgleich importieren</button>
   </div>
   <div class="conn-dot" id="conn-dot" title="Supabase Verbindung"></div>
   <div class="name-pill">
@@ -497,6 +506,7 @@ tbody td:last-child{border-right:none}
     <div class="modal-f" id="vt-modal-foot"></div>
   </div>
 </div>
+<input type="file" id="imp-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="importExcel(this.files[0]);this.value=''">
 <input type="file" id="bulk-file" accept="application/pdf,.pdf" multiple style="display:none" onchange="bulkZuordnen([...this.files]);this.value=''">
 <input type="file" id="vt-file" accept="application/pdf,.pdf" style="display:none" onchange="handleVertragFile(this.files[0]);this.value=''">
 
@@ -517,6 +527,7 @@ function herkunftBadge(h){
   if(h==='Vertragsdokument') return '<span class="hbadge hb-vertrag">📄 Vertrag</span>';
   if(h==='DATEV') return '<span class="hbadge hb-datev">⚠️ DATEV</span>';
   if(h.includes('DATEV')) return '<span class="hbadge hb-datev-lic">✅ DATEV+Liste</span>';
+  if(h==='Abgleich') return '<span class="hbadge" style="background:#B8601A;color:#fff">🔄 Abgleich</span>';
   if(h==='Versicherungsportfolio') return '<span class="hbadge hb-port">🛡 Portfolio</span>';
   if(h==='Manuell') return '<span class="hbadge hb-manuell">✍ Manuell</span>';
   if(h==='Lizenzliste') return '<span class="hbadge hb-lic">📊 Lizenzliste</span>';
@@ -1688,6 +1699,136 @@ async function bulkHochladen(){
     btn.textContent=`Lade hoch … ${n+1}`; await uploadDoc(id,res[i].f); n++;
   }
   closeVertragModal(); renderVertraege(); toast(`📎 ${n} Dokument(e) angehängt`);
+}
+
+
+// ── EXCEL-EXPORT / ABGLEICH-IMPORT ───────────────────────────────────────
+LIBS.xlsx='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+const BEREICHE={'Lizenzliste':'Lizenzliste','Vertragsdokument':'Vertrag','DATEV – In Lizenzliste':'Bekannt (DATEV)','DATEV – Zu prüfen':'Zu prüfen (DATEV)'};
+const BEREICH_REV=Object.fromEntries(Object.entries(BEREICHE).map(([k,v])=>[v.toLowerCase(),k]));
+// [Spaltenname, Feld]
+const EX_COLS=[['ID','id'],['Bereich','_bereich'],['Name / Anbieter','name'],['Kategorie','_kat'],['Ansprechpartner intern','_ap'],
+  ['Kosten/Monat netto (€)','kosten_monat'],['Kosten/Jahr netto (€)','kosten_jahr'],['Betrag (€)','betrag'],
+  ['Erste Buchung','erste_buchung'],['Letzte Buchung','letzte_buchung'],['Buchungstext / Vertragsnr.','buchungsbeispiel'],
+  ['Laufzeit bis','laufzeit_bis'],['Kündigungsfrist','kuendigung_frist'],['Kündigung spätestens','kuendigung_bis'],
+  ['Gekündigt (ja/nein)','_gek'],['Gekündigt zum','_gekzum'],['Status','status'],['Maßnahme','massnahme'],['Abgleich-Hinweis','_hinweis']];
+const MONEY=new Set(['kosten_monat','kosten_jahr','betrag']);
+function exVal(r,f){
+  if(f==='_bereich') return BEREICHE[r.quelle]||r.quelle||'';
+  if(f==='_kat') return katOf(r);
+  if(f==='_ap') return cur(r.id,'int_ansprechpartner',apDefault(r));
+  if(f==='_gek') return kInfo(r).on?'ja':'nein';
+  if(f==='_gekzum') return kInfo(r).zum||'';
+  if(f==='_hinweis') return '';
+  const v=cur(r.id,f,r[f]); return v==null||v==='NaT'?'':String(v);
+}
+async function exportExcel(){
+  try{ await loadScript(LIBS.xlsx); }catch(e){ toast('⚠ '+e.message); return; }
+  const rows=Object.values(allData).filter(r=>!r.archiviert).sort((a,b)=>(a.quelle||'').localeCompare(b.quelle||'')||katOf(a).localeCompare(katOf(b))||(a.name||'').localeCompare(b.name||''));
+  const data=[EX_COLS.map(c=>c[0]), ...rows.map(r=>EX_COLS.map(([,f])=>exVal(r,f)))];
+  const ws=XLSX.utils.aoa_to_sheet(data);
+  ws['!cols']=EX_COLS.map(([h])=>({wch:/Name|Maßnahme|Hinweis|Buchungstext/.test(h)?40:/ID/.test(h)?22:18}));
+  ws['!autofilter']={ref:ws['!ref']};
+  const anl=XLSX.utils.aoa_to_sheet([
+    ['Anleitung für den Abgleich (auch für Claude)'],[''],
+    ['1. Spalte „ID“ niemals ändern – darüber werden Änderungen dem richtigen Eintrag zugeordnet.'],
+    ['2. Fehlende Buchungen/Verträge: neue Zeile anfügen, „ID“ LEER lassen, „Bereich“ ausfüllen.'],
+    ['   Erlaubte Bereiche: Lizenzliste · Vertrag · Bekannt (DATEV) · Zu prüfen (DATEV)  (ohne Angabe: Zu prüfen (DATEV))'],
+    ['3. Korrekturen: Wert in der Zeile direkt überschreiben. Leere Zellen werden beim Import ignoriert (nichts wird gelöscht).'],
+    ['4. Auffälligkeiten (z.B. „Betrag weicht ab“, „trotz Kündigung abgebucht“) in „Abgleich-Hinweis“ schreiben – wird als Notiz übernommen.'],
+    ['5. Beträge als Zahl (z.B. 1234,56), Datumsangaben als TT.MM.JJJJ.'],
+    ['6. Kategorien: '+KAT_NAMES.join(' · ')],
+    ['7. Datei danach im Dashboard über „📤 Abgleich importieren“ einspielen – vor dem Übernehmen wird alles zur Prüfung angezeigt.'],
+    [''],['Exportiert am '+new Date().toLocaleString('de-DE')+' von '+author()]]);
+  anl['!cols']=[{wch:120}];
+  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Einträge'); XLSX.utils.book_append_sheet(wb,anl,'Anleitung');
+  const d=new Date(); XLSX.writeFile(wb,`RidersDeal_Vertraege_Lizenzen_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.xlsx`);
+  toast(`📥 ${rows.length} Einträge exportiert`);
+}
+function impNorm(v,f){
+  if(Object.prototype.toString.call(v)==='[object Date]') return `${String(v.getDate()).padStart(2,'0')}.${String(v.getMonth()+1).padStart(2,'0')}.${v.getFullYear()}`;
+  if(MONEY.has(f)){ const n=parseEuro(v); return n===null?String(v||'').trim():fmtEuro(n); }
+  return String(v??'').trim();
+}
+let impPlan=null;
+async function importExcel(file){
+  if(!file) return;
+  if(!connected){toast('⚠ Import nur mit Supabase-Verbindung');return;}
+  try{ await loadScript(LIBS.xlsx); }catch(e){ toast('⚠ '+e.message); return; }
+  const wb=XLSX.read(await file.arrayBuffer(),{cellDates:true});
+  const ws=wb.Sheets['Einträge']||wb.Sheets[wb.SheetNames[0]];
+  const rows=XLSX.utils.sheet_to_json(ws,{defval:'',raw:true});
+  const col=name=>Object.keys(rows[0]||{}).find(k=>k.trim().toLowerCase()===name.toLowerCase());
+  if(!rows.length||!col('Name / Anbieter')){ toast('⚠ Datei hat nicht das Export-Format (Spalte „Name / Anbieter“ fehlt)'); return; }
+  const neu=[], aend=[], notes=[];
+  for(const x of rows){
+    const g=h=>{ const k=col(h); return k?x[k]:''; };
+    const id=String(g('ID')||'').trim(), name=String(g('Name / Anbieter')||'').trim();
+    const hinweis=String(g('Abgleich-Hinweis')||'').trim();
+    if(!id){
+      if(!name) continue;
+      const q=BEREICH_REV[String(g('Bereich')||'').trim().toLowerCase()]||'DATEV – Zu prüfen';
+      const r={name,quelle:q};
+      EX_COLS.forEach(([h,f])=>{ if(f.startsWith('_')||f==='id'||f==='name') return; const v=impNorm(g(h),f); if(v) r[f]=v; });
+      const kat=String(g('Kategorie')||'').trim(); if(kat) r.kategorie=kat;
+      const ap=String(g('Ansprechpartner intern')||'').trim(); if(ap) r.int_ansprechpartner=ap;
+      if(hinweis) r.massnahme=[r.massnahme,'Abgleich: '+hinweis].filter(Boolean).join('\n');
+      neu.push(r); continue;
+    }
+    const r=allData[id]; if(!r) continue;
+    const ch=[];
+    EX_COLS.forEach(([h,f])=>{
+      if(f==='id'||f==='_bereich'||f==='_hinweis') return;
+      const nv=impNorm(g(h),MONEY.has(f)?f:''); if(!nv) return;
+      const ov=impNorm(exVal(r,f),MONEY.has(f)?f:'');
+      if(nv!==ov) ch.push({f,h,ov,nv});
+    });
+    if(ch.length) aend.push({id,name:r.name,ch});
+    if(hinweis) notes.push({id,name:r.name,text:'Abgleich: '+hinweis});
+  }
+  impPlan={neu,aend,notes};
+  document.querySelector('#vt-modal .modal-h b').textContent='📤 Abgleich importieren';
+  const body=document.getElementById('vt-modal-body');
+  if(!neu.length&&!aend.length&&!notes.length){
+    body.innerHTML='<div class="rv-hint">Keine Unterschiede gefunden – das Dashboard ist bereits auf dem Stand der Datei.</div>';
+    document.getElementById('vt-modal-foot').innerHTML='<button class="btn-ghost" onclick="closeVertragModal()">Schließen</button>';
+  } else {
+    body.innerHTML=`<div class="rv-hint">Bitte prüfen – nur angehakte Punkte werden übernommen. Es wird nichts gelöscht.</div>`
+    +(neu.length?`<div class="imp-sec" style="color:var(--grn)">＋ ${neu.length} neue Einträge</div>`+neu.map((r,i)=>`<label class="imp-row"><input type="checkbox" checked id="imp_n_${i}"><div><b>${esc(r.name)}</b> → ${esc(BEREICHE[r.quelle])}${r.kategorie?' · '+esc(r.kategorie):''}<div class="d">${['betrag','kosten_monat','erste_buchung','letzte_buchung','buchungsbeispiel'].filter(f=>r[f]).map(f=>esc(r[f])).join(' · ')}${r.massnahme?'<br>'+esc(r.massnahme):''}</div></div></label>`).join(''):'')
+    +(aend.length?`<div class="imp-sec" style="color:var(--acc)">✎ ${aend.length} geänderte Einträge</div>`+aend.map((a,i)=>`<label class="imp-row"><input type="checkbox" checked id="imp_a_${i}"><div><b>${esc(a.name)}</b><div class="d">${a.ch.map(c=>`${esc(c.h)}: <s>${esc(c.ov)||'leer'}</s> → <b>${esc(c.nv)}</b>`).join('<br>')}</div></div></label>`).join(''):'')
+    +(notes.length?`<div class="imp-sec" style="color:var(--ora)">💬 ${notes.length} Abgleich-Hinweise als Notiz</div>`+notes.map((n,i)=>`<label class="imp-row"><input type="checkbox" checked id="imp_h_${i}"><div><b>${esc(n.name)}</b><div class="d">${esc(n.text)}</div></div></label>`).join(''):'');
+    document.getElementById('vt-modal-foot').innerHTML=`<button class="btn-ghost" onclick="closeVertragModal()">Abbrechen</button><button class="btn-new" id="imp-go" onclick="importAusfuehren()">✓ Angehakte übernehmen</button>`;
+  }
+  document.getElementById('vt-modal').classList.add('open');
+}
+async function importAusfuehren(){
+  const {neu,aend,notes}=impPlan||{}; if(!neu) return;
+  const btn=document.getElementById('imp-go'); btn.disabled=true; btn.textContent='Übernehme …';
+  const t=Date.now().toString(36); let nN=0,nA=0,nH=0;
+  const ins=neu.filter((r,i)=>document.getElementById('imp_n_'+i)?.checked).map((r,i)=>{
+    const pref={'Lizenzliste':'lic','Vertragsdokument':'vertrag','DATEV – In Lizenzliste':'datev_ok','DATEV – Zu prüfen':'datev_pruef'}[r.quelle];
+    const row={...r,id:`${pref}_imp_${t}_${i}`,herkunft:'Abgleich',archiviert:false};
+    if(row.betrag) row.betrag_raw=parseEuro(row.betrag);
+    if(!row.status) row.status=r.quelle==='DATEV – Zu prüfen'?'⚠ Zu prüfen':'Aktiv';
+    return row;
+  });
+  if(ins.length){ const {error}=await SB.from('eintraege').insert(ins); if(error){toast('⚠ '+error.message);btn.disabled=false;btn.textContent='✓ Angehakte übernehmen';return;} ins.forEach(r=>allData[r.id]=r); nN=ins.length; }
+  for(let i=0;i<aend.length;i++){ if(!document.getElementById('imp_a_'+i)?.checked) continue;
+    const a=aend[i];
+    for(const c of a.ch){
+      const f={_kat:'kategorie',_ap:'int_ansprechpartner',_gek:'gekuendigt',_gekzum:'gekuendigt_zum'}[c.f]||c.f;
+      const v=f==='gekuendigt'?(/^(ja|j|x|yes|true|1)$/i.test(c.nv)?'ja':'nein'):c.nv;
+      await saveEdit(a.id,f,v); allEdits[a.id+'_'+f]=v;
+    }
+    nA++;
+  }
+  for(let i=0;i<notes.length;i++){ if(!document.getElementById('imp_h_'+i)?.checked) continue;
+    const n=notes[i], note={eintrag_id:n.id,autor:author(),text:n.text,resolved:false};
+    const {data}=await SB.from('notizen').insert(note).select().single();
+    if(data){ (allNotes[n.id]??=[]).push(data); nH++; }
+  }
+  closeVertragModal(); rerenderAll(); updateScores(); if(typeof renderAllNotes==='function') renderAllNotes();
+  toast(`✓ Import: ${nN} neu · ${nA} geändert · ${nH} Notizen`);
 }
 
 
